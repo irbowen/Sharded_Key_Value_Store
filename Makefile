@@ -2,31 +2,23 @@
 
 CXXFLAGS = -std=c++1z -g -pedantic -Wall -pthread
 
-SERVER_LIB := server.o server_main.o
-WORKER_LIB := worker.o worker_main.o
+SERVER_LIB := paxos.o paxos_main.o
 
 ########################################
 default: all 
-all: server worker
+all: paxos_server
 
 DEPS := $(wildcard *.h)
 
 %.o: %.cc $(DEPS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-server: $(SERVER_LIB)
+paxos_server: $(SERVER_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $^
-
-worker: $(WORKER_LIB)
-	$(CXX) $(CXXFLAGS) -o $@ $^
-
-########################################
-splitter: split.cc helper.h
-	$(CXX) $(CXXFLAGS) split.cc -o splitter
 
 ########################################
 clean:
-	touch indexer server worker
-	rm indexer server worker
+	touch paxos_server
+	rm paxos_server
 	rm *.o
 
