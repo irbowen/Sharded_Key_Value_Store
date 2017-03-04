@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
   int index;
   int iarg = 0;
   while (iarg != -1) {
-    iarg = getopt_long(argc, argv, "", longopts, &index);
+    iarg = getopt_long(argc, argv, "h:p:", longopts, &index);
     switch (iarg) {
       case 'h':
         break;
