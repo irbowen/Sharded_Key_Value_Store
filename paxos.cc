@@ -36,7 +36,7 @@ void paxos::handle_msg(std::string msg) {
   // Arguments: n
   // Acting as: Acceptor
   // Check if you've seen an n higher than this one
-  // Outgoing: a prepare_accept or prepare_deny
+  // Outgoing: a prepare_accept or prepare_reject
 
   // Incoming: prepare_accept
   // Arguments: n_a, v_a (could be null)
@@ -44,18 +44,18 @@ void paxos::handle_msg(std::string msg) {
   // Increment the count of # of prepare accepts you have gotten
   // Outgoing: If this is more than a majority, send propose_value(n, v)
 
-  // Incoming: prepare_deny
+  // Incoming: prepare_reject
   // Arguments: n_p
   // Acting as: Proposer
   // If we got a higher n value, update our internal storage with this new value
   // Outgoing:
 
-  // Incoming: Propose
+  // Incoming: propose
   // Arguments: n, v
   // Acting as: Acceptor
   // Outgoing: propose_accept(n), or propose_reject(n)
 
-  // Incoming: Propose_accept
+  // Incoming: propose_accept
   // Arguments: n
   // Acting as: Proposer
   // Outgoing: decided(v)
