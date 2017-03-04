@@ -33,6 +33,6 @@ int main(int argc, char* argv[]) {
 
   std::cout << "This platform can support " << std::thread::hardware_concurrency() << " threads are the same time\n";
   paxos p;
-  p.setup_server_for_requests(6666, "localhost");
+  p.setup_server(6666, "localhost");
   std::cout << "Get's here, so thats cool\n";
 }

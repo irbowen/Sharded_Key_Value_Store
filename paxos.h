@@ -6,16 +6,14 @@
 #include <string>
 #include <condition_variable>
 #include <thread>
-#include <future>
-#include <algorithm>
 #include <vector>
 
 class paxos {
 private:
   std::string config_file;
-  void process_request(int32_t);
+  void handle_msg(std::string);
 public:
-  void setup_server_for_requests(int, std::string);
+  void setup_server(int port, std::string host);
 };
 
 #endif
