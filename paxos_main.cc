@@ -22,8 +22,10 @@ int main(int argc, char* argv[]) {
     iarg = getopt_long(argc, argv, "h:p:", longopts, &index);
     switch (iarg) {
       case 'h':
+        // TODO
         break;
       case 'p':
+        // TODO
         break;
       case '?':
         std::cout << "Argument for -h and -p required\n";
@@ -31,7 +33,6 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  std::cout << "This platform can support " << std::thread::hardware_concurrency() << " threads are the same time\n";
   paxos p;
   p.setup_server(6666, "localhost");
   std::cout << "Get's here, so thats cool\n";
