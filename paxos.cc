@@ -30,13 +30,13 @@ void paxos::handle_msg(std::string msg) {
   
   // If client_req msg
   // skip
-  // oh fuck
 
   // Incoming: prepare
   // Arguments: n
   // Acting as: Acceptor
   // Check if you've seen an n higher than this one
-  // Outgoing: a prepare_accept or prepare_reject
+  // Outgoing: a prepare_accept 
+  //    OR prepare_reject
 
   // Incoming: prepare_accept
   // Arguments: n_a, v_a (could be null)
@@ -53,19 +53,20 @@ void paxos::handle_msg(std::string msg) {
   // Incoming: propose
   // Arguments: n, v
   // Acting as: Acceptor
-  // Outgoing: propose_accept(n), or propose_reject(n)
+  // Outgoing: propose_accept(n) + broadcast_to_learners(n, v),
+  //    OR propose_reject(n)
 
   // Incoming: propose_accept
   // Arguments: n
   // Acting as: Proposer
-  // Outgoing: decided(v)
+  // Outgoing:
 
   // Incoming: propose_reject
-  // Arguments: n
+  // Arguments: n_p
   // Acting as: Proposer
 
-  // Incoming: decided
-  // Arguments: v
+  // Incoming: broadcast_to_learners
+  // Arguments: n, v
   // Acting as: Learner
   // Outgoing: potenial client response
 
