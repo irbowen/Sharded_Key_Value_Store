@@ -30,7 +30,7 @@ void paxos::handle_msg(std::string msg) {
   
   // If client_req msg
   // skip
-
+  // oh fuck
 
   // Incoming: prepare
   // Arguments: n
@@ -60,15 +60,16 @@ void paxos::handle_msg(std::string msg) {
   // Acting as: Proposer
   // Outgoing: decided(v)
 
-  // Incoming: propose_accept
+  // Incoming: propose_reject
   // Arguments: n
   // Acting as: Proposer
-  // Outgoing: decided(v)
 
   // Incoming: decided
   // Arguments: v
   // Acting as: Learner
-  // Outgoing:
+  // Outgoing: potenial client response
+
+
 }
 
 void paxos::setup_server(int port, std::string host) {
