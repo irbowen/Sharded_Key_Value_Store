@@ -5,6 +5,10 @@
 #include "replica.h"
 #include "message.h"
 
+
+client_lib::client_lib(){
+    cur_view_num = 0;
+}
 void client_lib::add_chat_message(std::string chat_message){
     Message msg;
     msg.msg_type = MessageType::START_PREPARE;
