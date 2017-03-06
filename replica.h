@@ -17,8 +17,16 @@ private:
     int port;
     std::string host;
     std::string config_file;
-    void handle_msg(std::string);
-    
+
+    /* Number of live replicas in the system: 2f + 1 */
+    int tot_replicas;
+
+    /* Get the majority number f + 1 */
+    int get_quorum() { return (tot_replicas - 1) << 2; }
+
+    void handle_msg(Message);
+
+    /* Replica can take up any one of the following roles */
     Acceptor acceptor;
     Proposer proposer;
     Learner learner;
