@@ -8,9 +8,9 @@
 
 #include "acceptor.h"
 
-Message Acceptor::prepare(int n){
+Message Acceptor::prepare(int proposal_number){
     Message msg;
-    if(n < n_p){
+    if(proposal_number < n_p){
         msg.msg_type = MessageType::PREPARE_REJECT;
         msg.n_p = n_p;
     } else{
@@ -21,16 +21,16 @@ Message Acceptor::prepare(int n){
     return msg;
 }
 
-Message Acceptor::propose(int n, std::string new_value){
+Message Acceptor::propose(int proposal_number, std::string new_value){
     Message msg;
-    if(n < n_p){
+    if(proposal_number < n_p){
         msg.msg_type = MessageType::PROPOSE_REJECT;
         msg.n_p = n_p;
     } else{
-        n_a = n;
+        n_a = proposal_number;
         value = new_value;
         msg.msg_type = MessageType::PROPOSE_ACCEPT;
-        msg.n = n;
+        msg.prop_number = proposal_number;
     }
     return msg;
 }
