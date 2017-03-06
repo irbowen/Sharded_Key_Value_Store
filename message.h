@@ -10,21 +10,23 @@
 #define message_h
 
 enum MessageType {
-    PREPARE = 0,
-    PREPARE_ACCEPT = 1,
-    PREPARE_REJECT = 2,
-    PROPOSE = 3,
-    PROPOSE_ACCEPT = 4,
-    PROPOSE_REJECT = 5,
-    BRDCST_LEARNERS = 6
+    NO_ACTION = 0,
+    START_PREPARE = 1,
+    PREPARE = 2,
+    PREPARE_ACCEPT = 3,
+    PREPARE_REJECT = 4,
+    PROPOSE = 5,
+    PROPOSE_ACCEPT = 6,
+    PROPOSE_REJECT = 7,
+    BRDCST_LEARNERS = 8
 };
 class Message{
     
 public:
-    std::string value;
-    MessageType msg_type;
-    int n_a;
-    int n_p;
-    int n;
+    std::string value = std::string();
+    MessageType msg_type = MessageType::NO_ACTION;
+    int n_a = -1;
+    int n_p = -1;
+    int prop_number = -1;
 };
 #endif /* message_h */
