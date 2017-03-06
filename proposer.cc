@@ -7,14 +7,15 @@
 //
 
 #include "proposer.h"
+
 Message Proposer::prepare_accept(int n_a, std::string value){
     Message msg;
-    
+
     count[proposal_number] += 1;
     int quorum = (1 + tot_replicas) >> 2;
     if(count[proposal_number] >= quorum){
         msg.msg_type = MessageType::PROPOSE;
-        
+
         if(n_a == -1){
             // Propose the original value
             msg.value = to_propose;
@@ -24,7 +25,7 @@ Message Proposer::prepare_accept(int n_a, std::string value){
         }
         return msg;
     }
-    
+
     // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
@@ -33,15 +34,11 @@ Message Proposer::start_prepare(int proposal_number){
     msg.msg_type = MessageType::PREPARE;
     msg.prop_number = proposal_number;
     return msg;
-
 }
+
 Message Proposer::prepare_reject(int n_p){
     // go back to prepare phase
-    proposal_number = n_p + 1;
-    Message msg;
-    msg.msg_type = MessageType::PREPARE;
-    msg.prop_number = proposal_number;
-    return msg;
+    return start_prepare(n_p + 1);
 }
 
 Message Proposer::propose_accept(int n){
@@ -52,5 +49,5 @@ Message Proposer::propose_accept(int n){
 
 Message Proposer::propose_reject(int n_p){
     // if the proposal gets rejected, we are back to the prepare phase
-    return prepare_reject(n_p);
+    return start_prepare(n_p + 1);
 }

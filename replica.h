@@ -1,6 +1,6 @@
 
-#ifndef PAXOS_H_
-#define PAXOS_H_
+#ifndef replica_h
+#define replica_h
 
 #include <iostream>
 #include <string>

@@ -7,6 +7,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 #include <chrono>
 #include <iostream>
@@ -25,7 +28,7 @@ using namespace std;
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int port, std::string host) {
-    
+
     this->port = port;
     this->host = host;
 }
@@ -40,14 +43,14 @@ void replica::start(){
     struct sockaddr_in addr;
     memset(&addr, 0 , sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    addr.sin_addr.s_addr = inet_addr(this->host.c_str());
     addr.sin_port = htons(port);
-    
+
     assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
     assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
     socklen_t addr_len = sizeof(addr);
     assert(getsockname(serverfd, (struct sockaddr *) &addr, &addr_len) == 0);
-    
+
     struct sockaddr_storage their_addr;
     size_t numbytes;
     while (true) {
@@ -96,50 +99,50 @@ void replica::handle_msg(Message message) {
         case MessageType::BRDCST_LEARNERS:
             break;
     }
-    
+
+    // Send msg if not type noaction
+
     // If client_req msg
     // skip
-    
+
     // Incoming: prepare
     // Arguments: n
     // Acting as: Acceptor
     // Check if you've seen an n higher than this one
     // Outgoing: a prepare_accept
     //    OR prepare_reject
-    
+
     // Incoming: prepare_accept
     // Arguments: n_a, v_a (could be null)
     // Acting as: Proposer
     // Increment the count of # of prepare accepts you have gotten
     // Outgoing: If this is more than a majority, send propose_value(n, v)
-    
+
     // Incoming: prepare_reject
     // Arguments: n_p
     // Acting as: Proposer
     // If we got a higher n value, update our internal storage with this new value
     // Outgoing:
-    
+
     // Incoming: propose
     // Arguments: n, v
     // Acting as: Acceptor
     // Outgoing: propose_accept(n) + broadcast_to_learners(n, v),
     //    OR propose_reject(n)
-    
+
     // Incoming: propose_accept
     // Arguments: n
     // Acting as: Proposer
     // Outgoing:
-    
+
     // Incoming: propose_reject
     // Arguments: n_p
     // Acting as: Proposer
-    
+
     // Incoming: broadcast_to_learners
     // Arguments: n, v
     // Acting as: Learner
     // Outgoing: potenial client response
-    
-    
+
+
 }
-
-

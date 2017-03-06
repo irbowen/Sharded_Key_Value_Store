@@ -9,6 +9,9 @@
 #ifndef message_h
 #define message_h
 
+#include <string>
+#include <vector>
+
 enum MessageType {
     NO_ACTION = 0,
     START_PREPARE = 1,
@@ -28,5 +31,7 @@ public:
     int n_a = -1;
     int n_p = -1;
     int prop_number = -1;
+    std::string sender;
+    std::vector<std::string> receivers;
 };
 #endif /* message_h */
