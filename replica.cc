@@ -17,6 +17,7 @@
 
 #include "replica.h"
 #include "json.h"
+#include "message.h"
 
 using namespace std;
 
@@ -67,6 +68,33 @@ void replica::handle_msg(std::string msg) {
     // Step 2. Determine what kind of msg it is
     // Step 3. Call the correct function to hanlde it
     cout << "Got: " << msg << endl;
+    
+    
+    Message message;
+    int n_a, n_p, n;
+    std::string value;
+    switch(message.msg_type){
+        case MessageType::PREPARE:
+            acceptor.prepare(n);
+            break;
+        case MessageType::PREPARE_ACCEPT:
+            proposer.prepare_accept(n_a, value);
+            break;
+        case MessageType::PREPARE_REJECT:
+            proposer.prepare_reject(n_p);
+            break;
+        case MessageType::PROPOSE:
+            acceptor.propose(n, value);
+            break;
+        case MessageType::PROPOSE_ACCEPT:
+            proposer.propose_accept(n);
+            break;
+        case MessageType::PROPOSE_REJECT:
+            proposer.propose_reject(n_p);
+            break;
+        case MessageType::BRDCST_LEARNERS:
+            break;
+    }
     
     // If client_req msg
     // skip
