@@ -56,41 +56,42 @@ void replica::start(){
         if (numbytes == 0) {
             exit(1);
         }
-        string tmp(buf);
-        std::thread t(&replica::handle_msg, this, tmp);
+        //string tmp(buf);
+        Message *msg = (Message*) buf;
+        std::thread t(&replica::handle_msg, this, *msg);
         t.detach();
     }
 }
 
 /* Handle the given message */
-void replica::handle_msg(std::string msg) {
-    // Step 1. Parse msg into json
-    // Step 2. Determine what kind of msg it is
-    // Step 3. Call the correct function to hanlde it
-    cout << "Got: " << msg << endl;
-    
-    
-    Message message;
-    int n_a, n_p, n;
-    std::string value;
+void replica::handle_msg(Message message) {
+    cout << "Got: " << message.value << endl;
+
+    Message reply;
     switch(message.msg_type){
+        case MessageType::NO_ACTION:
+            // do nothing in this case
+            break;
+        case MessageType::START_PREPARE:
+            reply = proposer.start_prepare(message.prop_number);
+            break;
         case MessageType::PREPARE:
-            acceptor.prepare(n);
+            reply = acceptor.prepare(message.prop_number);
             break;
         case MessageType::PREPARE_ACCEPT:
-            proposer.prepare_accept(n_a, value);
+            reply = proposer.prepare_accept(message.n_a, message.value);
             break;
         case MessageType::PREPARE_REJECT:
-            proposer.prepare_reject(n_p);
+            reply = proposer.prepare_reject(message.n_p);
             break;
         case MessageType::PROPOSE:
-            acceptor.propose(n, value);
+            reply = acceptor.propose(message.prop_number, message.value);
             break;
         case MessageType::PROPOSE_ACCEPT:
-            proposer.propose_accept(n);
+            reply = proposer.propose_accept(message.prop_number);
             break;
         case MessageType::PROPOSE_REJECT:
-            proposer.propose_reject(n_p);
+            reply = proposer.propose_reject(message.n_p);
             break;
         case MessageType::BRDCST_LEARNERS:
             break;
