@@ -1,4 +1,7 @@
 
+#ifndef network_h_
+#define network_h_
+
 #include <arpa/inet.h>
 #include <cassert>
 #include <cmath>
@@ -37,3 +40,5 @@ class network {
     Message* recv_from();
     Message* recv_from_with_timeout();
 };
+
+#endif

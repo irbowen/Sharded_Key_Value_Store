@@ -12,8 +12,8 @@ void network::init() {
   struct sockaddr_in addr;
   memset(&addr, 0 , sizeof(addr));
   addr.sin_family = AF_INET;
-  //addr.sin_addr.s_addr = inet_addr(host.c_str());
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
+  addr.sin_addr.s_addr = inet_addr(host.c_str());
+  //addr.sin_addr.s_addr = htonl(INADDR_ANY);
   cout << "Port: " << port << endl;
   addr.sin_port = htons(port);
 
@@ -22,6 +22,7 @@ void network::init() {
   assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
   addr_len = sizeof(addr);
   cout << "@@@ socketfd: " << serverfd << endl;
+  cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
   cout << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
 
@@ -32,7 +33,7 @@ Message* network::recv_from() {
   //char buf[MAXBUFLEN];
   //void *buf;
   //memset(&buf, '\0' ,MAXBUFLEN);
-  Message buf;
+  Message* buf = new Message;
 
   // Vars needed to recv
   struct sockaddr_storage their_addr;
@@ -51,19 +52,23 @@ Message* network::recv_from() {
       cout << "There was no data\n";
       continue;
     }
-    cout << buf.n_a << endl;
-    return &buf;
+    cout << buf->n_a << endl;
+    return buf;
   }
 }
 
 void network::sendto(Message* message) {
+
   struct sockaddr_in to_addr;
   memset(&to_addr, 0 , sizeof(to_addr));
-  for(auto serv : message->receivers){
+  for (auto serv : message->receivers) {
+    cout << "suh dude\n";
     to_addr.sin_family = AF_INET;
-    to_addr.sin_port = serv.port;
+    to_addr.sin_port = htons(serv.port);
     inet_aton("127.0.0.1" , &to_addr.sin_addr);
-    ::sendto(serverfd, &message, sizeof(message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
+    cout << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
+    cout << "@@@ port " << ntohs(to_addr.sin_port) << endl;
+    ::sendto(serverfd, message, sizeof(*message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
   }
   //to_addr.sin_port = message->port;
   // Look into the message, get the destination from the message

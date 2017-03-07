@@ -45,9 +45,9 @@ replica::replica(int _port, string _host, int _id, string _config_file)
   }
 
 /* Start listening on the provided port and host */
-void replica::start(){
+void replica::start() {
 
-  while(true){
+  while (true) {
     Message *msg = net.recv_from();
     thread t(&replica::handle_msg, this, msg);
     t.detach();
