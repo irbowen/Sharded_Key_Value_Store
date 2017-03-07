@@ -6,7 +6,7 @@ int main(){
 
 	vector<string> messages = {"Hello", "How are you", "Do you like apples?"};
 
-	for_each(messages.begin(), messages.end(), [&](const string &message){
-		c_lib.add_chat_message(message);
-	});
+    for(auto &message : messages){
+        c_lib.add_chat_message(message);
+    }
 }

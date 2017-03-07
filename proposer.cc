@@ -22,7 +22,7 @@ Message Proposer::prepare_accept(int n_a, std::string value){
             msg.value = value;
         }
         // TODO: add this member to the class, keeping it to compile
-        std::vector<std::string> acceptor_list;
+        std::vector<node> acceptor_list;
         for(auto item: acceptor_list){
             msg.receivers.push_back(item);
         }
@@ -36,7 +36,7 @@ Message Proposer::start_prepare(int proposal_number){
     msg.prop_number = proposal_number;
     
     // TODO: add this member to the class, keeping it to compile
-    std::vector<std::string> acceptor_list;
+    std::vector<node> acceptor_list;
     for(auto item: acceptor_list){
         msg.receivers.push_back(item);
     }
