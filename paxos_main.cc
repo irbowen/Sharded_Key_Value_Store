@@ -14,6 +14,7 @@ int main(int argc, char* argv[]) {
   const struct option longopts[] = {
     {"host", required_argument, 0, 'h'},
     {"port", required_argument, 0, 'p'},
+    {"config", required_argument, 0, 'c'},
     {0,0,0,0},
   };
   int index;
