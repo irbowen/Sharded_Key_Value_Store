@@ -10,12 +10,10 @@
 
 Message Proposer::prepare_accept(int n_a, std::string value){
     Message msg;
-
     count[proposal_number] += 1;
     int quorum = (1 + tot_replicas) >> 2;
     if(count[proposal_number] >= quorum){
         msg.msg_type = MessageType::PROPOSE;
-
         if(n_a == -1){
             // Propose the original value
             msg.value = to_propose;
@@ -25,7 +23,6 @@ Message Proposer::prepare_accept(int n_a, std::string value){
         }
         return msg;
     }
-
     // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
