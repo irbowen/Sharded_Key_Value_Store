@@ -11,6 +11,7 @@
 
 #include <string>
 #include <vector>
+#include "node.h"
 
 enum MessageType {
     NO_ACTION = 0,
@@ -31,7 +32,8 @@ public:
     int n_a = -1;
     int n_p = -1;
     int prop_number = -1;
-    std::string sender;
-    std::vector<std::string> receivers;
+
+    node sender;
+    std::vector<node> receivers;
 };
 #endif /* message_h */
