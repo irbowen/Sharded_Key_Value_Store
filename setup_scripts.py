@@ -22,7 +22,8 @@ def main(num_replicas, port_number):
     # Create
     output_str = ""
     for i in range(num_replicas):
-        output_str += "./%s --port %s --host %s --config %s --id %d\n" % (BINARY_NAME, (port_number + i), "127.0.0.1", CONFIG_FILE, i)
+        output_str += "./%s --port %s --host %s --config %s --id %d\n" % (
+            BINARY_NAME, (port_number + i), "127.0.0.1", CONFIG_FILE, i)
     print(output_str)
     f = open('start.sh', 'w')
     f.write(output_str)
