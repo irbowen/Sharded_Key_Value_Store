@@ -1,5 +1,6 @@
 #include "network.h"
-network::network(std::string host, int port) {
+
+network::network(std::string _host, int _port) : host(_host), port(_port) {
     // Set up the socket for this communication
     int opt_val = 1;
     serverfd = 1;
