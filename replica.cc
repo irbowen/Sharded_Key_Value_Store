@@ -31,6 +31,7 @@ replica::replica(int port, std::string host) : net(host, port){
     
     this->port = port;
     this->host = host;
+    cur_view_num = 0;
 }
 
 /* Start listening on the provided port and host */
@@ -53,7 +54,10 @@ void replica::handle_msg(Message *message) {
             // do nothing in this case
             break;
         case MessageType::START_PREPARE:
-            reply = proposer.start_prepare(message->prop_number);
+            if(cur_view_num % tot_replicas == my_id)
+                reply = proposer.start_prepare(message->prop_number);
+            else
+                cur_view_num += 1;
             break;
         case MessageType::PREPARE:
             reply = acceptor.prepare(message->prop_number);
@@ -74,6 +78,7 @@ void replica::handle_msg(Message *message) {
             reply = proposer.propose_reject(message->n_p);
             break;
         case MessageType::BRDCST_LEARNERS:
+            reply = learner.update_vote(message->value);
             break;
     }
     delete(message);
