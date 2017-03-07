@@ -29,8 +29,8 @@ Message Acceptor::propose(int proposal_number, std::string new_value){
     } else{
         n_a = proposal_number;
         value = new_value;
-        msg.msg_type = MessageType::PROPOSE_ACCEPT;
-        msg.prop_number = proposal_number;
+        msg.msg_type = MessageType::BRDCST_LEARNERS;
+        msg.value = new_value;
     }
     return msg;
 }
