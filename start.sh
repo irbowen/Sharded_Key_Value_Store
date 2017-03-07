@@ -1,10 +1,21 @@
-./paxos_server --port 2000 --host 127.0.0.1 --config config.txt --id 0
-./paxos_server --port 2001 --host 127.0.0.1 --config config.txt --id 1
-./paxos_server --port 2002 --host 127.0.0.1 --config config.txt --id 2
-./paxos_server --port 2003 --host 127.0.0.1 --config config.txt --id 3
-./paxos_server --port 2004 --host 127.0.0.1 --config config.txt --id 4
-./paxos_server --port 2005 --host 127.0.0.1 --config config.txt --id 5
-./paxos_server --port 2006 --host 127.0.0.1 --config config.txt --id 6
-./paxos_server --port 2007 --host 127.0.0.1 --config config.txt --id 7
-./paxos_server --port 2008 --host 127.0.0.1 --config config.txt --id 8
-./paxos_server --port 2009 --host 127.0.0.1 --config config.txt --id 9
+./paxos_server --port 2000 --host 127.0.0.1 --config config.txt --id 0 &
+./paxos_server --port 2001 --host 127.0.0.1 --config config.txt --id 1 &
+./paxos_server --port 2002 --host 127.0.0.1 --config config.txt --id 2 &
+./paxos_server --port 2003 --host 127.0.0.1 --config config.txt --id 3 &
+./paxos_server --port 2004 --host 127.0.0.1 --config config.txt --id 4 &
+./paxos_server --port 2005 --host 127.0.0.1 --config config.txt --id 5 &
+./paxos_server --port 2006 --host 127.0.0.1 --config config.txt --id 6 &
+./paxos_server --port 2007 --host 127.0.0.1 --config config.txt --id 7 &
+./paxos_server --port 2008 --host 127.0.0.1 --config config.txt --id 8 &
+./paxos_server --port 2009 --host 127.0.0.1 --config config.txt --id 9 &
+./paxos_server --port 2010 --host 127.0.0.1 --config config.txt --id 10 &
+./paxos_server --port 2011 --host 127.0.0.1 --config config.txt --id 11 &
+./paxos_server --port 2012 --host 127.0.0.1 --config config.txt --id 12 &
+./paxos_server --port 2013 --host 127.0.0.1 --config config.txt --id 13 &
+./paxos_server --port 2014 --host 127.0.0.1 --config config.txt --id 14 &
+./paxos_server --port 2015 --host 127.0.0.1 --config config.txt --id 15 &
+./paxos_server --port 2016 --host 127.0.0.1 --config config.txt --id 16 &
+./paxos_server --port 2017 --host 127.0.0.1 --config config.txt --id 17 &
+./paxos_server --port 2018 --host 127.0.0.1 --config config.txt --id 18 &
+./paxos_server --port 2019 --host 127.0.0.1 --config config.txt --id 19 &
+./paxos_server --port 2020 --host 127.0.0.1 --config config.txt --id 20 &
