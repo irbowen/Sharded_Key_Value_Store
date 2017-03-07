@@ -20,6 +20,7 @@ void client_lib::add_chat_message(std::string chat_message){
 
     while(!got_response){
         // send the message as a broadcast with timeout = timeout, if no response, try again
+        // wait in recv loop
         timeout *= 2;
         // Increment the view number
     }
