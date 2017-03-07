@@ -2,57 +2,56 @@
 
 network::network(std::string _host, int _port) : host(_host), port(_port) {}
 
+
 void network::init() {
   // Set up the socket for this communication
   int opt_val = 1;
   serverfd = socket(AF_INET, SOCK_DGRAM, 0);
   assert(serverfd > 0);
+  cout << "Serverfd: " << serverfd << endl;
 
   // Set up the addr info for this machine/host
   struct sockaddr_in addr;
   memset(&addr, 0 , sizeof(addr));
   addr.sin_family = AF_INET;
-  //addr.sin_addr.s_addr = inet_addr(host.c_str());
-  addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  cout << "Port: " << port << endl;
+  addr.sin_addr.s_addr = inet_addr(host.c_str());
+  //addr.sin_addr.s_addr = htonl(INADDR_ANY);
   addr.sin_port = htons(port);
 
   // Allow us to resuse address
   assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
   assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
   addr_len = sizeof(addr);
-  cout << "@@@ socketfd: " << serverfd << endl;
-  cout << "@@@ port " << ntohs(addr.sin_port) << endl;
+  assert(getsockname(serverfd, (struct sockaddr *) &addr, &addr_len) == 0);
 }
 
 
 /* Block recv on socket */
 Message* network::recv_from() {
   // Init an empty buffer to hold incoming msg data
-  //char buf[MAXBUFLEN];
+  char buf[MAXBUFLEN];
   //void *buf;
-  //memset(&buf, '\0' ,MAXBUFLEN);
-  Message buf;
+  memset(&buf, '\0' ,MAXBUFLEN);
 
   // Vars needed to recv
   struct sockaddr_storage their_addr;
   ssize_t numbytes = 0;
 
   while (true) {
+    cout << "Num bytes: " << numbytes;
     cout << "listener: waiting to recv_from...\n";
-    numbytes = recvfrom(serverfd, &buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
+    cout << "Num bytes: " << numbytes;
+    numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
     // If there is an error, move on and log
-    cout << "Num bytes: " << numbytes << endl;
+    cout << "Num bytes: " << numbytes;
     if (numbytes < 0) {
       cout << "There was an error getting data on the incoming socket\n";
+      perror("recvfrom");
       continue;
     }
-    if (numbytes == 0) {
-      cout << "There was no data\n";
-      continue;
-    }
-    cout << buf.n_a << endl;
-    return &buf;
+    string tmp(buf);
+    cout << "Got a msg: " << tmp;
+    return new Message;
   }
 }
 

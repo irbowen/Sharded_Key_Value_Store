@@ -27,7 +27,7 @@ class network {
 
   private:
     std::string host;
-    int serverfd = 1, port = 1;
+    int serverfd, port;
     socklen_t addr_len;
 
   public:

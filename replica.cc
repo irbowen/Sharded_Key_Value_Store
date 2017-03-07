@@ -26,23 +26,23 @@
 using namespace std;
 
 /* Setting up the replica with the provided port and host */
-replica::replica(int _port, string _host, int _id, string _config_file) :
-  net(host, port), learner(4) {
+replica::replica(int _port, string _host, int _id, string _config_file)
+  : net(_host, _port), learner(4) {
 
     net.init();
 
-  this->port = port;
-  this->host = host;
-  this->id = id;
-  cur_view_num = 0;
+    this->port = port;
+    this->host = host;
+    this->id = id;
+    cur_view_num = 0;
 
-  ifstream config_fs;
-  config_fs.open(_config_file);
-  // TODO
-  // Read from config file
-  // Determine number of replicas
-  // pass that to learner
-}
+    ifstream config_fs;
+    config_fs.open(_config_file);
+    // TODO
+    // Read from config file
+    // Determine number of replicas
+    // pass that to learner
+  }
 
 /* Start listening on the provided port and host */
 void replica::start(){
