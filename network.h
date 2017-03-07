@@ -23,11 +23,14 @@ using namespace std;
 
 #define MAXBUFLEN 100
 
-class net {
-  int socket_;
+class network {
+private:
+    int socket_;
+    int serverfd;
+    socklen_t addr_len;
 
-  net(std::string ip_addr, int socket);
-
-  void sendto(Message* message);
-  Message* recvfrom();
-}
+public:
+    network(std::string ip_addr, int socket);
+    void sendto(Message* message);
+    Message* recvfrom();
+};
