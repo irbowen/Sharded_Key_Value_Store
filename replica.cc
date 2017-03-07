@@ -78,7 +78,7 @@ void replica::handle_msg(Message *message) {
             reply = proposer.propose_reject(message->n_p);
             break;
         case MessageType::BRDCST_LEARNERS:
-            reply = learner.update_vote(message->value);
+            reply = learner.update_vote(message->n_a, message->value);
             break;
     }
     delete(message);
