@@ -10,9 +10,21 @@
 #define learner_h
 
 #include <stdio.h>
+#include <string>
+#include "message.h"
+#include <map>
+
+struct Score{
+    unsigned int tally;
+    std::string value;
+};
 
 class Learner{
+private:
+    std::map<int, Score> score_map;
     
+public:
+    Message update_vote(int n_a, std::string value);
 };
 
 #endif /* learner_h */
