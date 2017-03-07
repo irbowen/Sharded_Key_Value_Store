@@ -31,6 +31,7 @@ Message Acceptor::propose(int proposal_number, std::string new_value){
         value = new_value;
         msg.msg_type = MessageType::BRDCST_LEARNERS;
         msg.value = new_value;
+        msg.n_a = n_a;
     }
     return msg;
 }
