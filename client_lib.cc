@@ -6,6 +6,7 @@
 #include "client_lib.h"
 
 client_lib::client_lib() : net("127.0.0.1", 5000) {
+  net.init();
     cur_view_num = 0;
 }
 
@@ -23,7 +24,6 @@ void client_lib::add_chat_message(std::string chat_message){
     n.host = "127.0.0.1";
     msg.receivers.push_back(n);
     net.sendto(&msg);
-    
 
     while (!got_response) {
         // send the message as a broadcast with timeout = timeout, if no response, try again

@@ -41,7 +41,7 @@ Message* network::recv_from() {
 
   while (true) {
     cout << "listener: waiting to recv_from...\n";
-    numbytes = recvfrom(serverfd, &buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
+    numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
     // If there is an error, move on and log
     cout << "Num bytes: " << numbytes << endl;
     if (numbytes < 0) {
@@ -52,7 +52,7 @@ Message* network::recv_from() {
       cout << "There was no data\n";
       continue;
     }
-    cout << buf->n_a << endl;
+    cout << "N_a is: " << buf->value << endl;
     return buf;
   }
 }
@@ -68,7 +68,11 @@ void network::sendto(Message* message) {
     inet_aton("127.0.0.1" , &to_addr.sin_addr);
     cout << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
     cout << "@@@ port " << ntohs(to_addr.sin_port) << endl;
-    ::sendto(serverfd, message, sizeof(*message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
+    auto retvalue = ::sendto(serverfd, message, sizeof(*message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
+    cout << "ret value " << retvalue << endl;
+    cout << "ret value " << errno << endl;
+    perror("sendto");
+
   }
   //to_addr.sin_port = message->port;
   // Look into the message, get the destination from the message
