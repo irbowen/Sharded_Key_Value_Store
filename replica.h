@@ -16,6 +16,7 @@
 class replica {
   private:
     int port;
+    int id;
     std::string host;
     std::string config_file;
     network net;

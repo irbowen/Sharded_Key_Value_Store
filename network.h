@@ -25,13 +25,15 @@ using namespace std;
 
 class network {
 
-private:
-    int serverfd, port;
+  private:
     std::string host;
+    int serverfd = 1, port = 1;
     socklen_t addr_len;
 
-public:
+  public:
+    void init();
     network(std::string ip_addr, int socket);
     void sendto(Message* message);
-    Message* recvfrom();
+    Message* recv_from();
+    Message* recv_from_with_timeout();
 };

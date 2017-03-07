@@ -21,14 +21,22 @@ int main(int argc, char* argv[]) {
   };
   int index;
   int iarg = 0;
+  string host, config;
+  int port, id;
   while (iarg != -1) {
     iarg = getopt_long(argc, argv, "h:p:i:c:", longopts, &index);
     switch (iarg) {
       case 'h':
-        // TODO
+        host = optarg;
         break;
       case 'p':
-        // TODO
+        port = atoi(optarg);
+        break;
+      case 'i':
+        id = atoi(optarg);
+        break;
+      case 'c':
+        config = optarg;
         break;
       case '?':
         std::cout << "Argument for -h and -p required\n";
@@ -36,7 +44,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  replica r(6000, "127.0.0.1", 0, "config.txt");
+  replica r(port, host, id, config);
   r.start();
   std::cout << "Get's here, so thats cool\n";
 }

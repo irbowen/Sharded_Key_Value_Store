@@ -25,14 +25,15 @@
 
 using namespace std;
 
-#define MAXBUFLEN 100
-
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file) :
   net(host, port), learner(4) {
 
+    net.init();
+
   this->port = port;
   this->host = host;
+  this->id = id;
   cur_view_num = 0;
 
   ifstream config_fs;
@@ -47,7 +48,7 @@ replica::replica(int _port, string _host, int _id, string _config_file) :
 void replica::start(){
 
   while(true){
-    Message *msg = net.recvfrom();
+    Message *msg = net.recv_from();
     thread t(&replica::handle_msg, this, msg);
     t.detach();
   }
