@@ -1,16 +1,16 @@
 //
-//  server.h
+//  node
 //  ChatService
 //
 //  Created by Pranav Ramarao on 3/6/17.
 //  Copyright © 2017 Pranav Ramarao. All rights reserved.
 //
 
-#ifndef server_h
-#define server_h
+#ifndef node_h
+#define node_h
 
 
-#endif /* server_h */
+#endif /* node_h */
 
 struct node{
     int port;
