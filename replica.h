@@ -21,7 +21,8 @@ private:
     network net;
     /* Number of live replicas in the system: 2f + 1 */
     int tot_replicas;
-
+    int my_id;
+    int cur_view_num;
     /* Get the majority number f + 1 */
     int get_quorum() { return (tot_replicas - 1) << 2; }
 
