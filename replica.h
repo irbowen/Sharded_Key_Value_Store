@@ -14,7 +14,7 @@
 #include "network.h"
 
 class replica {
-private:
+  private:
     int port;
     std::string host;
     std::string config_file;
@@ -34,8 +34,8 @@ private:
     Learner learner;
 
     friend class net;
-public:
-    replica(int port, std::string host);
+  public:
+    replica(int _port, std::string _host, int _id, std::string _config_file);
     void start();
 };
 
