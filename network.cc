@@ -53,6 +53,15 @@ Message* network::recvfrom() {
 }
 
 void network::sendto(Message* message) {
+    struct sockaddr_in to_addr;
+    memset(&to_addr, 0 , sizeof(to_addr));
+    for(auto serv : message->receivers){
+        to_addr.sin_family = AF_INET;
+        to_addr.sin_port = serv.port;
+        inet_aton("127.0.0.1" , &to_addr.sin_addr);
+        ::sendto(serverfd, &message, sizeof(message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
+    }
+    //to_addr.sin_port = message->port;
     // Look into the message, get the destination from the message
     // Fill in addr using this info, and then fire it off
     // sendto(socket, &message, sizeof(message), 0, (struct sockaddr *)&addr, sizeof(sockaddr));
