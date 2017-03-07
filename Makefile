@@ -2,7 +2,7 @@
 
 CXXFLAGS = -std=c++1z -g -pedantic -Wall -pthread
 
-SERVER_LIB := paxos_main.o replica.o acceptor.o learner.o proposer.o
+SERVER_LIB := paxos_main.o replica.o acceptor.o learner.o proposer.o network.o
 
 ########################################
 default: all 

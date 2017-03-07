@@ -27,11 +27,15 @@ using namespace std;
 #define MAXBUFLEN 100
 
 /* Setting up the replica with the provided port and host */
-replica::replica(int port, std::string host) : net(host, port){
+replica::replica(int port, std::string host) : net(host, port), learner(4) {
     
     this->port = port;
     this->host = host;
     cur_view_num = 0;
+    // TODO
+    // Read from config file
+    // Determine number of replicas
+    // pass that to learner
 }
 
 /* Start listening on the provided port and host */
