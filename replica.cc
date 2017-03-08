@@ -27,17 +27,20 @@ using namespace std;
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file)
-  : net(_host, _port), learner(4) {
+  : net(_host, _port), port(_port), host(_host), id(_id), cur_view_num(0) {
 
     net.init();
-
-    this->port = _port;
-    this->host = _host;
-    this->id = _id;
-    cur_view_num = 0;
-
-    ifstream config_fs;
-    config_fs.open(_config_file);
+    int num_replicas = 0;
+    string h, p, i;
+    ifstream config_fs(_config_file);
+    while (config_fs >> h >> p >> i) {
+      node n;
+      n.host = h;
+      n.port = stoi(p);
+      replicas.push_back(n);
+      num_replicas++;
+    }
+    learner(num_replicas);
     // TODO
     // Read from config file
     // Determine number of replicas

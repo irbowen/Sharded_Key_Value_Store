@@ -9,9 +9,10 @@
 #include <vector>
 
 #include "acceptor.h"
-#include "proposer.h"
 #include "learner.h"
 #include "network.h"
+#include "node.h"
+#include "proposer.h"
 
 class replica {
   private:
@@ -19,6 +20,7 @@ class replica {
     int id;
     std::string host;
     std::string config_file;
+    std::vector<node> replicas;
     network net;
     /* Number of live replicas in the system: 2f + 1 */
     int tot_replicas;
