@@ -14,8 +14,8 @@ Message* Proposer::start_prepare(int view_num) {
     return msg;
 }
 
-bool Proposer::reached_quroum(view_num) {
-  return count[proposal_number] >= quorum;
+bool Proposer::reached_quroum(int view_num) {
+  return count[view_num] >= quorum;
 }
 
 // TODO check view vs proposal

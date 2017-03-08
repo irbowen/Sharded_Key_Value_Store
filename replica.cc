@@ -66,9 +66,24 @@ void replica::handle_msg(Message *message) {
             break;
         case MessageType::START_PREPARE:
         {
-            // If we are the primary, then we should send a
-            // start prepare message to all other replicas
+            if (message->view_num > cur_view_num) {
+              cur_view_num = message->view_num;
+              if (cur_view_num % num_replicas == id) {
+                // Becoming the primary and fix previous sate
+                // TODO
+              }
+            }
+
+            if (proposer.reached_quroum(message->view_num) &&
+                cur_view_num % num_replicas == id) {
+              // Don't need to send start prepare, we are primary
+              reply = acceptor.propose(message->view_num, message->value);
+              add_all_to_receiver_list(reply);
+              break;
+            }
             if (cur_view_num % num_replicas == id) {
+                assert(false);
+                // Check for holes
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
                 reply = proposer.start_prepare(message->view_num);

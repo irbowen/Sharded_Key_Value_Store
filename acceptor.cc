@@ -10,6 +10,7 @@ Message* Acceptor::prepare(int in_view) {
         msg->msg_type = MessageType::PREPARE_ACCEPT;
     }
     msg->view_num = cur_view;
+    msg->acceptor_state = accepted_values;
     return msg;
 }
 

@@ -19,7 +19,8 @@ private:
     std::string value = std::string();
     // needs chat log
 public:
-	void init(size_t _num_replicas, int _id);
+    std::vector<ViewValue> accepted_values;
+	  void init(size_t _num_replicas, int _id);
     Message* prepare(int in_view);
     Message* propose(int in_view, std::string value);
 };
