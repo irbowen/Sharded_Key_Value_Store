@@ -23,8 +23,6 @@ class replica {
     int tot_replicas;
     int my_id;
     int cur_view_num;
-    /* Get the majority number f + 1 */
-    int get_quorum() { return (tot_replicas - 1) << 2; }
 
     void handle_msg(Message*);
     
