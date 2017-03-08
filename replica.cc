@@ -41,6 +41,8 @@ replica::replica(int _port, string _host, int _id, string _config_file)
     // Determine number of replicas
     // pass that to learner
     tot_replicas = 3;
+    proposer.set_tot_replicas(tot_replicas);
+    learner.set_tot_replicas(tot_replicas);
 }
 
 /* Start listening on the provided port and host */
@@ -61,21 +63,24 @@ void replica::add_all_to_receiver_list(Message *ref){
 void replica::handle_msg(Message *message) {
     cout << "Got: " << message->value << endl;
 
-    Message *reply = new Message;
+    Message *reply;
     // By default, any message sent back must sender info
-    reply->sender.host = host;
-    reply->sender.port = port;
+
 
     switch(message->msg_type){
         case MessageType::NO_ACTION:
             break;
         // Proposer scenarios
         case MessageType::START_PREPARE:{
-            if(cur_view_num % tot_replicas == my_id)
+            if(cur_view_num % tot_replicas == my_id){
+                // add the initial value to be proposed to proposer state
+                proposer.to_propose = message->value;
                 reply = proposer.start_prepare(message->prop_number);
-            else
+                add_all_to_receiver_list(reply);
+            } else{
                 // this assumes the first message is not broadcasted but sent to only machine 0
                 cur_view_num += 1;
+            }
             break;
         }
         case MessageType::PREPARE_ACCEPT:{
@@ -123,7 +128,9 @@ void replica::handle_msg(Message *message) {
         }
     }
 
-    if(reply->msg_type != MessageType::NO_ACTION){
+    if(reply != nullptr && reply->msg_type != MessageType::NO_ACTION){
+        reply->sender.host = host;
+        reply->sender.port = port;
         net.sendto(reply);
     }
     //delete(message);
