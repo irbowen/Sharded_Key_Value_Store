@@ -30,14 +30,20 @@ void client_lib::add_chat_message(std::string chat_message){
     }
     net.sendto(&msg);
     cout << chat_message << " has been added to the chat log" << endl;
-    //    int timeout = 1;
-    //    bool got_response = false;
-    //    while (!got_response) {
-    //        // send the message as a broadcast with timeout = timeout, if no response, try again
-    //        // wait in recv loop
-    //        timeout *= 2;
-    //        // Increment the view number
-    //    }
-    //    // the client's chat_message has been added
+    return;
+
+    int timeout = 1;
+    // the client will keep trying until success
+    while (true) {
+        net.sendto(&msg);
+        Message *reply = net.recv_from();
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT){
+            // the client library blocks until success so a return is a success to the client
+            return;
+        }
+        timeout *= 2;
+        cur_view_num += 1;
+        cout << "Add to chat log failed ... Retrying in " << timeout << " ms";
+    }
     return;
 }
