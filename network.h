@@ -22,16 +22,17 @@
 #include "message.h"
 
 using namespace std;
-
+#define MICROSECONDS 1000
+#define START_TIMEOUT (100 * MICROSECONDS)
 class network {
-  private:
+private:
     int port;
     std::string host;
     int serverfd;
     socklen_t addr_len;
-    int micro_second_delay = 100000;
-
-  public:
+    int micro_second_delay = START_TIMEOUT;
+    
+public:
     network(int port, std::string ip_addr) ;
     void sendto(Message* message);
     Message* recv_from();

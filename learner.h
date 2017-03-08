@@ -26,12 +26,12 @@ class Learner {
 private:
 	std::mutex m;
     size_t quorum;
-    int id;
+    size_t id;
     std::map<int, Score> score_map;
     std::vector<std::string> chat_log;
     
 public:
-    void init(size_t replica_count, int _id);
+    void init(size_t replica_count, size_t _id);
     Message* update_vote(int n_a, std::string value);
     void print_log();
 };
