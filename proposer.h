@@ -25,12 +25,12 @@ public:
     void init(vector<node> _replicas, int _id);
     Message* start_prepare(int proposal_number, int seq_num);
     
-    Message* prepare_accept(int n_a, std::string value);
+    Message* prepare_accept(int view_num, std::string value);
     
-    Message* prepare_reject(int n_p, int seq_num);
+    Message* prepare_reject(int view_num, int seq_num);
     
-    Message* propose_accept(int n);
+    Message* propose_accept(int view_num);
     
-    Message* propose_reject(int n_p, int seq_num);
+    Message* propose_reject(int view_num, int seq_num);
 };
 #endif /* proposer_h */
