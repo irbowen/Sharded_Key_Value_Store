@@ -6,8 +6,8 @@ Message* Acceptor::prepare(int in_view) {
     if (in_view < cur_view) {
         msg->msg_type = MessageType::PREPARE_REJECT;
     } else {
+        cur_view = in_view;
         msg->msg_type = MessageType::PREPARE_ACCEPT;
-        msg->value = value;
     }
     msg->view_num = cur_view;
     return msg;

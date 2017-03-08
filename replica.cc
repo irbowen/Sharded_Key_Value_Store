@@ -59,6 +59,7 @@ void replica::handle_msg(Message *message) {
     Message* reply = new Message();
     cout << "Msg in handle_msg: " << message->serialize() << endl;
     cout << "Msg type: " << message->msg_type << endl;
+    cout << "Current view is: " << cur_view_num << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
             // do nothing in this case
@@ -70,13 +71,8 @@ void replica::handle_msg(Message *message) {
             if (cur_view_num % num_replicas == id) {
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
-                reply = proposer.start_prepare(message->view_num, learner.get_seqnum());
+                reply = proposer.start_prepare(message->view_num);
                 add_all_to_receiver_list(reply);
-            }
-            // Otherwise, we need to increment our viewnum and assert it
-            // is equal to the viewnum sent in the client msg
-            else {
-                cur_view_num += 1;
             }
             break;
         }
@@ -84,12 +80,13 @@ void replica::handle_msg(Message *message) {
         {
             reply = proposer.prepare_accept(message->view_num, message->value);
             // add all the acceptors to the receiver list
+            // Acceptor vector check
             add_all_to_receiver_list(reply);
             break;
         }
         case MessageType::PREPARE_REJECT:
         {
-            reply = proposer.prepare_reject(message->view_num, message->seq_num);
+            reply = proposer.prepare_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
@@ -102,7 +99,7 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PROPOSE_REJECT:
         {
-            reply = proposer.propose_reject(message->view_num, message->seq_num);
+            reply = proposer.propose_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
@@ -143,46 +140,47 @@ void replica::handle_msg(Message *message) {
         net.sendto(reply);
         cout << "Sending out msg: " << reply->serialize() << endl;
         net.sendto(reply);
+        this_thread::sleep_for(1s);
     }
     // Send msg if not type noaction
-    
+
     // If client_req msg
     // skip
-    
+
     // Incoming: prepare
     // Arguments: n
     // Acting as: Acceptor
     // Check if you've seen an n higher than this one
     // Outgoing: a prepare_accept
     //    OR prepare_reject
-    
+
     // Incoming: prepare_accept
     // Arguments: n_a, v_a (could be null)
     // Acting as: Proposer
     // Increment the count of # of prepare accepts you have gotten
     // Outgoing: If this is more than a majority, send propose_value(n, v)
-    
+
     // Incoming: prepare_reject
     // Arguments: n_p
     // Acting as: Proposer
     // If we got a higher n value, update our internal storage with this new value
     // Outgoing:
-    
+
     // Incoming: propose
     // Arguments: n, v
     // Acting as: Acceptor
     // Outgoing: propose_accept(n) + broadcast_to_learners(n, v),
     //    OR propose_reject(n)
-    
+
     // Incoming: propose_accept
     // Arguments: n
     // Acting as: Proposer
     // Outgoing:
-    
+
     // Incoming: propose_reject
     // Arguments: n_p
     // Acting as: Proposer
-    
+
     // Incoming: broadcast_to_learners
     // Arguments: n, v
     // Acting as: Learner
