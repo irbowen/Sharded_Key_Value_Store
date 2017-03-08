@@ -1,7 +1,7 @@
 //C++
 #include <string>
 #include <iostream>
-#include <cgetopt>
+#include <getopt.h>
 
 //Project
 #include "replica.h"

@@ -19,7 +19,6 @@
 #include <string>
 #include <thread>
 
-#include "json.h"
 #include "message.h"
 
 using namespace std;
