@@ -35,7 +35,7 @@ void Learner::print_log() {
 }
 
 
-void Learner::init(size_t replica_count, int _id) {
+void Learner::init(size_t replica_count, size_t _id) {
     quorum = (1 + replica_count) >> 1;
     id = _id;
 }
