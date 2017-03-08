@@ -28,7 +28,6 @@ using namespace std;
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file)
 : net(_host, _port), learner(4) {
-    net.init();
 
     this->port = _port;
     this->host = _host;
