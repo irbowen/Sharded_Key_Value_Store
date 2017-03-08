@@ -17,6 +17,7 @@ void client_lib::add_chat_message(std::string chat_message){
   Message msg;
   msg.msg_type = MessageType::START_PREPARE;
 
+  msg.view_num = cur_view_num;
   msg.value = chat_message;
   msg.prop_number = 0;
   // setup sender

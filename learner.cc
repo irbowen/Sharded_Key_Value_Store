@@ -24,14 +24,19 @@ Message* Learner::update_vote(int n_a, string value){
 }
 
 void Learner::print_log() {
-  cout << "CHAT LOG: ";
+  string log_filename = "log_" + to_string(id) + ".txt";
+  ostringstream oss;
   for (auto& msg : chat_log) {
-    cout << msg << endl;
+    oss << msg << ", ";
   }
+  ofstream outfile;
+  outfile.open(log_filename, ios_base::app);
+  outfile << oss.str() << endl;
 }
 
 
-void Learner::init(int replica_count) {
+void Learner::init(int replica_count, int _id) {
   quorum = (1 + replica_count) >> 1;
+  id = _id;
 }
 

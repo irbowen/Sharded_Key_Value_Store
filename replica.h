@@ -4,6 +4,8 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
 #include <condition_variable>
 #include <thread>
 #include <vector>

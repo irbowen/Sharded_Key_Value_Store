@@ -38,7 +38,7 @@ replica::replica(int _port, string _host, int _id, string _config_file) :
     replicas.push_back(n);
     num_replicas++;
   }
-  learner.init(num_replicas);
+  learner.init(num_replicas, id);
   proposer.init(replicas);
 }
 

@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <fstream>
 #include "message.h"
 #include <map>
 
@@ -22,11 +23,12 @@ struct Score {
 class Learner {
   private:
     size_t quorum;
+    int id;
     std::map<int, Score> score_map;
     std::vector<std::string> chat_log;
 
   public:
-    void init(int replica_count);
+    void init(int replica_count, int _id);
     Message* update_vote(int n_a, std::string value);
     void print_log();
 };
