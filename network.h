@@ -25,13 +25,13 @@
 using namespace std;
 
 class network {
-  private:
+private:
     int port;
     std::string host;
     int serverfd;
     socklen_t addr_len;
-
-  public:
+    
+public:
     network(int port, std::string ip_addr) ;
     void sendto(Message* message);
     Message* recv_from();

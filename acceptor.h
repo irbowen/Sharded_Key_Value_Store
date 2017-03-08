@@ -13,11 +13,11 @@
 #include "message.h"
 
 class Acceptor {
-  private:
+private:
     int n_a = -1;
     int n_p = -1;
     std::string value = std::string();
-  public:
+public:
     Message* prepare(int n);
     Message* propose(int n, std::string value);
 };

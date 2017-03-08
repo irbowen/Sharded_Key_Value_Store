@@ -16,19 +16,19 @@ using namespace std;
 #define LOCALHOST "127.0.0.1"
 
 enum MessageType {
-  NO_ACTION = 0,
-  START_PREPARE = 1,
-  PREPARE = 2,
-  PREPARE_ACCEPT = 3,
-  PREPARE_REJECT = 4,
-  PROPOSE = 5,
-  PROPOSE_ACCEPT = 6,
-  PROPOSE_REJECT = 7,
-  BRDCST_LEARNERS = 8
+    NO_ACTION = 0,
+    START_PREPARE = 1,
+    PREPARE = 2,
+    PREPARE_ACCEPT = 3,
+    PREPARE_REJECT = 4,
+    PROPOSE = 5,
+    PROPOSE_ACCEPT = 6,
+    PROPOSE_REJECT = 7,
+    BRDCST_LEARNERS = 8
 };
 
 class Message {
-  public:
+public:
     MessageType msg_type = MessageType::NO_ACTION;
     int n_a = -1;
     int n_p = -1;

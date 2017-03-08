@@ -16,19 +16,19 @@
 #include <map>
 
 struct Score {
-  size_t tally;
-  std::string value;
+    size_t tally;
+    std::string value;
 };
 
 class Learner {
-  private:
+private:
     size_t quorum;
     int id;
     std::map<int, Score> score_map;
     std::vector<std::string> chat_log;
-
-  public:
-    void init(int replica_count, int _id);
+    
+public:
+    void init(size_t replica_count, int _id);
     Message* update_vote(int n_a, std::string value);
     void print_log();
 };

@@ -12,12 +12,12 @@
 #include "node.h"
 
 class client_lib {
-  private:
+private:
     std::string current_primary;
     std::string find_master();
     uint cur_view_num = 0;
     network net;
-  public:
+public:
     client_lib();
     // Blocking until success, may retry multiple times under the hood
     // Primary, upon receiving learn msg itself, will reply to client
