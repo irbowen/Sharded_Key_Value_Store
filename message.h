@@ -35,6 +35,7 @@ class Message {
     node sender;
     std::vector<node> receivers;
     std::string serialize();
+    void deserialize(std::string in);
 };
 
 #endif /* message_h */

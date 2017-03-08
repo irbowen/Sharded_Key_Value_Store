@@ -47,7 +47,10 @@ Message* network::recv_from() {
     }
     string tmp(buf);
     cout << "Msg:: " << tmp << endl;
+    cout << "@@@@@@@@@@@@@\n\n";
     Message* msg = new Message();
+    msg->deserialize(tmp);
+    cout << "Msg:: " << msg->serialize() << endl;
     return msg;
   }
 }

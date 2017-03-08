@@ -4,7 +4,7 @@
 using namespace std;
 
 std::string Message::serialize() {
-  char div_char = ' ';
+  char div_char = ':';
   ostringstream oss;;
 
   oss << msg_type;
@@ -27,13 +27,39 @@ std::string Message::serialize() {
   oss << sender.host;
   oss << div_char;
 
+  oss << receivers.size();
+  oss << div_char;
   for (auto& r : receivers) {
     oss << r.port;
     oss << div_char;
     oss << r.host;
     oss << div_char;
   }
-
-  std::cout << oss.str();
   return oss.str();
+}
+
+void Message::deserialize(std::string in) {
+
+  vector<string> array;
+  size_t pos = 0, found;
+  while ((found = in.find_first_of(':', pos)) != string::npos) {
+    array.push_back(in.substr(pos, found - pos));
+    pos = found + 1;
+  }
+  array.push_back(in.substr(pos));
+
+  msg_type = (MessageType)stoi(array.at(0));
+  n_a = stoi(array.at(1));
+  n_p = stoi(array.at(2));
+  prop_number = stoi(array.at(3));
+  value = array.at(4);
+  sender.port = stoi(array.at(5));
+  sender.host = array.at(6);
+  int num_recv = stoi(array.at(7));
+  for (int i = 0; i < num_recv; i++) {
+    node r;
+    r.port = stoi(array.at(8 + i));
+    r.host = array.at(9 + i);
+    receivers.push_back(r);
+  }
 }
