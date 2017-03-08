@@ -9,10 +9,9 @@
 #include <vector>
 #include "node.h"
 
-#define MAXBUFLEN 2048
-
 using namespace std;
 
+#define MAXBUFLEN 2048
 #define LOCALHOST "127.0.0.1"
 
 enum MessageType {

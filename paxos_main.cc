@@ -11,7 +11,7 @@
 #define optional_argument 2
 
 int main(int argc, char* argv[]) {
-    
+
     const struct option longopts[] = {
         {"host", required_argument, 0, 'h'},
         {"port", required_argument, 0, 'p'},
