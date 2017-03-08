@@ -31,9 +31,9 @@ replica::replica(int _port, string _host, int _id, string _config_file)
 
     net.init();
 
-    this->port = port;
-    this->host = host;
-    this->id = id;
+    this->port = _port;
+    this->host = _host;
+    this->id = _id;
     cur_view_num = 0;
 
     ifstream config_fs;
