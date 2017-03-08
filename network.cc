@@ -76,6 +76,8 @@ Message* network::recv_from_with_timeout() {
             delete[] buf;
             return nullptr;
         }
+        // if control reachers here, we can go ahead and reset the delay
+        micro_second_delay = START_TIMEOUT;
         string tmp(buf);
         Message* msg = new Message();
         msg->deserialize(tmp);
