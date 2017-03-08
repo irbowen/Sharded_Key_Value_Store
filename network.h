@@ -34,7 +34,6 @@ class network {
     socklen_t addr_len;
 
   public:
-    void init();
     network(std::string ip_addr, int socket);
     void sendto(Message* message);
     Message* recv_from();

@@ -1,31 +1,28 @@
 #include "network.h"
 
-network::network(std::string _host, int _port) : host(_host), port(_port) {}
-
-void network::init() {
-  // Set up the socket for this communication
-  int opt_val = 1;
-  serverfd = socket(AF_INET, SOCK_DGRAM, 0);
-  assert(serverfd > 0);
-
-  // Set up the addr info for this machine/host
-  struct sockaddr_in addr;
-  memset(&addr, 0 , sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = inet_addr(host.c_str());
-  //addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  cout << "Port: " << port << endl;
-  addr.sin_port = htons(port);
-
-  // Allow us to resuse address
-  assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
-  assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
-  addr_len = sizeof(addr);
-  cout << "@@@ socketfd: " << serverfd << endl;
-  cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
-  cout << "@@@ port " << ntohs(addr.sin_port) << endl;
+network::network(std::string _host, int _port) : host(_host), port(_port) {
+    // Set up the socket for this communication
+    int opt_val = 1;
+    serverfd = socket(AF_INET, SOCK_DGRAM, 0);
+    assert(serverfd > 0);
+    
+    // Set up the addr info for this machine/host
+    struct sockaddr_in addr;
+    memset(&addr, 0 , sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(host.c_str());
+    //addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    cout << "Port: " << port << endl;
+    addr.sin_port = htons(port);
+    
+    // Allow us to resuse address
+    assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
+    assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
+    addr_len = sizeof(addr);
+    cout << "@@@ socketfd: " << serverfd << endl;
+    cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
+    cout << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
-
 
 /* Block recv on socket */
 Message* network::recv_from() {
@@ -62,7 +59,6 @@ void network::sendto(Message* message) {
   struct sockaddr_in to_addr;
   memset(&to_addr, 0 , sizeof(to_addr));
   for (auto serv : message->receivers) {
-    cout << "suh dude\n";
     to_addr.sin_family = AF_INET;
     to_addr.sin_port = htons(serv.port);
     inet_aton("127.0.0.1" , &to_addr.sin_addr);
