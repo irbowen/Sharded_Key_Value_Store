@@ -24,16 +24,16 @@ enum MessageType {
     PROPOSE_REJECT = 7,
     BRDCST_LEARNERS = 8
 };
-class Message{
-    
+class Message {
 public:
-    std::string value = std::string();
     MessageType msg_type = MessageType::NO_ACTION;
     int n_a = -1;
     int n_p = -1;
     int prop_number = -1;
-
+    std::string value = "";
     node sender;
     std::vector<node> receivers;
+    std::string serialize();
+    void deserialize(std::string in);
 };
 #endif /* message_h */
