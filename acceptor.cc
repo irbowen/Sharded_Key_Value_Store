@@ -27,7 +27,7 @@ Message* Acceptor::propose(int proposal_number, std::string new_value){
         msg->msg_type = MessageType::PROPOSE_REJECT;
         msg->n_p = n_p;
     } else {
-        n_a = proposal_number;
+        n_a = n_p = proposal_number;
         value = new_value;
         msg->msg_type = MessageType::BRDCST_LEARNERS;
         msg->value = new_value;
