@@ -5,8 +5,7 @@
 
 #include "client_lib.h"
 
-client_lib::client_lib() : net("127.0.0.1", 5000) {
-  net.init();
+client_lib::client_lib() : net(5000, "127.0.0.1") {
   cur_view_num = 0;
 }
 
@@ -28,9 +27,13 @@ void client_lib::add_chat_message(std::string chat_message){
   msg.sender = s;
   // setup receivers
   node n;
-  n.port = 2000;
+  n.port = 9000;
   n.host = "127.0.0.1";
   msg.receivers.push_back(n);
+  node n2;
+  n2.port = 9001;
+  n2.host = "127.0.0.1";
+  msg.receivers.push_back(n2);
   // Send the thing
   net.sendto(&msg);
 

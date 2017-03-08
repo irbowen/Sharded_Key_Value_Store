@@ -56,10 +56,16 @@ void Message::deserialize(std::string in) {
   sender.port = stoi(array.at(5));
   sender.host = array.at(6);
   int num_recv = stoi(array.at(7));
-  for (int i = 0; i < num_recv; i++) {
+  int start = 8;
+  // cout << "Num recv: " << num_recv << endl;
+  for (int k = 0; k < num_recv; k++) {
+    int i = 2 * k;
+    // cout << "at: " << array.at(start + i) << " " << array.at(start + 1 + i) << endl;
     node r;
-    r.port = stoi(array.at(8 + i));
-    r.host = array.at(9 + i);
+    r.port = stoi(array.at(i + start));
+    r.host = array.at(i + 1 + start);
     receivers.push_back(r);
+    i++;
   }
+  // cout << "Num recv: " << num_recv << endl;
 }

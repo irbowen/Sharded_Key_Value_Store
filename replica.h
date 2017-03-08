@@ -17,15 +17,10 @@
 class replica {
   private:
     int port;
-    int id;
     std::string host;
-    std::string config_file;
-    std::vector<node> replicas;
+    int id, cur_view_num, tot_replicas;
     network net;
-    /* Number of live replicas in the system: 2f + 1 */
-    int tot_replicas;
-    int my_id;
-    int cur_view_num;
+    std::vector<node> replicas;
     /* Get the majority number f + 1 */
     int get_quorum() { return (tot_replicas - 1) << 2; }
 
@@ -36,7 +31,6 @@ class replica {
     Proposer proposer;
     Learner learner;
 
-    friend class net;
   public:
     replica(int _port, std::string _host, int _id, std::string _config_file);
     void start();

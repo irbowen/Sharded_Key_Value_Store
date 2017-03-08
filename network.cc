@@ -1,8 +1,7 @@
 #include "network.h"
 
-network::network(std::string _host, int _port) : host(_host), port(_port) {}
-
-void network::init() {
+network::network(int _port, std::string _host) :
+  port(_port), host(_host) {
   // Set up the socket for this communication
   int opt_val = 1;
   serverfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -47,7 +46,6 @@ Message* network::recv_from() {
     }
     string tmp(buf);
     cout << "Msg:: " << tmp << endl;
-    cout << "@@@@@@@@@@@@@\n\n";
     Message* msg = new Message();
     msg->deserialize(tmp);
     cout << "Msg:: " << msg->serialize() << endl;

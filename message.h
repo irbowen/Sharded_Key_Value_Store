@@ -9,7 +9,7 @@
 #include <vector>
 #include "node.h"
 
-#define MAXBUFLEN 1024
+#define MAXBUFLEN 2048
 
 using namespace std;
 

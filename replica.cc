@@ -27,29 +27,23 @@ using namespace std;
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file)
-  : net(_host, _port), port(_port), host(_host), id(_id), cur_view_num(0) {
-
-    net.init();
-    int num_replicas = 0;
-    string h, p, i;
-    ifstream config_fs(_config_file);
-    while (config_fs >> h >> p >> i) {
-      node n;
-      n.host = h;
-      n.port = stoi(p);
-      replicas.push_back(n);
-      num_replicas++;
-    }
-    learner(num_replicas);
-    // TODO
-    // Read from config file
-    // Determine number of replicas
-    // pass that to learner
+  : port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
+{
+  int num_replicas = 0;
+  string h, p, i;
+  ifstream config_fs(_config_file);
+  while (config_fs >> h >> p >> i) {
+    node n;
+    n.host = h;
+    n.port = stoi(p);
+    replicas.push_back(n);
+    num_replicas++;
   }
+  learner.init(num_replicas);
+}
 
 /* Start listening on the provided port and host */
 void replica::start() {
-
   while (true) {
     Message *msg = net.recv_from();
     thread t(&replica::handle_msg, this, msg);
@@ -59,15 +53,13 @@ void replica::start() {
 
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
-  return;
-
   Message reply;
   switch (message->msg_type) {
     case MessageType::NO_ACTION:
       // do nothing in this case
       break;
     case MessageType::START_PREPARE:
-      if(cur_view_num % tot_replicas == my_id)
+      if(cur_view_num % tot_replicas == id)
         reply = proposer.start_prepare(message->prop_number);
       else
         cur_view_num += 1;
