@@ -5,8 +5,6 @@
 
 #include "client_lib.h"
 
-#define LOCALHOST "127.0.0.1"
-
 #define CLIENT_PORT	6023 	// Assume one client for now
 
 client_lib::client_lib() : net(CLIENT_PORT, LOCALHOST) {
@@ -67,4 +65,3 @@ void client_lib::add_chat_message(std::string chat_message){
   //    // the client's chat_message has been added
   return;
 }
-

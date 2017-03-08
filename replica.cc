@@ -20,7 +20,6 @@
 #include <thread>
 
 #include "replica.h"
-#include "json.h"
 #include "message.h"
 
 using namespace std;
@@ -124,7 +123,7 @@ void replica::handle_msg(Message *message) {
         break;
       }
       // Learner scenarios
-    case MessageType::BRDCST_LEARNERS: 
+    case MessageType::BRDCST_LEARNERS:
       {
         reply = learner.update_vote(message->n_a, message->value);
         // add the proposer to the receiver list

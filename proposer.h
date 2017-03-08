@@ -2,13 +2,13 @@
 #ifndef proposer_h
 #define proposer_h
 
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <map>
 #include "message.h"
 #include "node.h"
 
-class Proposer{
+class Proposer {
   private:
     std::map<int, int> count;
 
