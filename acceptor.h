@@ -18,7 +18,7 @@ class Acceptor {
     int n_p = -1;
     std::string value = std::string();
   public:
-    Message prepare(int n);
-    Message propose(int n, std::string value);
+    Message* prepare(int n);
+    Message* propose(int n, std::string value);
 };
 #endif /* acceptor_h */

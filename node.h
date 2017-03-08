@@ -13,6 +13,8 @@ struct node {
     int port;
     std::string host;
     // any other info regarding a server
+    node(int _port, std::string _host) : port(_port), host(_host) {}
+    node(){}
 };
 
 #endif /* node_h */

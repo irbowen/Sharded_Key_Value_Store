@@ -8,53 +8,47 @@
 
 #include "proposer.h"
 
-Message Proposer::prepare_accept(int n_a, std::string value){
-    Message msg;
+Message* Proposer::prepare_accept(int n_a, std::string value){
+    Message *msg = new Message;
     count[proposal_number] += 1;
-    int quorum = (1 + tot_replicas) >> 2;
+    int quorum = (1 + tot_replicas) >> 1;
     if(count[proposal_number] >= quorum){
-        msg.msg_type = MessageType::PROPOSE;
+        msg->msg_type = MessageType::PROPOSE;
         if(n_a == -1){
             // Propose the original value
-            msg.value = to_propose;
+            msg->value = to_propose;
+            msg->prop_number = proposal_number;
         } else{
             // Propose the already accepted value
-            msg.value = value;
-        }
-        // TODO: add this member to the class, keeping it to compile
-        std::vector<node> acceptor_list;
-        for(auto item: acceptor_list){
-            msg.receivers.push_back(item);
+            msg->value = value;
+            msg->prop_number = proposal_number;
         }
     }
     // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
-Message Proposer::start_prepare(int proposal_number){
-    Message msg;
-    msg.msg_type = MessageType::PREPARE;
-    msg.prop_number = proposal_number;
-    
-    // TODO: add this member to the class, keeping it to compile
-    std::vector<node> acceptor_list;
-    for(auto item: acceptor_list){
-        msg.receivers.push_back(item);
-    }
+Message* Proposer::start_prepare(int proposal_number){
+    Message *msg = new Message;
+    msg->msg_type = MessageType::PREPARE;
+    msg->prop_number = proposal_number;
     return msg;
 }
 
-Message Proposer::prepare_reject(int n_p){
+Message* Proposer::prepare_reject(int n_p){
     // go back to prepare phase
     return start_prepare(n_p + 1);
 }
 
-Message Proposer::propose_accept(int n){
+Message* Proposer::propose_accept(int n){
     // nothing to do for now in this scenario
-    Message msg;
+    Message *msg = new Message;
     return msg;
 }
 
-Message Proposer::propose_reject(int n_p){
+Message* Proposer::propose_reject(int n_p){
     // if the proposal gets rejected, we are back to the prepare phase
     return start_prepare(n_p + 1);
+}
+void Proposer::set_tot_replicas(int tot){
+    tot_replicas = tot;
 }

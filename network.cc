@@ -1,8 +1,6 @@
 #include "network.h"
 
-network::network(std::string _host, int _port) : host(_host), port(_port) {}
-
-void network::init() {
+network::network(std::string _host, int _port) : host(_host), port(_port) {
   // Set up the socket for this communication
   int opt_val = 1;
   serverfd = socket(AF_INET, SOCK_DGRAM, 0);
@@ -25,8 +23,6 @@ void network::init() {
   cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
   cout << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
-
-
 /* Block recv on socket */
 Message* network::recv_from() {
   char* buf = new char[MAXBUFLEN];
@@ -80,27 +76,27 @@ void network::sendto(Message* message) {
 }
 
 /*
-Message* network::recv_from_with_timeout() {
-  struct timeval tv;
-  tv.tv_sec = 0;
-  tv.tv_usec = 100000;
-  assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
-  void *buf;
-  memset(&buf, '\0' ,MAXBUFLEN);
+   Message* network::recv_from_with_timeout() {
+   struct timeval tv;
+   tv.tv_sec = 0;
+   tv.tv_usec = 100000;
+   assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
+   void *buf;
+   memset(&buf, '\0' ,MAXBUFLEN);
 
-  // Vars needed to recv
-  struct sockaddr_storage their_addr;
-  size_t numbytes;
+// Vars needed to recv
+struct sockaddr_storage their_addr;
+size_t numbytes;
 
-  while (true) {
-    cout << "listener: waiting to recv_from_with_timeout...\n";
-    numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-    if (numbytes <= 0) {
-      cout << "There was an error getting data on the incoming socket\n";
-      continue;
-    }
-    cout << "Got a msg: " << buf;
-    return (Message*)buf;
-  }
+while (true) {
+cout << "listener: waiting to recv_from_with_timeout...\n";
+numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
+if (numbytes <= 0) {
+cout << "There was an error getting data on the incoming socket\n";
+continue;
 }
-*/
+cout << "Got a msg: " << buf;
+return (Message*)buf;
+}
+}
+ */

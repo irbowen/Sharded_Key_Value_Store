@@ -13,6 +13,8 @@
 
 using namespace std;
 
+#define LOCALHOST "127.0.0.1"
+
 enum MessageType {
   NO_ACTION = 0,
   START_PREPARE = 1,

@@ -26,4 +26,3 @@ clean:
 	touch paxos_server client1
 	rm paxos_server client1
 	rm *.o
-

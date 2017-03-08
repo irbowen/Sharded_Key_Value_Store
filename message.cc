@@ -1,11 +1,8 @@
-
+#include <sstream>
 #include "message.h"
-
-using namespace std;
-
 std::string Message::serialize() {
   char div_char = ':';
-  ostringstream oss;;
+  std::ostringstream oss;
 
   oss << msg_type;
   oss << div_char;
@@ -40,9 +37,9 @@ std::string Message::serialize() {
 
 void Message::deserialize(std::string in) {
 
-  vector<string> array;
+  std::vector<std::string> array;
   size_t pos = 0, found;
-  while ((found = in.find_first_of(':', pos)) != string::npos) {
+  while ((found = in.find_first_of(':', pos)) != std::string::npos) {
     array.push_back(in.substr(pos, found - pos));
     pos = found + 1;
   }
