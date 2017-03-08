@@ -17,7 +17,6 @@ void client_lib::add_chat_message(std::string chat_message){
 
     msg.view_num = cur_view_num;
     msg.value = chat_message;
-    msg.prop_number = 0;
     msg.sender = node(CLIENT_PORT, LOCALHOST);
 
     int replica_start_port = 9000;

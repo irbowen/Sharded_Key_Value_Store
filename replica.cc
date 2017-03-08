@@ -33,8 +33,9 @@ port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
         replicas.push_back(node(stoi(p), h));
     }
     num_replicas = replicas.size();
+    acceptor.init(0, num_replicas, id);
     learner.init(num_replicas, id);
-    proposer.init(replicas);
+    proposer.init(replicas, id);
 }
 
 /* Start listening on the provided port and host */
@@ -69,7 +70,7 @@ void replica::handle_msg(Message *message) {
             if (cur_view_num % num_replicas == id) {
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
-                reply = proposer.start_prepare(message->prop_number, learner.get_seqnum());
+                reply = proposer.start_prepare(message->view_num, learner.get_seqnum());
                 add_all_to_receiver_list(reply);
             }
             // Otherwise, we need to increment our viewnum and assert it
@@ -81,27 +82,27 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PREPARE_ACCEPT:
         {
-            reply = proposer.prepare_accept(message->n_a, message->value);
+            reply = proposer.prepare_accept(message->view_num, message->value);
             // add all the acceptors to the receiver list
             add_all_to_receiver_list(reply);
             break;
         }
         case MessageType::PREPARE_REJECT:
         {
-            reply = proposer.prepare_reject(message->n_p, message->seq_num);
+            reply = proposer.prepare_reject(message->view_num, message->seq_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
         }
         case MessageType::PROPOSE_ACCEPT:
         {
-            reply = proposer.propose_accept(message->prop_number);
+            reply = proposer.propose_accept(message->view_num);
             // nothing to be sent for now in this scenario
             break;
         }
         case MessageType::PROPOSE_REJECT:
         {
-            reply = proposer.propose_reject(message->n_p, message->seq_num);
+            reply = proposer.propose_reject(message->view_num, message->seq_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
@@ -109,14 +110,14 @@ void replica::handle_msg(Message *message) {
             // Acceptor scenarios
         case MessageType::PREPARE:
         {
-            reply = acceptor.prepare(message->prop_number);
+            reply = acceptor.prepare(message->view_num);
             // add only the proposer to the receiver list
             reply->receivers.push_back(message->sender);
             break;
         }
         case MessageType::PROPOSE:
         {
-            reply = acceptor.propose(message->prop_number, message->value);
+            reply = acceptor.propose(message->view_num, message->value);
             // add all the learners to the receiver list
             add_all_to_receiver_list(reply);
             break;
@@ -124,7 +125,7 @@ void replica::handle_msg(Message *message) {
             // Learner scenarios
         case MessageType::BRDCST_LEARNERS:
         {
-            reply = learner.update_vote(message->n_a, message->seq_num, message->value);
+            reply = learner.update_vote(message->view_num, message->seq_num, message->value);
             // add the proposer to the receiver list
             reply->receivers.push_back(message->sender);
             break;

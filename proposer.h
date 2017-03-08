@@ -14,13 +14,15 @@ private:
     
     size_t quorum;
     int proposal_number;
+    int id;
+    
     std::vector<node> replicas;
     
 public:
     /* The value to be proposed */
     std::string to_propose;
     
-    void init(vector<node> _replicas);
+    void init(vector<node> _replicas, int _id);
     Message* start_prepare(int proposal_number, int seq_num);
     
     Message* prepare_accept(int n_a, std::string value);

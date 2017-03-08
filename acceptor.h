@@ -14,10 +14,11 @@
 
 class Acceptor {
 private:
-    int n_a = -1;
-    int n_p = -1;
+    int cur_view = 0, num_replicas = 0, id = 0;
     std::string value = std::string();
+    // needs chat log
 public:
+	void init(int _view, int _num_replicas, int _id);
     Message* prepare(int n);
     Message* propose(int n, std::string value);
 };

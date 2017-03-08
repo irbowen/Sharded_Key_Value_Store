@@ -30,9 +30,6 @@ enum MessageType {
 class Message {
 public:
     MessageType msg_type = MessageType::NO_ACTION;
-    int n_a = -1;
-    int n_p = -1;
-    int prop_number = -1;
     int view_num = -1;
     size_t seq_num = 0;
     std::string value = "";

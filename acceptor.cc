@@ -1,30 +1,34 @@
 
 #include "acceptor.h"
 
-Message* Acceptor::prepare(int proposal_number) {
+Message* Acceptor::prepare(int in_view) {
     Message *msg = new Message;
-    if (proposal_number < n_p) {
+    if (in_view < cur_view) {
         msg->msg_type = MessageType::PREPARE_REJECT;
-        msg->n_p = n_p;
     } else {
         msg->msg_type = MessageType::PREPARE_ACCEPT;
-        msg->n_a = n_a;
         msg->value = value;
     }
+    msg->view_num = cur_view;
     return msg;
 }
 
-Message* Acceptor::propose(int proposal_number, std::string new_value){
+Message* Acceptor::propose(int in_view, std::string new_value){
     Message *msg = new Message;
-    if (proposal_number < n_p) {
+    if (in_view < cur_view) {
         msg->msg_type = MessageType::PROPOSE_REJECT;
-        msg->n_p = n_p;
     } else {
-        n_a = n_p = proposal_number;
+        cur_view = in_view;
         value = new_value;
         msg->msg_type = MessageType::BRDCST_LEARNERS;
         msg->value = new_value;
-        msg->n_a = n_a;
     }
+    msg->view_num = cur_view;
     return msg;
+}
+
+void Acceptor::init(int _view, int _num_replicas, int _id) {
+    cur_view = _view;
+    num_replicas = _num_replicas;
+    id = _id;
 }
