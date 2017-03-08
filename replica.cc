@@ -26,12 +26,11 @@
 replica::replica(int _port, string _host, int _id, string _config_file) :
 port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
 {
-    string h, p, i;
+    string h, p, rep_id;
     ifstream config_fs(_config_file);
-    while (config_fs >> h >> p >> i) {
+    while (config_fs >> h >> p >> rep_id) {
         // letting vector use move semantics underneath
         replicas.push_back(node(stoi(p), h));
-        num_replicas++;
     }
     num_replicas = replicas.size();
     learner.init(num_replicas, id);
@@ -126,6 +125,11 @@ void replica::handle_msg(Message *message) {
             reply = learner.update_vote(message->n_a, message->value);
             // add the proposer to the receiver list
             reply->receivers.push_back(message->sender);
+            break;
+        }
+        case MessageType::PROPOSAL_LEARNT:
+        {
+            // TODO: return response back to the proposer/client
             break;
         }
     }
