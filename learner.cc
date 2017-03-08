@@ -6,12 +6,15 @@
 using namespace std;
 
 Message* Learner::update_vote(int n_a, string value){
+    lock_guard<mutex> lock(m);
     Message *reply = new Message;
     
     score_map[n_a].tally += 1;
     score_map[n_a].value = value;
-    if (score_map[n_a].tally >= quorum){
-        reply->msg_type = MessageType::PROPOSE_ACCEPT;
+    // If this is the message that made us equal to the qurom
+    if (score_map[n_a].tally == quorum) {
+        // We should broadcast a proposal learned msg to everyone
+        reply->msg_type = MessageType::PROPOSAL_LEARNT;
         // commit message to local chat log
         // set seq_num -> seq_num + 1
         if (static_cast<int>(chat_log.size()) <= n_a) {
@@ -24,6 +27,7 @@ Message* Learner::update_vote(int n_a, string value){
 }
 
 void Learner::print_log() {
+    lock_guard<mutex> lock(m);
     string log_filename = "log_" + to_string(id) + ".txt";
     ostringstream oss;
     for (auto& msg : chat_log) {

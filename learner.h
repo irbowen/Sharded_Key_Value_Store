@@ -14,6 +14,8 @@
 #include <fstream>
 #include "message.h"
 #include <map>
+#include <mutex>
+#include <thread>
 
 struct Score {
     size_t tally;
@@ -22,6 +24,7 @@ struct Score {
 
 class Learner {
 private:
+	std::mutex m;
     size_t quorum;
     int id;
     std::map<int, Score> score_map;
