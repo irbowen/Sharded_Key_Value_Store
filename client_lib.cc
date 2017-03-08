@@ -30,10 +30,17 @@ void client_lib::add_chat_message(std::string chat_message){
   n.port = 9000;
   n.host = "127.0.0.1";
   msg.receivers.push_back(n);
+
   node n2;
   n2.port = 9001;
   n2.host = "127.0.0.1";
   msg.receivers.push_back(n2);
+
+  node n3;
+  n3.port = 9002;
+  n3.host = "127.0.0.1";
+  msg.receivers.push_back(n3);
+
   // Send the thing
   net.sendto(&msg);
 

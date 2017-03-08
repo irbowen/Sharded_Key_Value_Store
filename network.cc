@@ -29,6 +29,7 @@ network::network(int _port, std::string _host) :
 /* Block recv on socket */
 Message* network::recv_from() {
   char* buf = new char[MAXBUFLEN];
+  memset(buf, '\0', MAXBUFLEN);
   struct sockaddr_storage their_addr;
   ssize_t numbytes = 0;
 

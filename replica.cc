@@ -53,6 +53,7 @@ void replica::start() {
 
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
+  return;
   Message reply;
   switch (message->msg_type) {
     case MessageType::NO_ACTION:
