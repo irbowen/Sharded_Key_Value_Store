@@ -180,5 +180,4 @@ void replica::handle_msg(Message *message) {
   // Arguments: n, v
   // Acting as: Learner
   // Outgoing: potenial client response
->>>>>>> 64f30446c74d293fe1f9ac06e8204ee7ad3ff9c1
 }

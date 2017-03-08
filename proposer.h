@@ -8,13 +8,8 @@
 #include "message.h"
 #include "node.h"
 
-<<<<<<< HEAD
 class Proposer{
 private:
-=======
-class Proposer {
-  private:
->>>>>>> 64f30446c74d293fe1f9ac06e8204ee7ad3ff9c1
     std::map<int, int> count;
     
     size_t quorum;
