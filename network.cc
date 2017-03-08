@@ -36,7 +36,7 @@ Message* network::recv_from() {
   while (true) {
     cout << "listener: waiting to recv_from...\n";
     numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-    cout << "Num bytes: " << numbytes << endl;
+    // cout << "Num bytes: " << numbytes << endl;
     if (numbytes < 0) {
       cout << "There was an error getting data on the incoming socket\n";
       continue;
@@ -46,10 +46,8 @@ Message* network::recv_from() {
       continue;
     }
     string tmp(buf);
-    cout << "Msg:: " << tmp << endl;
     Message* msg = new Message();
     msg->deserialize(tmp);
-    cout << "Msg:: " << msg->serialize() << endl;
     return msg;
   }
 }

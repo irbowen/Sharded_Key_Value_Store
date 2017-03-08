@@ -26,10 +26,9 @@
 using namespace std;
 
 /* Setting up the replica with the provided port and host */
-replica::replica(int _port, string _host, int _id, string _config_file)
-  : port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
+replica::replica(int _port, string _host, int _id, string _config_file) :
+  port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
 {
-  int num_replicas = 0;
   string h, p, i;
   ifstream config_fs(_config_file);
   while (config_fs >> h >> p >> i) {
@@ -40,6 +39,7 @@ replica::replica(int _port, string _host, int _id, string _config_file)
     num_replicas++;
   }
   learner.init(num_replicas);
+  proposer.init(replicas);
 }
 
 /* Start listening on the provided port and host */
@@ -53,17 +53,23 @@ void replica::start() {
 
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
-  return;
   Message reply;
+  cout << "Msg in handle_msg: " << message->serialize() << endl;
   switch (message->msg_type) {
     case MessageType::NO_ACTION:
       // do nothing in this case
       break;
     case MessageType::START_PREPARE:
-      if(cur_view_num % tot_replicas == id)
+      // If we are the primary, then we should sent a
+      // start prepare message to all other replicas
+      if (cur_view_num % num_replicas == id) {
         reply = proposer.start_prepare(message->prop_number);
-      else
+      }
+      // Otherwise, we need to increment our viewnum and assert it
+      // is equal to the viewnum sent in the client msg
+      else {
         cur_view_num += 1;
+      }
       break;
     case MessageType::PREPARE:
       reply = acceptor.prepare(message->prop_number);
@@ -88,6 +94,10 @@ void replica::handle_msg(Message *message) {
       break;
   }
   delete(message);
+  if (reply.msg_type != MessageType::NO_ACTION) {
+    cout << "Sending out msg: " << reply.serialize() << endl;
+    net.sendto(&reply);
+  }
   // Send msg if not type noaction
 
   // If client_req msg

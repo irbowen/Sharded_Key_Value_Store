@@ -13,26 +13,29 @@
 #include <string>
 #include <map>
 #include "message.h"
+#include "node.h"
 
 class Proposer{
-private:
+  private:
     std::map<int, int> count;
-    
+
     int tot_replicas;
     int proposal_number;
-    
+    std::vector<node> replicas;
+
     /* The value to be proposed */
     std::string to_propose;
 
-public:
+  public:
+    void init(vector<node> _replicas);
     Message start_prepare(int proposal_number);
-    
+
     Message prepare_accept(int n_a, std::string value);
-    
+
     Message prepare_reject(int n_p);
-    
+
     Message propose_accept(int n);
-    
+
     Message propose_reject(int n_p);
 };
 #endif /* proposer_h */

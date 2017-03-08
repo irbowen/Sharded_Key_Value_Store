@@ -19,6 +19,7 @@ class replica {
     int port;
     std::string host;
     int id, cur_view_num, tot_replicas;
+    int num_replicas = 0;
     network net;
     std::vector<node> replicas;
     /* Get the majority number f + 1 */
