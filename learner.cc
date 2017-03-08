@@ -43,12 +43,11 @@ void Learner::init(size_t replica_count, size_t _id) {
     id = _id;
 }
 
-size_t Learner::get_seqnum() {
-    return chat_log.size();
+int Learner::get_seqnum() {
+    return static_cast<int>(chat_log.size());
 }
 
-size_t Learner::get_seqnum_with_skip() {
-    chat_log.push_back("");
+int Learner::get_seqnum_with_skip() {
     chat_log.push_back("");
     return get_seqnum();    
 }

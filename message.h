@@ -31,7 +31,7 @@ class Message {
 public:
     MessageType msg_type = MessageType::NO_ACTION;
     int view_num = -1;
-    size_t seq_num = 0;
+    int seq_num = 0;
     std::string value = "";
     node sender;
     std::vector<node> receivers;

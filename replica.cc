@@ -33,7 +33,7 @@ port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
         replicas.push_back(node(stoi(p), h));
     }
     num_replicas = replicas.size();
-    acceptor.init(0, num_replicas, id);
+    acceptor.init(num_replicas, id);
     learner.init(num_replicas, id);
     proposer.init(replicas, id);
 }

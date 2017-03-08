@@ -27,8 +27,7 @@ Message* Acceptor::propose(int in_view, std::string new_value){
     return msg;
 }
 
-void Acceptor::init(int _view, int _num_replicas, int _id) {
-    cur_view = _view;
+void Acceptor::init(size_t _num_replicas, int _id) {
     num_replicas = _num_replicas;
     id = _id;
 }
