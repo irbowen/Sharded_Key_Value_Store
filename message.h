@@ -23,7 +23,8 @@ enum MessageType {
     PROPOSE = 5,
     PROPOSE_ACCEPT = 6,
     PROPOSE_REJECT = 7,
-    BRDCST_LEARNERS = 8
+    BRDCST_LEARNERS = 8,
+    PROPOSAL_LEARNT = 9
 };
 
 class Message {
