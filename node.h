@@ -9,7 +9,7 @@
 #ifndef node_h
 #define node_h
 
-struct node{
+struct node {
     int port;
     std::string host;
     // any other info regarding a server

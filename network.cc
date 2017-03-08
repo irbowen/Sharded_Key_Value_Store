@@ -29,20 +29,13 @@ void network::init() {
 
 /* Block recv on socket */
 Message* network::recv_from() {
-  // Init an empty buffer to hold incoming msg data
-  //char buf[MAXBUFLEN];
-  //void *buf;
-  //memset(&buf, '\0' ,MAXBUFLEN);
-  Message* buf = new Message;
-
-  // Vars needed to recv
+  char* buf = new char[MAXBUFLEN];
   struct sockaddr_storage their_addr;
   ssize_t numbytes = 0;
 
   while (true) {
     cout << "listener: waiting to recv_from...\n";
     numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-    // If there is an error, move on and log
     cout << "Num bytes: " << numbytes << endl;
     if (numbytes < 0) {
       cout << "There was an error getting data on the incoming socket\n";
@@ -52,8 +45,10 @@ Message* network::recv_from() {
       cout << "There was no data\n";
       continue;
     }
-    cout << "N_a is: " << buf->value << endl;
-    return buf;
+    string tmp(buf);
+    cout << "Msg:: " << tmp << endl;
+    Message* msg = new Message();
+    return msg;
   }
 }
 
@@ -68,11 +63,12 @@ void network::sendto(Message* message) {
     inet_aton("127.0.0.1" , &to_addr.sin_addr);
     cout << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
     cout << "@@@ port " << ntohs(to_addr.sin_port) << endl;
-    auto retvalue = ::sendto(serverfd, message, sizeof(*message), 0, (struct sockaddr *)&to_addr, sizeof(to_addr));
+    auto msg_buf = message->serialize();
+    auto retvalue = ::sendto(serverfd, msg_buf.c_str(), msg_buf.size(), 0,
+        (struct sockaddr *)&to_addr, sizeof(to_addr));
     cout << "ret value " << retvalue << endl;
-    cout << "ret value " << errno << endl;
+    cout << "errno value " << errno << endl;
     perror("sendto");
-
   }
   //to_addr.sin_port = message->port;
   // Look into the message, get the destination from the message

@@ -24,10 +24,7 @@
 
 using namespace std;
 
-#define MAXBUFLEN 100
-
 class network {
-
   private:
     std::string host;
     int serverfd, port;

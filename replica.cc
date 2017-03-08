@@ -56,10 +56,10 @@ void replica::start() {
 
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
-  cout << "Got: " << message->value << endl;
+  return;
 
   Message reply;
-  switch(message->msg_type){
+  switch (message->msg_type) {
     case MessageType::NO_ACTION:
       // do nothing in this case
       break;
