@@ -14,7 +14,7 @@ Message* Learner::update_vote(int n_a, string value){
         reply->msg_type = MessageType::PROPOSE_ACCEPT;
         // commit message to local chat log
         // set seq_num -> seq_num + 1
-        if (static_cast<int>(chat_log.size()) < n_a) {
+        if (static_cast<int>(chat_log.size()) <= n_a) {
             chat_log.resize(n_a + 1);
         }
         chat_log.at(n_a) = value;

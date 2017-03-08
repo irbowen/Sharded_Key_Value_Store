@@ -52,7 +52,6 @@ Message* network::recv_from() {
 }
 
 Message* network::recv_from_with_timeout() {
-  int micro_second_delay = 100000;
 
   char* buf = new char[MAXBUFLEN];
   memset(buf, '\0', MAXBUFLEN);
@@ -74,7 +73,8 @@ Message* network::recv_from_with_timeout() {
     if (numbytes == 0) {
       cout << "There was no data, time to double timeout\n";
       micro_second_delay *= 2;
-      continue;
+      delete(buf);
+      return nullptr;
     }
     string tmp(buf);
     Message* msg = new Message();
