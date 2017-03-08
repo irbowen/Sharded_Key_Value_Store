@@ -1,10 +1,3 @@
-//
-//  proposer.h
-//  ChatService
-//
-//  Created by Pranav Ramarao on 3/5/17.
-//  Copyright © 2017 Pranav Ramarao. All rights reserved.
-//
 
 #ifndef proposer_h
 #define proposer_h
@@ -19,7 +12,7 @@ class Proposer{
   private:
     std::map<int, int> count;
 
-    int tot_replicas;
+    int quorum;
     int proposal_number;
     std::vector<node> replicas;
 
