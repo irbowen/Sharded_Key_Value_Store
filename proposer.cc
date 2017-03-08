@@ -1,10 +1,3 @@
-//
-//  proposer.cc
-//  ChatService
-//
-//  Created by Pranav Ramarao on 3/5/17.
-//  Copyright © 2017 Pranav Ramarao. All rights reserved.
-//
 
 #include "proposer.h"
 
@@ -49,6 +42,7 @@ Message* Proposer::propose_reject(int n_p){
     // if the proposal gets rejected, we are back to the prepare phase
     return start_prepare(n_p + 1);
 }
-void Proposer::set_tot_replicas(int tot){
-    tot_replicas = tot;
+
+void Proposer::init(vector<node> _replicas) {
+  replicas = _replicas;
 }

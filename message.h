@@ -9,7 +9,7 @@
 #include <vector>
 #include "node.h"
 
-#define MAXBUFLEN 1024
+#define MAXBUFLEN 2048
 
 using namespace std;
 
@@ -33,6 +33,7 @@ class Message {
     int n_a = -1;
     int n_p = -1;
     int prop_number = -1;
+    int view_num = -1;
     std::string value = "";
     node sender;
     std::vector<node> receivers;

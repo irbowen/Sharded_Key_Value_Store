@@ -1,38 +1,41 @@
 #include "network.h"
 
-network::network(std::string _host, int _port) : host(_host), port(_port) {
-  // Set up the socket for this communication
-  int opt_val = 1;
-  serverfd = socket(AF_INET, SOCK_DGRAM, 0);
-  assert(serverfd > 0);
+network::network(int _port, std::string _host) :
+  port(_port), host(_host) {
+    // Set up the socket for this communication
+    int opt_val = 1;
+    serverfd = socket(AF_INET, SOCK_DGRAM, 0);
+    assert(serverfd > 0);
 
-  // Set up the addr info for this machine/host
-  struct sockaddr_in addr;
-  memset(&addr, 0 , sizeof(addr));
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = inet_addr(host.c_str());
-  //addr.sin_addr.s_addr = htonl(INADDR_ANY);
-  cout << "Port: " << port << endl;
-  addr.sin_port = htons(port);
+    // Set up the addr info for this machine/host
+    struct sockaddr_in addr;
+    memset(&addr, 0 , sizeof(addr));
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = inet_addr(host.c_str());
+    //addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    cout << "Port: " << port << endl;
+    addr.sin_port = htons(port);
 
-  // Allow us to resuse address
-  assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
-  assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
-  addr_len = sizeof(addr);
-  cout << "@@@ socketfd: " << serverfd << endl;
-  cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
-  cout << "@@@ port " << ntohs(addr.sin_port) << endl;
-}
+    // Allow us to resuse address
+    assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
+    assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
+    addr_len = sizeof(addr);
+    cout << "@@@ socketfd: " << serverfd << endl;
+    cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
+    cout << "@@@ port " << ntohs(addr.sin_port) << endl;
+  }
+
 /* Block recv on socket */
 Message* network::recv_from() {
   char* buf = new char[MAXBUFLEN];
+  memset(buf, '\0', MAXBUFLEN);
   struct sockaddr_storage their_addr;
   ssize_t numbytes = 0;
 
   while (true) {
     cout << "listener: waiting to recv_from...\n";
     numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-    cout << "Num bytes: " << numbytes << endl;
+    // cout << "Num bytes: " << numbytes << endl;
     if (numbytes < 0) {
       cout << "There was an error getting data on the incoming socket\n";
       continue;
@@ -42,11 +45,8 @@ Message* network::recv_from() {
       continue;
     }
     string tmp(buf);
-    cout << "Msg:: " << tmp << endl;
-    cout << "@@@@@@@@@@@@@\n\n";
     Message* msg = new Message();
     msg->deserialize(tmp);
-    cout << "Msg:: " << msg->serialize() << endl;
     return msg;
   }
 }

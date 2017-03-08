@@ -14,20 +14,19 @@
 #include "message.h"
 #include <map>
 
-struct Score{
-    size_t tally;
-    std::string value;
+struct Score {
+  size_t tally;
+  std::string value;
 };
 
-class Learner{
-private:
-    int tot_replicas;
+class Learner {
+  private:
+    size_t quorum;
     std::map<int, Score> score_map;
     std::vector<std::string> chat_log;
-    
-public:
-    void set_tot_replicas(int tot_replicas);
-    Learner(int replica_count);
+
+  public:
+    void init(int replica_count);
     Message* update_vote(int n_a, std::string value);
     void print_log();
 };
