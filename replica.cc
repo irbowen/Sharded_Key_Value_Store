@@ -57,6 +57,7 @@ void replica::add_all_to_receiver_list(Message *ref){
 void replica::handle_msg(Message *message) {
     Message* reply = new Message();
     cout << "Msg in handle_msg: " << message->serialize() << endl;
+    cout << "Msg type: " << message->msg_type << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
             // do nothing in this case
@@ -68,7 +69,7 @@ void replica::handle_msg(Message *message) {
             if (cur_view_num % num_replicas == id) {
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
-                reply = proposer.start_prepare(message->prop_number);
+                reply = proposer.start_prepare(message->prop_number, learner.get_seqnum());
                 add_all_to_receiver_list(reply);
             }
             // Otherwise, we need to increment our viewnum and assert it
@@ -76,6 +77,7 @@ void replica::handle_msg(Message *message) {
             else {
                 cur_view_num += 1;
             }
+            break;
         }
         case MessageType::PREPARE_ACCEPT:
         {
@@ -86,7 +88,7 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PREPARE_REJECT:
         {
-            reply = proposer.prepare_reject(message->n_p);
+            reply = proposer.prepare_reject(message->n_p, message->seq_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
@@ -99,7 +101,7 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PROPOSE_REJECT:
         {
-            reply = proposer.propose_reject(message->n_p);
+            reply = proposer.propose_reject(message->n_p, message->seq_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             add_all_to_receiver_list(reply);
             break;
@@ -122,7 +124,7 @@ void replica::handle_msg(Message *message) {
             // Learner scenarios
         case MessageType::BRDCST_LEARNERS:
         {
-            reply = learner.update_vote(message->n_a, message->value);
+            reply = learner.update_vote(message->n_a, message->seq_num, message->value);
             // add the proposer to the receiver list
             reply->receivers.push_back(message->sender);
             break;
@@ -134,7 +136,7 @@ void replica::handle_msg(Message *message) {
         }
     }
     delete(message);
-    if(reply != nullptr && reply->msg_type != MessageType::NO_ACTION){
+    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION){
         reply->sender.host = host;
         reply->sender.port = port;
         net.sendto(reply);

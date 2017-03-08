@@ -5,7 +5,7 @@
 
 using namespace std;
 
-Message* Learner::update_vote(int n_a, string value){
+Message* Learner::update_vote(int n_a, int seq_num, string value){
     lock_guard<mutex> lock(m);
     Message *reply = new Message;
     
@@ -17,17 +17,16 @@ Message* Learner::update_vote(int n_a, string value){
         reply->msg_type = MessageType::PROPOSAL_LEARNT;
         // commit message to local chat log
         // set seq_num -> seq_num + 1
-        if (static_cast<int>(chat_log.size()) <= n_a) {
-            chat_log.resize(n_a + 1);
+        if (static_cast<int>(chat_log.size()) <= seq_num) {
+            chat_log.resize(seq_num + 1);
         }
-        chat_log.at(n_a) = value;
+        chat_log.at(seq_num) = value;
         print_log();
     }
     return reply;
 }
 
 void Learner::print_log() {
-    lock_guard<mutex> lock(m);
     string log_filename = "log_" + to_string(id) + ".txt";
     ostringstream oss;
     for (auto& msg : chat_log) {
@@ -44,3 +43,12 @@ void Learner::init(size_t replica_count, size_t _id) {
     id = _id;
 }
 
+size_t Learner::get_seqnum() {
+    return chat_log.size();
+}
+
+size_t Learner::get_seqnum_with_skip() {
+    chat_log.push_back("");
+    chat_log.push_back("");
+    return get_seqnum();    
+}

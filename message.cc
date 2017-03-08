@@ -20,6 +20,9 @@ std::string Message::serialize() {
     
     oss << view_num;
     oss << div_char;
+
+    oss << seq_num;
+    oss << div_char;
     
     oss << value;
     oss << div_char;
@@ -50,17 +53,19 @@ void Message::deserialize(std::string in) {
     }
     array.push_back(in.substr(pos));
     
-    int msg_int = stoi(array.at(0));
+    int index = 0;
+    int msg_int = stoi(array.at(index++));
     msg_type = static_cast<MessageType>(msg_int);
-    n_a = stoi(array.at(1));
-    n_p = stoi(array.at(2));
-    prop_number = stoi(array.at(3));
-    view_num = stoi(array.at(4));
-    value = array.at(5);
-    sender.port = stoi(array.at(6));
-    sender.host = array.at(7);
-    int num_recv = stoi(array.at(8));
-    int start = 9;
+    n_a = stoi(array.at(index++));
+    n_p = stoi(array.at(index++));
+    prop_number = stoi(array.at(index++));
+    view_num = stoi(array.at(index++));
+    seq_num = stoi(array.at(index++));
+    value = array.at(index++);
+    sender.port = stoi(array.at(index++));
+    sender.host = array.at(index++);
+    int num_recv = stoi(array.at(index++));
+    int start = index;
     // cout << "Num recv: " << num_recv << endl;
     for (int k = 0; k < num_recv; k++) {
         int i = 2 * k;

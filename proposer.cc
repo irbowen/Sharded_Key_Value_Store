@@ -6,10 +6,11 @@ void Proposer::init(vector<node> _replicas) {
     quorum = (1 + _replicas.size()) >> 1;
 }
 
-Message* Proposer::start_prepare(int proposal_number){
+Message* Proposer::start_prepare(int proposal_number, int seq_num) {
     Message *msg = new Message;
     msg->msg_type = MessageType::PREPARE;
     msg->prop_number = proposal_number;
+    msg->seq_num = seq_num;
     return msg;
 }
 
@@ -32,19 +33,19 @@ Message* Proposer::prepare_accept(int n_a, std::string value) {
     return msg;
 }
 
-Message* Proposer::prepare_reject(int n_p){
+Message* Proposer::prepare_reject(int n_p, int seq_num) {
     // go back to prepare phase
-    return start_prepare(n_p + 1);
+    return start_prepare(n_p + 1, seq_num);
 }
 
-Message* Proposer::propose_accept(int n){
+Message* Proposer::propose_accept(int n) {
     // nothing to do for now in this scenario
     Message *msg = new Message;
     return msg;
 }
 
-Message* Proposer::propose_reject(int n_p){
+Message* Proposer::propose_reject(int n_p, int seq_num) {
     // if the proposal gets rejected, we are back to the prepare phase
-    return start_prepare(n_p + 1);
+    return start_prepare(n_p + 1, seq_num);
 }
 

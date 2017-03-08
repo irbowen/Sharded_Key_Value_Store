@@ -34,6 +34,7 @@ public:
     int n_p = -1;
     int prop_number = -1;
     int view_num = -1;
+    size_t seq_num = 0;
     std::string value = "";
     node sender;
     std::vector<node> receivers;

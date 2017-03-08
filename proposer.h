@@ -21,14 +21,14 @@ public:
     std::string to_propose;
     
     void init(vector<node> _replicas);
-    Message* start_prepare(int proposal_number);
+    Message* start_prepare(int proposal_number, int seq_num);
     
     Message* prepare_accept(int n_a, std::string value);
     
-    Message* prepare_reject(int n_p);
+    Message* prepare_reject(int n_p, int seq_num);
     
     Message* propose_accept(int n);
     
-    Message* propose_reject(int n_p);
+    Message* propose_reject(int n_p, int seq_num);
 };
 #endif /* proposer_h */

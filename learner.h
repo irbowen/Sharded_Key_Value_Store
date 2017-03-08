@@ -17,6 +17,8 @@
 #include <mutex>
 #include <thread>
 
+#define DIF 2
+
 struct Score {
     size_t tally;
     std::string value;
@@ -32,8 +34,10 @@ private:
     
 public:
     void init(size_t replica_count, size_t _id);
-    Message* update_vote(int n_a, std::string value);
+    Message* update_vote(int n_a, int seq_num, std::string value);
     void print_log();
+    size_t get_seqnum();
+    size_t get_seqnum_with_skip();
 };
 
 #endif /* learner_h */
