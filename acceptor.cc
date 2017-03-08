@@ -22,7 +22,7 @@ Message* Acceptor::prepare(int proposal_number) {
 }
 
 Message* Acceptor::propose(int proposal_number, std::string new_value){
-    Message *msg;
+    Message *msg = new Message;
     if (proposal_number < n_p) {
         msg->msg_type = MessageType::PROPOSE_REJECT;
         msg->n_p = n_p;
