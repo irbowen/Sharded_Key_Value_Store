@@ -27,7 +27,7 @@ private:
     
 public:
     Learner(int replica_count);
-    Message update_vote(int n_a, std::string value);
+    Message* update_vote(int n_a, std::string value);
     void print_log();
 };
 
