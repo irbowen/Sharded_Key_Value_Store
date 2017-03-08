@@ -17,6 +17,9 @@ void client_lib::add_chat_message(std::string chat_message){
     
     msg.value = chat_message;
     msg.prop_number = 0;
+
+    msg.sender = node(CLIENT_PORT, LOCALHOST);
+
     /* TEST MODE - adding 1 client that send messages to the 3 replicas*/
     for(int i = 0; i < 3; i++){
         node n;
@@ -26,8 +29,6 @@ void client_lib::add_chat_message(std::string chat_message){
     }
     net.sendto(&msg);
     cout << chat_message << " has been added to the chat log" << endl;
-    
-
 //    int timeout = 1;
 //    bool got_response = false;
 //    while (!got_response) {
