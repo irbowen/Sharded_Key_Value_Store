@@ -63,22 +63,28 @@ void replica::handle_msg(Message *message) {
     // The simple answer to all of your concurreny problems
     // unique_lock<mutex> lock(m);
     Message* reply = new Message();
-    cout << "Msg in handle_msg: " << message->serialize() << endl;
-    cout << "Current view is: " << cur_view_num << endl;
+    COUT << "Msg in handle_msg: " << message->serialize() << endl;
+    COUT << "Current view is: " << cur_view_num << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
             // do nothing in this case
             break;
         case MessageType::START_PREPARE:
         {
+            // Various scenarios when control can come here
+            // 1. first primary comes here  (message->view_num == cur_view_num
+            // 2. view changed, next primary comes in  (message->view_num > cur_view_num)
+            // 3. new primary finished fix and exec new client reqs (message->view_num == cur_view_num)
+            //
             if (message->view_num > cur_view_num) {
-              cur_view_num = message->view_num;
-              if (cur_view_num % num_replicas == id) {
-                // Becoming the primary and fix previous sate
-                // TODO
-              }
+                // scenario 2
+                cur_view_num = message->view_num;
+                if (cur_view_num % num_replicas == id) {
+                    // Becoming the primary and fix previous sate
+                    // TODO
+                }
             }
-
+            
             // If we already know that we are the primary
             if (is_primary(message->view_num)) {
                 // Keep track of which seqnum maps to which client, so that when it is commited, we know who to tell
@@ -89,7 +95,11 @@ void replica::handle_msg(Message *message) {
                 break;
             }
             if (cur_view_num % num_replicas == id) {
-                //assert(false);
+                // does this happen only for the very first primary?
+                // for all other primaries that come up, they are bound to enter the scenario 2
+                // and will definitely get a quorum right?
+
+                // assert(false);
                 // Check for holes
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
@@ -163,49 +173,49 @@ void replica::handle_msg(Message *message) {
         reply->sender.host = host;
         reply->sender.port = port;
         net.sendto(reply);
-        cout << "Sending out msg: " << reply->serialize() << endl;
-        net.sendto(reply);
-        this_thread::sleep_for(1s);
+        //COUT << "Sending out msg: " << reply->serialize() << endl;
+        //net.sendto(reply);
+        //this_thread::sleep_for(1s);
     }
     // Send msg if not type noaction
-
+    
     // If client_req msg
     // skip
-
+    
     // Incoming: prepare
     // Arguments: n
     // Acting as: Acceptor
     // Check if you've seen an n higher than this one
     // Outgoing: a prepare_accept
     //    OR prepare_reject
-
+    
     // Incoming: prepare_accept
     // Arguments: n_a, v_a (could be null)
     // Acting as: Proposer
     // Increment the count of # of prepare accepts you have gotten
     // Outgoing: If this is more than a majority, send propose_value(n, v)
-
+    
     // Incoming: prepare_reject
     // Arguments: n_p
     // Acting as: Proposer
     // If we got a higher n value, update our internal storage with this new value
     // Outgoing:
-
+    
     // Incoming: propose
     // Arguments: n, v
     // Acting as: Acceptor
     // Outgoing: propose_accept(n) + broadcast_to_learners(n, v),
     //    OR propose_reject(n)
-
+    
     // Incoming: propose_accept
     // Arguments: n
     // Acting as: Proposer
     // Outgoing:
-
+    
     // Incoming: propose_reject
     // Arguments: n_p
     // Acting as: Proposer
-
+    
     // Incoming: broadcast_to_learners
     // Arguments: n, v
     // Acting as: Learner
