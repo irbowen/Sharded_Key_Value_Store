@@ -7,6 +7,7 @@
 #include <map>
 #include "message.h"
 #include "node.h"
+#include "network.h"
 
 class Proposer {
 private:
@@ -17,6 +18,10 @@ private:
 
     std::vector<node> replicas;
 
+    std::vector<std::vector<view_val>> all_acceptors_state;
+
+    /* Proposer shares the network library of the replica */
+    network *net;
 public:
     /* The value to be proposed */
     std::string to_propose;
@@ -24,7 +29,7 @@ public:
     /* Did this primary just become the new primary === Fix required */
     bool is_new_primary = false;
 
-    void init(vector<node> _replicas, int _id);
+    void init(vector<node> _replicas, int _id, network *net);
 
     // If we have already reached a quorum for this view_num
     // there is no need to run the firs step of paxos again
