@@ -25,7 +25,8 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
     Message *msg = new Message;
     // Only increment this if this is the first time you've heard each replica
     // TODO
-    count[view_num] += 1;
+    if(is_new_primary)
+        count[view_num] += 1;
 
     if (count[view_num] >= quorum) {
         if(is_new_primary){
@@ -49,6 +50,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         }
         
     }
+    // TODO : Need to add sequence number to this message (Important) - Pranav
     // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
