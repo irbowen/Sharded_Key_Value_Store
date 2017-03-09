@@ -13,7 +13,7 @@ private:
     std::vector<view_val> accepted_values;
 public:
     void init(size_t _num_replicas, int _id);
-    Message* prepare(int in_view);
-    Message* propose(int in_view, std::string value, int seq_num);
+    Message* accept_prepare_msg(int in_view);
+    Message* accept_propose_msg(int in_view, std::string value, int seq_num);
 };
 #endif /* acceptor_h */

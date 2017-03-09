@@ -79,7 +79,7 @@ void replica::handle_msg(Message *message) {
             if (proposer.reached_quroum(message->view_num) &&
                 cur_view_num % num_replicas == id) {
               // Don't need to send start prepare, we are primary
-              reply = acceptor.propose(message->view_num, message->value, learner.get_seqnum());
+              reply = acceptor.accept_propose_msg(message->view_num, message->value, learner.get_seqnum());
               add_all_to_receiver_list(reply);
               break;
             }
@@ -124,14 +124,14 @@ void replica::handle_msg(Message *message) {
             // Acceptor scenarios
         case MessageType::PREPARE:
         {
-            reply = acceptor.prepare(message->view_num);
+            reply = acceptor.accept_prepare_msg(message->view_num);
             // add only the proposer to the receiver list
             reply->receivers.push_back(message->sender);
             break;
         }
         case MessageType::PROPOSE:
         {
-            reply = acceptor.propose(message->view_num, message->value, message->seq_num);
+            reply = acceptor.accept_propose_msg(message->view_num, message->value, message->seq_num);
             // add all the learners to the receiver list
             add_all_to_receiver_list(reply);
             break;
