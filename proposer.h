@@ -41,6 +41,8 @@ public:
 
     // Create a PROPOSE msg
     Message* handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num);
+    
+    Message* handle_prepare_accept_fast(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num);
 
     Message* handle_prepare_reject(int view_num);
 
