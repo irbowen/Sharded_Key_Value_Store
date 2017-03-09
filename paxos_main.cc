@@ -39,12 +39,12 @@ int main(int argc, char* argv[]) {
                 config = optarg;
                 break;
             case '?':
-                std::cout << "Argument for -h and -p required\n";
+                COUT << "Argument for -h and -p required\n";
                 exit(1);
         }
     }
     assert(port != -1 && id != -1);
     replica r(port, host, id, config);
     r.start();
-    std::cout << "Get's here, so thats cool\n";
+    COUT << "Get's here, so thats cool\n";
 }

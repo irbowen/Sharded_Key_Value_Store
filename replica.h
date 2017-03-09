@@ -24,7 +24,7 @@ private:
     std::string host;
 
     // replica id
-    size_t id;
+    int id;
 
     // current view number that this replica thinks it is in
     size_t cur_view_num;

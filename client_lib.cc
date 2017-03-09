@@ -36,7 +36,7 @@ void client_lib::add_chat_message(std::string chat_message){
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             // the client library blocks until success so a return is a success to the client
             delete(reply);
-            cout << chat_message << " has been added to the chat log" << endl;
+            COUT << chat_message << " has been added to the chat log" << endl;
             return;
         }
         cur_view_num += 1;

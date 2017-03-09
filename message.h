@@ -14,6 +14,13 @@ using namespace std;
 #define MAXBUFLEN 2048
 #define LOCALHOST "127.0.0.1"
 
+#ifdef DEBUGZ
+    #define COUT std::cout
+#else
+    #define COUT while(0) std::cout
+#endif
+
+
 struct view_val {
     int view_num;
     string value;
@@ -37,7 +44,7 @@ enum MessageType {
 class Message {
 public:
     MessageType msg_type = MessageType::NO_ACTION;
-    size_t view_num = -1;
+    int view_num = -1;
     int seq_num = 0;
     std::string value = "";
     node sender;
