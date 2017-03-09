@@ -12,10 +12,10 @@ Message* Learner::update_vote(int in_view, int seq_num, string value){
     Message m;
     m.value = value;
     
-    score_map[in_view].tally += 1;
-    score_map[in_view].value = m.get_value();
+    score_map[seq_num].tally += 1;
+    score_map[seq_num].value = m.get_value();
     // If this is the message that made us equal to the qurom
-    if (score_map[in_view].tally == quorum) {
+    if (score_map[seq_num].tally == quorum) {
         // We should broadcast a proposal learned msg to everyone
         reply->msg_type = MessageType::PROPOSAL_LEARNT;
         reply->seq_num = seq_num;
