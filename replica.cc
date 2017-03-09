@@ -93,7 +93,13 @@ void replica::handle_msg(Message *message) {
                 // Keep track of which seqnum maps to which client, so that when it is commited, we know who to tell
                 int tmp_seq_num = learner.get_seqnum();
                 seq_to_client_map[tmp_seq_num] = message->sender;
-                reply = acceptor.accept_propose_msg(message->view_num, message->value, tmp_seq_num);
+
+                // BIG BUG
+                // cannot just call acceptor's propse_msg
+                //reply = acceptor.accept_propose_msg(message->view_num, message->value, tmp_seq_num);
+
+                // The fix :
+                reply = proposer.handle_prepare_accept(message->acceptor_state, cur_view_num, message->value);
                 make_broadcast(reply);
                 break;
             }
