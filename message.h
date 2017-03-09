@@ -14,6 +14,7 @@ using namespace std;
 #define MAXBUFLEN 2048
 #define LOCALHOST "127.0.0.1"
 
+#define DEBUGZ
 #ifdef DEBUGZ
     #define COUT std::cout
 #else

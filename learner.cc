@@ -5,14 +5,14 @@
 
 using namespace std;
 
-Message* Learner::update_vote(int n_a, int seq_num, string value){
+Message* Learner::update_vote(int in_view, int seq_num, string value){
     lock_guard<mutex> lock(m);
     Message *reply = new Message;
     
-    score_map[n_a].tally += 1;
-    score_map[n_a].value = value;
+    score_map[in_view].tally += 1;
+    score_map[in_view].value = value;
     // If this is the message that made us equal to the qurom
-    if (score_map[n_a].tally == quorum) {
+    if (score_map[in_view].tally == quorum) {
         // We should broadcast a proposal learned msg to everyone
         reply->msg_type = MessageType::PROPOSAL_LEARNT;
         reply->seq_num = seq_num;
