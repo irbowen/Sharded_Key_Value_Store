@@ -29,8 +29,8 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         count[view_num] += 1;
         all_acceptors_state.push_back(acceptor_state);
     }
-
-    if (count[view_num] >= quorum && is_new_primary) {
+    
+    if (count[view_num] == quorum && is_new_primary) {
         // i am the new primary, i have reached a quorum, i have f+1 acceptor states
         // i can begin the fix process
 
@@ -83,7 +83,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         all_acceptors_state.clear();
     }
 
-    if(count[view_num] >= quorum){
+    if(count[view_num] == quorum){
         // regular case where proposer proposes the original value
         msg->msg_type = MessageType::PROPOSE;
         // bug fixed : view num can never be -1 (we did this earlier since we had n_a)
