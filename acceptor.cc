@@ -8,6 +8,7 @@ Message* Acceptor::accept_prepare_msg(int in_view) {
     } else {
         cur_view = in_view;
         msg->msg_type = MessageType::PREPARE_ACCEPT;
+        msg->value = value;
     }
     msg->view_num = cur_view;
     msg->acceptor_state = accepted_values;
