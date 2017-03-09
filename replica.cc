@@ -169,7 +169,8 @@ void replica::handle_msg(Message *message) {
         {
             reply = learner.update_vote(message->view_num, message->seq_num, message->value);
             // add the proposer to the receiver list
-            make_broadcast(reply);
+            //make_broadcast(reply);
+            //reply->receivers
             break;
         }
         case MessageType::PROPOSAL_LEARNT:{
