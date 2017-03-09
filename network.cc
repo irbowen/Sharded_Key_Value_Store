@@ -12,16 +12,16 @@ network::network(int _port, std::string _host) : port(_port), host(_host) {
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = inet_addr(host.c_str());
     //addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    cout << "Port: " << port << endl;
+    COUT << "Port: " << port << endl;
     addr.sin_port = htons(port);
 
     // Allow us to resuse address
     assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
     assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
     addr_len = sizeof(addr);
-    cout << "@@@ socketfd: " << serverfd << endl;
-    cout << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
-    cout << "@@@ port " << ntohs(addr.sin_port) << endl;
+    COUT << "@@@ socketfd: " << serverfd << endl;
+    COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
+    COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
 
 /* Block recv on socket */
@@ -32,15 +32,15 @@ Message* network::recv_from() {
     ssize_t numbytes = 0;
 
     while (true) {
-        cout << "listener: waiting to recv_from...\n";
+        COUT << "listener: waiting to recv_from...\n";
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-        // cout << "Num bytes: " << numbytes << endl;
+        // COUT << "Num bytes: " << numbytes << endl;
         if (numbytes < 0) {
-            cout << "There was an error getting data on the incoming socket\n";
+            COUT << "There was an error getting data on the incoming socket\n";
             continue;
         }
         if (numbytes == 0) {
-            cout << "There was no data\n";
+            COUT << "There was no data\n";
             continue;
         }
         string tmp(buf);
@@ -61,12 +61,14 @@ Message* network::recv_from_with_timeout() {
         struct timeval tv;
         tv.tv_sec = micro_second_delay / MICRO_PER_SECOND;
         tv.tv_usec = micro_second_delay % MICRO_PER_SECOND;
+        
+        tv.tv_sec = 50000000;
         assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
-        cout << "listener: waiting to recv_from with delay of " << micro_second_delay << "\n";
+        COUT << "listener: waiting to recv_from with delay of " << micro_second_delay << "\n";
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
-        // cout << "Num bytes: " << numbytes << endl;
+        // COUT << "Num bytes: " << numbytes << endl;
         if (numbytes <= 0) {
-            cout << "There was no data, time to double timeout\n";
+            COUT << "There was no data, time to double timeout\n";
             micro_second_delay *= 2;
             delete[] buf;
             return nullptr;
@@ -88,14 +90,14 @@ void network::sendto(Message* message) {
         to_addr.sin_family = AF_INET;
         to_addr.sin_port = htons(serv.port);
         inet_aton("127.0.0.1" , &to_addr.sin_addr);
-        //cout << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
-        //cout << "@@@ port " << ntohs(to_addr.sin_port) << endl;
+        //COUT << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
+        //COUT << "@@@ port " << ntohs(to_addr.sin_port) << endl;
         auto msg_buf = message->serialize();
         //auto retvalue = 
         ::sendto(serverfd, msg_buf.c_str(), msg_buf.size(), 0,
                 (struct sockaddr *)&to_addr, sizeof(to_addr));
-        //cout << "ret value " << retvalue << endl;
-        //cout << "errno value " << errno << endl;
+        //COUT << "ret value " << retvalue << endl;
+        //COUT << "errno value " << errno << endl;
         //perror("sendto");
     }
     //to_addr.sin_port = message->port;
