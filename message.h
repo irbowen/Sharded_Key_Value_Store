@@ -54,6 +54,10 @@ public:
     std::vector<view_val> acceptor_state;
     std::string serialize();
     void deserialize(std::string in);
+    std::string get_value();
+    std::string get_client_id();
+    int get_client_seq_num();
+    node get_client_node();
 };
 
 #endif /* message_h */

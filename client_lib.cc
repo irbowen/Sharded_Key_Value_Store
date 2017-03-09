@@ -9,15 +9,21 @@
 
 client_lib::client_lib(int _port, string _host) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;
-    cur_seq_num = 0;
+    client_seq_num = 0;
 }
 
 void client_lib::add_chat_message(std::string chat_message){
     Message msg;
     msg.msg_type = MessageType::START_PREPARE;
-
     msg.view_num = cur_view_num;
-    msg.value = chat_message;
+
+    string true_value = chat_message 
+        + "#" + to_string(port)
+        + "#" + host
+        + "#" + to_string(client_seq_num);
+
+    msg.value = true_value;
+
     msg.sender = node(port, host);
 
     int replica_start_port = 9000;
@@ -38,9 +44,11 @@ void client_lib::add_chat_message(std::string chat_message){
             // the client library blocks until success so a return is a success to the client
             delete(reply);
             COUT << chat_message << " has been added to the chat log" << endl;
+            client_seq_num++;
             return;
         }
         cur_view_num += 1;
     }
+
     return;
 }

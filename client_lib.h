@@ -18,7 +18,7 @@ private:
     std::string current_primary;
     std::string find_master();
     uint cur_view_num = 0;
-    int cur_seq_num;
+    int client_seq_num;
     network net;
 public:
     client_lib(int _port, string _host);
