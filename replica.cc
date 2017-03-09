@@ -42,8 +42,9 @@ port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
 void replica::start() {
     while (true) {
         Message *msg = net.recv_from();
-        thread t(&replica::handle_msg, this, msg);
-        t.detach();
+        //thread t(&replica::handle_msg, this, msg);
+        //t.detach();
+        handle_msg(msg);
     }
 }
 
@@ -76,12 +77,13 @@ void replica::handle_msg(Message *message) {
 
             // if the client's request is already learnt, but didn't get a response
             // send a response right away
-            if(client_progress_map[in_client_id] >= in_client_seq_number){
+            if(client_progress_map.count(in_client_id) != 0 &&
+                client_progress_map[in_client_id] >= in_client_seq_number){
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
                 reply->receivers.push_back(message->get_client_node());
                 break;
             }
-
+            proposer.to_propose = message->value;
             // Various scenarios when control can come here
             // 1. first primary comes here  (message->view_num == cur_view_num
             // 2. view changed, next primary comes in  (message->view_num > cur_view_num)
@@ -94,7 +96,6 @@ void replica::handle_msg(Message *message) {
                     // Becoming the primary and fix previous sate
                     // TODO
                     this->proposer.is_new_primary = true;
-                    proposer.to_propose = message->value;
                     reply = proposer.handle_start_prepare(cur_view_num);
                     reply->value = message->value;
                     make_broadcast(reply);
