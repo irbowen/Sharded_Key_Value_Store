@@ -3,6 +3,7 @@
 #define proposer_h
 
 #include <cstdio>
+#include <algorithm>
 #include <string>
 #include <map>
 #include "message.h"

@@ -33,5 +33,5 @@ chat_client_%.out: chat_client_%.o $(CLIENT_LIB)
 clean:
 	touch paxos_server client1
 	rm paxos_server client1
-	touch dummy.o dummy.out
-	rm *.o *.out
+	touch dummy.o dummy.out log_0.txt
+	rm *.o *.out log_*.txt
