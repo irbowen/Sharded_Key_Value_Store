@@ -60,12 +60,6 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
                 }
             }
             if(!quorum_reached){
-                if(best_view_val.value == NO_OP){
-                    // no best found === no_op case
-                    // TODO:
-                } else{
-                    // choose the best's value
-                }
                 Message *reply = new Message;
                 reply->view_num = view_num; // view_num of the new primary
                 reply->value = best_view_val.value; // will automatically be no_op if that is the best
