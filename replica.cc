@@ -71,6 +71,18 @@ void replica::handle_msg(Message *message) {
             break;
         case MessageType::START_PREPARE:
         {
+            std::string in_client_id = "";
+            int in_client_seq_number = 5;
+            node client_info;
+
+            // if the client's request is already learnt, but didn't get a response
+            // send a response right away
+            if(client_progress_map[in_client_id] >= in_client_seq_number){
+                reply->msg_type = MessageType::PROPOSAL_LEARNT;
+                reply->receivers.push_back(client_info);
+                break;
+            }
+
             // Various scenarios when control can come here
             // 1. first primary comes here  (message->view_num == cur_view_num
             // 2. view changed, next primary comes in  (message->view_num > cur_view_num)
@@ -169,15 +181,24 @@ void replica::handle_msg(Message *message) {
         {
             reply = learner.update_vote(message->view_num, message->seq_num, message->value);
             // add the proposer to the receiver list
-            //make_broadcast(reply);
+            make_broadcast(reply);
             //reply->receivers
             break;
         }
         case MessageType::PROPOSAL_LEARNT:{
             // Send the same msg that we just got, but just send it to the client
+
+            // all replicas get this message
+            std::string client_id = "";
+            int client_seq_number = 5;
+            client_progress_map[client_id] = client_seq_number;
+            node client_info;
+
             if (is_primary(message->view_num)) {
-                reply = learner.broadcast_learn(message->seq_num);
-                reply->receivers.push_back(seq_to_client_map[message->seq_num]);
+                // primary is responsible for sending it back to the client
+                  //learner.broadcast_learn(message->seq_num);
+                reply->msg_type = MessageType::PROPOSAL_LEARNT;
+                reply->receivers.push_back(client_info);
             }
             break;
         }
