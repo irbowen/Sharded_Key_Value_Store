@@ -24,7 +24,7 @@
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file) :
-port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
+port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
 {
     string h, p, rep_id;
     ifstream config_fs(_config_file);
@@ -84,6 +84,8 @@ void replica::handle_msg(Message *message) {
                     // TODO
                     this->proposer.is_new_primary = true;
                     proposer.to_propose = message->value;
+                    reply = proposer.handle_start_prepare(cur_view_num);
+                    make_broadcast(reply);
                     // store client sender info
                 }
             }
