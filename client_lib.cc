@@ -26,7 +26,7 @@ void client_lib::add_chat_message(std::string chat_message){
 
     msg.sender = node(port, host);
 
-    int replica_start_port = 9000;
+    int replica_start_port = 8000;
     /* TEST MODE - adding 1 client that send messages to the 3 replicas*/
     for(int i = 0; i < 3; i++){
         node n;
