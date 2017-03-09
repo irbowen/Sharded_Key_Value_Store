@@ -8,7 +8,7 @@ void Proposer::init(vector<node> _replicas, int _id) {
     id = _id;
 }
 
-Message* Proposer::handle_prepare(int view_num) {
+Message* Proposer::handle_start_prepare(int view_num) {
     Message *msg = new Message;
     msg->msg_type = MessageType::PREPARE;
     msg->view_num = view_num;
@@ -55,7 +55,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
 
 Message* Proposer::handle_prepare_reject(int view_num) {
     // go back to prepare phase
-    return handle_prepare(view_num + 1);
+    return handle_start_prepare(view_num + 1);
 }
 
 Message* Proposer::handle_propose_accept(int n) {
@@ -66,5 +66,5 @@ Message* Proposer::handle_propose_accept(int n) {
 
 Message* Proposer::handle_propose_reject(int view_num) {
     // if the proposal gets rejected, we are back to the prepare phase
-    return handle_prepare(view_num + 1);
+    return handle_start_prepare(view_num + 1);
 }

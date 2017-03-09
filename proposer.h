@@ -31,7 +31,7 @@ public:
     bool reached_quroum(int view_num);
 
     // Create a PREPARE msg
-    Message* handle_prepare(int view_num);
+    Message* handle_start_prepare(int view_num);
 
     // Create a PROPOSE msg
     Message* handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value);
