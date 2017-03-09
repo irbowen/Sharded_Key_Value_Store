@@ -38,6 +38,9 @@ private:
     std::vector<node> replicas;
     std::map<int, node> seq_to_client_map;
 
+    /* Mapping from client_id to the latest client sequence number that got finished */
+    std::map<string, int> client_progress_map;
+
     void handle_msg(Message*);
 
     /* Adds all the replicas in the system to the receiver list of the reply message */
