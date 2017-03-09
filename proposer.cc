@@ -21,22 +21,23 @@ bool Proposer::reached_quroum(int view_num) {
 
 // TODO check view vs proposal
 // Note: copying vector by value to avoid delete invalidation
-Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value) {
+Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
-    // Only increment this if this is the first time you've heard each replica
-    // TODO
+
     if(is_new_primary)
         count[view_num] += 1;
 
-    if (count[view_num] >= quorum) {
-        if(is_new_primary){
-            // i am the new primary, i have reached a quorum, i have f+1 acceptor states
-            // i can begin the fix process
+    if (count[view_num] >= quorum && is_new_primary) {
+        // i am the new primary, i have reached a quorum, i have f+1 acceptor states
+        // i can begin the fix process
 
 
-            // need to fix things
-            is_new_primary = false;
-        }
+        // need to fix things
+        is_new_primary = false;
+    }
+
+    if(count[view_num] >= quorum){
+        // regular case where proposer proposes the original value
         msg->msg_type = MessageType::PROPOSE;
         // bug fixed : view num can never be -1 (we did this earlier since we had n_a)
         if (value == "") {
@@ -48,10 +49,10 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
             msg->value = value;
             msg->view_num = view_num;
         }
-        
+        // TODO : Need to add sequence number to this message (Important) - Pranav
+        // if quorum is not reached, the message type default is NO_ACTION
+        msg->seq_num = seq_num;
     }
-    // TODO : Need to add sequence number to this message (Important) - Pranav
-    // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
 
