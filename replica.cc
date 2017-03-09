@@ -99,7 +99,7 @@ void replica::handle_msg(Message *message) {
                 //reply = acceptor.accept_propose_msg(message->view_num, message->value, tmp_seq_num);
 
                 // The fix :
-                reply = proposer.handle_prepare_accept(message->acceptor_state, cur_view_num, message->value);
+                reply = proposer.handle_prepare_accept(message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
                 make_broadcast(reply);
                 break;
             }
@@ -119,7 +119,9 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PREPARE_ACCEPT:
         {
-            reply = proposer.handle_prepare_accept(message->acceptor_state, message->view_num, message->value);
+            // TODO: when will the below handle_prepare be called - what should the seq number be?
+            int dummy_seq = 99;
+            reply = proposer.handle_prepare_accept(message->acceptor_state, message->view_num, message->value, dummy_seq);
             // add all the acceptors to the receiver list
             // Acceptor vector check
             make_broadcast(reply);
