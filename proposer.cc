@@ -1,11 +1,12 @@
 
 #include "proposer.h"
 
-void Proposer::init(vector<node> _replicas, int _id) {
+void Proposer::init(vector<node> _replicas, int _id, network* net) {
     replicas = _replicas;
     quorum = (1 + _replicas.size()) >> 1;
     COUT << "zQuorum is: " << quorum << endl;
     id = _id;
+    this->net = net;
 }
 
 Message* Proposer::handle_start_prepare(int view_num) {
@@ -24,16 +25,68 @@ bool Proposer::reached_quroum(int view_num) {
 Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
 
-    if(is_new_primary)
+    if(is_new_primary){
         count[view_num] += 1;
+        all_acceptors_state.push_back(acceptor_state);
+    }
 
     if (count[view_num] >= quorum && is_new_primary) {
         // i am the new primary, i have reached a quorum, i have f+1 acceptor states
         // i can begin the fix process
 
+        // find longest acceptor state
+        auto max_length_acceptor = std::max_element(all_acceptors_state.begin(), all_acceptors_state.end(),
+                                    []( const std::vector<view_val> &a, const std::vector<view_val> &b )
+                                    {
+                                        return a.size() < b.size();
+                                    });
+        // for each column
+        for(int j = 0; j < max_length_acceptor->size(); j++){
+            // for each item in that column
+            std::map<int, int> quorum_count;
+            bool quorum_reached = false;
 
-        // need to fix things
+            // Note: best_view_val has -1 view num and no_op value by default
+            // if it doesn't get updated in the below loop, we can decide accordingly
+            view_val best_view_val;
+            for(int i = 0; i < all_acceptors_state.size(); i++){
+                auto item = all_acceptors_state[i][j];
+                quorum_count[item.view_num] += 1;
+                if(quorum_count[item.view_num] >= quorum){
+                    quorum_reached = true;
+                }
+                if(item.view_num > best_view_val.view_num){
+                    best_view_val = item;
+                }
+            }
+            if(!quorum_reached){
+                if(best_view_val.value == NO_OP){
+                    // no best found === no_op case
+                    // TODO:
+                } else{
+                    // choose the best's value
+                }
+                Message *reply = new Message;
+                reply->view_num = view_num; // view_num of the new primary
+                reply->value = best_view_val.value; // will automatically be no_op if that is the best
+                reply->seq_num = j; // jth column becomes the sequence number
+                reply->msg_type = MessageType::PROPOSE;
+
+                //broadcast message
+                for (auto& r : replicas) {
+                    reply->receivers.push_back(r);
+                }
+                reply->sender = replicas[id];   // quick hack to get proposer's info
+                net->sendto(reply);
+            }
+            // if quorum is reached, do nothing for this column
+        }
+        // update sequence number to max_length
+        seq_num = static_cast<int>(max_length_acceptor->size());
+        // update seq_num if required based on acceptor state
+        // seq_num = new_seq_num;
         is_new_primary = false;
+        all_acceptors_state.clear();
     }
 
     if(count[view_num] >= quorum){
