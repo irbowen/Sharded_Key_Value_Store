@@ -21,12 +21,12 @@ using namespace std;
     #define COUT while(0) std::cout
 #endif
 
-
+const string NO_OP = "NO_OP";
 struct view_val {
     int view_num;
     string value;
     view_val(int n, string v) : view_num(n), value(v) {}
-    view_val() {}
+    view_val() {view_num = -1; value = NO_OP;}
 };
 
 enum MessageType {
