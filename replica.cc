@@ -56,6 +56,8 @@ void replica::add_all_to_receiver_list(Message *ref){
 
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
+    // The simple answer to all of your concurreny problems
+    // unique_lock<mutex> lock(m);
     Message* reply = new Message();
     cout << "Msg in handle_msg: " << message->serialize() << endl;
     cout << "Msg type: " << message->msg_type << endl;
@@ -77,7 +79,7 @@ void replica::handle_msg(Message *message) {
             if (proposer.reached_quroum(message->view_num) &&
                 cur_view_num % num_replicas == id) {
               // Don't need to send start prepare, we are primary
-              reply = acceptor.propose(message->view_num, message->value);
+              reply = acceptor.propose(message->view_num, message->value, learner.get_seqnum());
               add_all_to_receiver_list(reply);
               break;
             }
@@ -129,7 +131,7 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PROPOSE:
         {
-            reply = acceptor.propose(message->view_num, message->value);
+            reply = acceptor.propose(message->view_num, message->value, message->seq_num);
             // add all the learners to the receiver list
             add_all_to_receiver_list(reply);
             break;

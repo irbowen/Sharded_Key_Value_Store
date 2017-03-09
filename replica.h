@@ -18,6 +18,7 @@
 
 class replica {
 private:
+    mutex m;
     // server info
     int port;
     std::string host;

@@ -13,7 +13,6 @@ private:
     std::map<int, size_t> count;
 
     size_t quorum;
-    int proposal_number;
     int id;
 
     std::vector<node> replicas;
@@ -24,9 +23,14 @@ public:
 
     void init(vector<node> _replicas, int _id);
 
-    Message* start_prepare(int view_num);
+    // If we have already reached a quorum for this view_num
+    // there is no need to run the firs step of paxos again
     bool reached_quroum(int view_num);
 
+    // Create a PREPARE msg
+    Message* start_prepare(int view_num);
+
+    // Create a PROPOSE msg
     Message* prepare_accept(int view_num, std::string value);
 
     Message* prepare_reject(int view_num);

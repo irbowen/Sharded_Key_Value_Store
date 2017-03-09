@@ -1,6 +1,9 @@
-## Isaac Bowen, eecs485win16p6
 
-CXXFLAGS = -std=c++1z -g -pedantic -Wall -pthread
+DEBUG = -g
+RELEASE = -O3
+VERSION = $(DEBUG)
+
+CXXFLAGS = -std=c++1z $(VERSION) -pedantic -Wall -pthread
 
 BOTH_LIB := network.o message.o
 SERVER_LIB := paxos_main.o replica.o acceptor.o learner.o proposer.o $(BOTH_LIB)

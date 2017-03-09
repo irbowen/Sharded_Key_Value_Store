@@ -35,7 +35,7 @@ private:
     int micro_second_delay = START_TIMEOUT;
     
 public:
-    network(int port, std::string ip_addr) ;
+    network(int port, std::string ip_addr);
     void sendto(Message* message);
     Message* recv_from();
     Message* recv_from_with_timeout();

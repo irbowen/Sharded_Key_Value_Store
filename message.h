@@ -14,9 +14,11 @@ using namespace std;
 #define MAXBUFLEN 2048
 #define LOCALHOST "127.0.0.1"
 
-struct ViewValue {
-  int view_num;
-  std::string value;
+struct view_val {
+    int view_num;
+    string value;
+    view_val(int n, string v) : view_num(n), value(v) {}
+    view_val() {}
 };
 
 enum MessageType {
@@ -40,7 +42,7 @@ public:
     std::string value = "";
     node sender;
     std::vector<node> receivers;
-    std::vector<ViewValue> acceptor_state;
+    std::vector<view_val> acceptor_state;
     std::string serialize();
     void deserialize(std::string in);
 };
