@@ -21,8 +21,10 @@ DEPS := $(wildcard *.h)
 paxos_server: $(SERVER_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
-TESTS_SRC :=$(wildcard chat_client_*.cc)
-TESTS := $(patsubst %.cc,%.out,$(TESTS_SRC))
+CLIENT_SRC :=$(wildcard chat_client_*.cc)
+CLIENTS := $(patsubst %.cc,%.out,$(CLIENT_SRC))
+
+clients: $(CLIENTS)
 
 chat_client_%.out: chat_client_%.o $(CLIENT_LIB)
 	$(CXX) $(CXXFLAGS) -o $@ $^
@@ -31,4 +33,5 @@ chat_client_%.out: chat_client_%.o $(CLIENT_LIB)
 clean:
 	touch paxos_server client1
 	rm paxos_server client1
-	rm *.o
+	touch dummy.o dummy.out
+	rm *.o *.out
