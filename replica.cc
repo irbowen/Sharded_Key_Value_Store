@@ -95,8 +95,12 @@ void replica::handle_msg(Message *message) {
                     // Becoming the primary and fix previous sate
                     // TODO
                     this->proposer.is_new_primary = true;
-                    proposer.to_propose = message->value;
+                    string true_value = message->value 
+                        + "#" + to_string(message->sender.port)
+                        + "#" + message->sender.host;
+                    proposer.to_propose = true_value;
                     reply = proposer.handle_start_prepare(cur_view_num);
+                    reply->value = true_value;
                     make_broadcast(reply);
                     // store client sender info
                 }

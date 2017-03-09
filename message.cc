@@ -3,19 +3,12 @@
 #include "message.h"
 
 std::string Message::serialize() {
-    char div_char = ':';
     std::ostringstream oss;
 
     oss << msg_type;
     oss << div_char;
 
     oss << view_num;
-    oss << div_char;
-
-    oss << client_id;
-    oss << div_char;
-
-    oss << client_seq_num;
     oss << div_char;
 
     oss << seq_num;
@@ -53,7 +46,7 @@ void Message::deserialize(std::string in) {
 
     std::vector<std::string> array;
     size_t pos = 0, found;
-    while ((found = in.find_first_of(':', pos)) != std::string::npos) {
+    while ((found = in.find_first_of(div_char, pos)) != std::string::npos) {
         array.push_back(in.substr(pos, found - pos));
         pos = found + 1;
     }
@@ -63,8 +56,6 @@ void Message::deserialize(std::string in) {
     int msg_int = stoi(array.at(index++));
     msg_type = static_cast<MessageType>(msg_int);
     view_num = stoi(array.at(index++));
-    client_id = array.at(index++);
-    client_seq_num = stoi(array.at(index++));
     seq_num = stoi(array.at(index++));
     value = array.at(index++);
     sender.port = stoi(array.at(index++));

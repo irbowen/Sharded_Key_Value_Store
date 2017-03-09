@@ -47,8 +47,6 @@ class Message {
 public:
     MessageType msg_type = MessageType::NO_ACTION;
     int view_num = -1;
-    std::string client_id;
-    int client_seq_num = 0;
     int seq_num = 0;
     std::string value = "";
     node sender;
