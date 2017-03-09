@@ -8,7 +8,7 @@ void Proposer::init(vector<node> _replicas, int _id) {
     id = _id;
 }
 
-Message* Proposer::start_prepare(int view_num) {
+Message* Proposer::handle_start_prepare(int view_num) {
     Message *msg = new Message;
     msg->msg_type = MessageType::PREPARE;
     msg->view_num = view_num;
@@ -20,15 +20,25 @@ bool Proposer::reached_quroum(int view_num) {
 }
 
 // TODO check view vs proposal
-Message* Proposer::prepare_accept(int view_num, std::string value) {
+// Note: copying vector by value to avoid delete invalidation
+Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value) {
     Message *msg = new Message;
     // Only increment this if this is the first time you've heard each replica
     // TODO
     count[view_num] += 1;
+
     if (count[view_num] >= quorum) {
+        if(is_new_primary){
+            // i am the new primary, i have reached a quorum, i have f+1 acceptor states
+            // i can begin the fix process
+
+
+            // need to fix things
+            is_new_primary = false;
+        }
         msg->msg_type = MessageType::PROPOSE;
         // bug fixed : view num can never be -1 (we did this earlier since we had n_a)
-        if (msg->value == "") {
+        if (value == "") {
             // Propose the original value
             msg->value = to_propose;
             msg->view_num = view_num;
@@ -37,23 +47,24 @@ Message* Proposer::prepare_accept(int view_num, std::string value) {
             msg->value = value;
             msg->view_num = view_num;
         }
+        
     }
     // if quorum is not reached, the message type default is NO_ACTION
     return msg;
 }
 
-Message* Proposer::prepare_reject(int view_num) {
+Message* Proposer::handle_prepare_reject(int view_num) {
     // go back to prepare phase
-    return start_prepare(view_num + 1);
+    return handle_start_prepare(view_num + 1);
 }
 
-Message* Proposer::propose_accept(int n) {
+Message* Proposer::handle_propose_accept(int n) {
     // nothing to do for now in this scenario
     Message *msg = new Message;
     return msg;
 }
 
-Message* Proposer::propose_reject(int view_num) {
+Message* Proposer::handle_propose_reject(int view_num) {
     // if the proposal gets rejected, we are back to the prepare phase
-    return start_prepare(view_num + 1);
+    return handle_start_prepare(view_num + 1);
 }

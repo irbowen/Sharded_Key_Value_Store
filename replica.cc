@@ -82,6 +82,9 @@ void replica::handle_msg(Message *message) {
                 if (cur_view_num % num_replicas == id) {
                     // Becoming the primary and fix previous sate
                     // TODO
+                    this->proposer.is_new_primary = true;
+                    proposer.to_propose = message->value;
+                    // store client sender info
                 }
             }
             
@@ -94,23 +97,23 @@ void replica::handle_msg(Message *message) {
                 make_broadcast(reply);
                 break;
             }
-            if (cur_view_num % num_replicas == id) {
-                // does this happen only for the very first primary?
-                // for all other primaries that come up, they are bound to enter the scenario 2
-                // and will definitely get a quorum right?
-
-                // assert(false);
-                // Check for holes
-                // add the initial value to be proposed to proposer state
-                proposer.to_propose = message->value;
-                reply = proposer.start_prepare(message->view_num);
-                make_broadcast(reply);
-            }
+//            if (cur_view_num % num_replicas == id) {
+//                // does this happen only for the very first primary?
+//                // for all other primaries that come up, they are bound to enter the scenario 2
+//                // and will definitely get a quorum right?
+//
+//                // assert(false);
+//                // Check for holes
+//                // add the initial value to be proposed to proposer state
+//                proposer.to_propose = message->value;
+//                reply = proposer.start_prepare(message->view_num);
+//                make_broadcast(reply);
+//            }
             break;
         }
         case MessageType::PREPARE_ACCEPT:
         {
-            reply = proposer.prepare_accept(message->view_num, message->value);
+            reply = proposer.handle_prepare_accept(message->acceptor_state, message->view_num, message->value);
             // add all the acceptors to the receiver list
             // Acceptor vector check
             make_broadcast(reply);
@@ -118,25 +121,25 @@ void replica::handle_msg(Message *message) {
         }
         case MessageType::PREPARE_REJECT:
         {
-            reply = proposer.prepare_reject(message->view_num);
+            reply = proposer.handle_prepare_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             make_broadcast(reply);
             break;
         }
         case MessageType::PROPOSE_ACCEPT:
         {
-            reply = proposer.propose_accept(message->view_num);
+            reply = proposer.handle_propose_accept(message->view_num);
             // nothing to be sent for now in this scenario
             break;
         }
         case MessageType::PROPOSE_REJECT:
         {
-            reply = proposer.propose_reject(message->view_num);
+            reply = proposer.handle_propose_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
             make_broadcast(reply);
             break;
         }
-            // Acceptor scenarios
+        // Acceptor scenarios
         case MessageType::PREPARE:
         {
             reply = acceptor.accept_prepare_msg(message->view_num);
