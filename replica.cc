@@ -114,7 +114,7 @@ void replica::handle_msg(Message *message) {
                 //reply = acceptor.accept_propose_msg(message->view_num, message->value, tmp_seq_num);
 
                 // The fix :
-                reply = proposer.handle_prepare_accept(message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
+                reply = proposer.handle_prepare_accept_fast(message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
                 make_broadcast(reply);
                 break;
             }
