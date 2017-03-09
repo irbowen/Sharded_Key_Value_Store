@@ -14,7 +14,6 @@ client_lib::client_lib(int _port, string _host) : port(_port), host(_host), net(
 
 void client_lib::add_chat_message(std::string chat_message){
     Message msg;
-    msg.client_id = to_string(port) + "_" + host;
     msg.msg_type = MessageType::START_PREPARE;
 
     msg.view_num = cur_view_num;
