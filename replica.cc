@@ -35,7 +35,7 @@ port(_port), host(_host), id(_id), cur_view_num(0), net(_port, _host)
     num_replicas = replicas.size();
     acceptor.init(num_replicas, id);
     learner.init(num_replicas, id);
-    proposer.init(replicas, id);
+    proposer.init(replicas, id, &net);
 }
 
 /* Start listening on the provided port and host */
