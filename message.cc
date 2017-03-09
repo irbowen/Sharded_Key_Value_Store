@@ -79,3 +79,32 @@ void Message::deserialize(std::string in) {
     // COUT << "Num recv: " << num_recv << endl;
 }
 
+std::vector<std::string> split(std::string in) {
+    std::vector<std::string> array;
+    size_t pos = 0, found;
+    while ((found = in.find_first_of('#', pos)) != std::string::npos) {
+        array.push_back(in.substr(pos, found - pos));
+        pos = found + 1;
+    }
+    array.push_back(in.substr(pos));
+    return array;
+}
+
+std::string Message::get_value() {
+    return split(value).at(0);
+}
+
+std::string Message::get_client_id() {
+    auto array = split(value);
+    return array.at(1) + "#" + array.at(2);
+}
+
+int Message::get_client_seq_num() {
+    return stoi(split(value).at(3));
+}
+
+node Message::get_client_node() {
+    auto array =  split(value);
+    return node(stoi(array.at(1)), array.at(2));
+}
+
