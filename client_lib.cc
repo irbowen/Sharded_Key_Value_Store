@@ -7,17 +7,19 @@
 
 #define CLIENT_PORT	6023 	// Assume one client for now
 
-client_lib::client_lib() : net(CLIENT_PORT, LOCALHOST) {
+client_lib::client_lib(int _port, string _host) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;
+    cur_seq_num = 0;
 }
 
 void client_lib::add_chat_message(std::string chat_message){
     Message msg;
+    msg.client_id = to_string(port) + "_" + host;
     msg.msg_type = MessageType::START_PREPARE;
 
     msg.view_num = cur_view_num;
     msg.value = chat_message;
-    msg.sender = node(CLIENT_PORT, LOCALHOST);
+    msg.sender = node(port, host);
 
     int replica_start_port = 9000;
     /* TEST MODE - adding 1 client that send messages to the 3 replicas*/
