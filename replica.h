@@ -27,7 +27,7 @@ private:
     int id;
 
     // current view number that this replica thinks it is in
-    size_t cur_view_num;
+    int cur_view_num;
 
     // total number of replicas in the system
     size_t num_replicas = 0;
