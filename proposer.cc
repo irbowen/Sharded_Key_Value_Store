@@ -23,6 +23,7 @@ bool Proposer::reached_quroum(int view_num) {
 Message* Proposer::prepare_accept(int view_num, std::string value) {
     Message *msg = new Message;
     // Only increment this if this is the first time you've heard each replica
+    // TODO
     count[view_num] += 1;
     if (count[view_num] >= quorum) {
         msg->msg_type = MessageType::PROPOSE;
