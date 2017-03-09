@@ -71,15 +71,14 @@ void replica::handle_msg(Message *message) {
             break;
         case MessageType::START_PREPARE:
         {
-            std::string in_client_id = "";
-            int in_client_seq_number = 5;
-            node client_info;
+            std::string in_client_id = message->get_client_id();
+            int in_client_seq_number = message->get_client_seq_num();
 
             // if the client's request is already learnt, but didn't get a response
             // send a response right away
             if(client_progress_map[in_client_id] >= in_client_seq_number){
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(client_info);
+                reply->receivers.push_back(message->get_client_node());
                 break;
             }
 
@@ -193,16 +192,15 @@ void replica::handle_msg(Message *message) {
             // Send the same msg that we just got, but just send it to the client
 
             // all replicas get this message
-            std::string client_id = "";
-            int client_seq_number = 5;
+            std::string client_id = message->get_client_id();
+            int client_seq_number = message->get_client_seq_num();
             client_progress_map[client_id] = client_seq_number;
-            node client_info;
 
             if (is_primary(message->view_num)) {
                 // primary is responsible for sending it back to the client
                   //learner.broadcast_learn(message->seq_num);
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(client_info);
+                reply->receivers.push_back(message->get_client_node());
             }
             break;
         }
