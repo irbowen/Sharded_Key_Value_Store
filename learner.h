@@ -35,6 +35,7 @@ private:
 public:
     void init(size_t replica_count, size_t _id);
     Message* update_vote(int n_a, int seq_num, std::string value);
+    Message* broadcast_learn(int seq_num);
     void print_log();
     int get_seqnum();
     int get_seqnum_with_skip();

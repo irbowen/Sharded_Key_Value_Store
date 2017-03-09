@@ -15,6 +15,8 @@ Message* Learner::update_vote(int n_a, int seq_num, string value){
     if (score_map[n_a].tally == quorum) {
         // We should broadcast a proposal learned msg to everyone
         reply->msg_type = MessageType::PROPOSAL_LEARNT;
+        reply->seq_num = seq_num;
+
         // commit message to local chat log
         // set seq_num -> seq_num + 1
         if (static_cast<int>(chat_log.size()) <= seq_num) {
@@ -25,6 +27,13 @@ Message* Learner::update_vote(int n_a, int seq_num, string value){
     }
     return reply;
 }
+
+Message* Learner::broadcast_learn(int seq_num) {
+    Message* reply = new Message();
+    reply->seq_num = seq_num;
+    return reply;
+}
+
 
 void Learner::print_log() {
     string log_filename = "log_" + to_string(id) + ".txt";

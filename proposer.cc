@@ -4,6 +4,7 @@
 void Proposer::init(vector<node> _replicas, int _id) {
     replicas = _replicas;
     quorum = (1 + _replicas.size()) >> 1;
+    cout << "zQuorum is: " << quorum << endl;
     id = _id;
 }
 
@@ -21,6 +22,7 @@ bool Proposer::reached_quroum(int view_num) {
 // TODO check view vs proposal
 Message* Proposer::prepare_accept(int view_num, std::string value) {
     Message *msg = new Message;
+    // Only increment this if this is the first time you've heard each replica
     count[view_num] += 1;
     if (count[view_num] >= quorum) {
         msg->msg_type = MessageType::PROPOSE;

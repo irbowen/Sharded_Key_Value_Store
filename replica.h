@@ -36,11 +36,12 @@ private:
 
     // list of replicas in the system
     std::vector<node> replicas;
+    std::map<int, node> seq_to_client_map;
 
     void handle_msg(Message*);
 
     /* Adds all the replicas in the system to the receiver list of the reply message */
-    void add_all_to_receiver_list(Message *reply);
+    void make_broadcast(Message *reply);
 
     /* Replica can take up any one of the following roles */
     Acceptor acceptor;
@@ -48,6 +49,8 @@ private:
     Learner learner;
 
 public:
+    bool is_primary(int view_num);
+
     replica(int _port, std::string _host, int _id, std::string _config_file);
     void start();
 };

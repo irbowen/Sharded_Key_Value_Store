@@ -48,10 +48,14 @@ void replica::start() {
 }
 
 /* Adds all the replicas in the system to the receiver list */
-void replica::add_all_to_receiver_list(Message *ref){
+void replica::make_broadcast(Message *ref){
     for (auto& r : replicas) {
         ref->receivers.push_back(r);
     }
+}
+
+bool replica::is_primary(int view_num) {
+    return cur_view_num % num_replicas == id && proposer.reached_quroum(view_num);
 }
 
 /* Handle the given message */
@@ -60,7 +64,6 @@ void replica::handle_msg(Message *message) {
     // unique_lock<mutex> lock(m);
     Message* reply = new Message();
     cout << "Msg in handle_msg: " << message->serialize() << endl;
-    cout << "Msg type: " << message->msg_type << endl;
     cout << "Current view is: " << cur_view_num << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
@@ -76,20 +79,22 @@ void replica::handle_msg(Message *message) {
               }
             }
 
-            if (proposer.reached_quroum(message->view_num) &&
-                cur_view_num % num_replicas == id) {
-              // Don't need to send start prepare, we are primary
-              reply = acceptor.accept_propose_msg(message->view_num, message->value, learner.get_seqnum());
-              add_all_to_receiver_list(reply);
-              break;
+            // If we already know that we are the primary
+            if (is_primary(message->view_num)) {
+                // Keep track of which seqnum maps to which client, so that when it is commited, we know who to tell
+                int tmp_seq_num = learner.get_seqnum();
+                seq_to_client_map[tmp_seq_num] = message->sender;
+                reply = acceptor.accept_propose_msg(message->view_num, message->value, tmp_seq_num);
+                make_broadcast(reply);
+                break;
             }
             if (cur_view_num % num_replicas == id) {
-                assert(false);
+                //assert(false);
                 // Check for holes
                 // add the initial value to be proposed to proposer state
                 proposer.to_propose = message->value;
                 reply = proposer.start_prepare(message->view_num);
-                add_all_to_receiver_list(reply);
+                make_broadcast(reply);
             }
             break;
         }
@@ -98,14 +103,14 @@ void replica::handle_msg(Message *message) {
             reply = proposer.prepare_accept(message->view_num, message->value);
             // add all the acceptors to the receiver list
             // Acceptor vector check
-            add_all_to_receiver_list(reply);
+            make_broadcast(reply);
             break;
         }
         case MessageType::PREPARE_REJECT:
         {
             reply = proposer.prepare_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
-            add_all_to_receiver_list(reply);
+            make_broadcast(reply);
             break;
         }
         case MessageType::PROPOSE_ACCEPT:
@@ -118,7 +123,7 @@ void replica::handle_msg(Message *message) {
         {
             reply = proposer.propose_reject(message->view_num);
             // add all the acceptors to the receiver list (proposer will propose again)
-            add_all_to_receiver_list(reply);
+            make_broadcast(reply);
             break;
         }
             // Acceptor scenarios
@@ -133,7 +138,7 @@ void replica::handle_msg(Message *message) {
         {
             reply = acceptor.accept_propose_msg(message->view_num, message->value, message->seq_num);
             // add all the learners to the receiver list
-            add_all_to_receiver_list(reply);
+            make_broadcast(reply);
             break;
         }
             // Learner scenarios
@@ -141,12 +146,15 @@ void replica::handle_msg(Message *message) {
         {
             reply = learner.update_vote(message->view_num, message->seq_num, message->value);
             // add the proposer to the receiver list
-            reply->receivers.push_back(message->sender);
+            make_broadcast(reply);
             break;
         }
-        case MessageType::PROPOSAL_LEARNT:
-        {
-            // TODO: return response back to the proposer/client
+        case MessageType::PROPOSAL_LEARNT:{
+            // Send the same msg that we just got, but just send it to the client
+            if (is_primary(message->view_num)) {
+                reply = learner.broadcast_learn(message->seq_num);
+                reply->receivers.push_back(seq_to_client_map[message->seq_num]);
+            }
             break;
         }
     }
