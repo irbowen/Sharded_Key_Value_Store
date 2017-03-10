@@ -32,6 +32,7 @@ Message* Acceptor::accept_propose_msg(int in_view, std::string new_value, int se
         msg->msg_type = MessageType::BRDCST_LEARNERS;
         msg->value = value;
         msg->seq_num = seq_num;
+        this->value = "";
     }
     msg->view_num = cur_view;
     return msg;
