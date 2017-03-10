@@ -192,14 +192,19 @@ void replica::handle_msg(Message *message) {
             // all replicas get this message
             std::string client_id = message->get_client_id();
             int client_seq_number = message->get_client_seq_num();
-            client_progress_map[client_id] = client_seq_number;
 
             if (is_primary(message->view_num)) {
+                // if a response has already been sent to the client, don't send again
+                if(client_progress_map.count(client_id) != 0 &&
+                   client_progress_map[client_id] >= client_seq_number)
+                    break;
+
                 // primary is responsible for sending it back to the client
                   //learner.broadcast_learn(message->seq_num);
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
                 reply->receivers.push_back(message->get_client_node());
             }
+            client_progress_map[client_id] = client_seq_number;
             break;
         }
     }
