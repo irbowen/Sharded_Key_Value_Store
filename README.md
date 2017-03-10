@@ -1,6 +1,6 @@
 # Distributed Chat Service (using paxos)
 
-irbowen and pranavr
+Isaac Bowen(irbowen) & Pranav Ramarao(pranavr)
 
 Our paxos implmentation is written in c++14. You can git clone the repo, cd in the dir, and type `make`.
 This will build the binary for the paxos replicas and the binary for many clients that can be used for testing.
@@ -38,7 +38,7 @@ If you'd prefer to not to deal with all of these command line arguments, we have
 
 - `test_kill_one.sh` - This script starts up 3 replicas, launches a client, and then kills one of the replicas. It launches some more clients, and makes sure that the logs are still consistent for the replicas that are alive.
 
-- `test_kill_f.sh` - This sript starts up 5 replicas, launches a client, and then kills one replica. Then, it launches another client.  Then, it kills ANOTHER REPLICA, and then CREATES ANOTHER CLIENT. It then checks that all of the log files for the 3 replicas still up are consistent
+- `test_kill_f.sh` - This sript starts up 5 replicas, launches a client, and then kills one replica. Then, it launches another client.  Then, it kills another replica, and then creates another client. It then checks that all of the log files for the 3 replicas still up are consistent
 
 - `test_many.sh` - This starts up 3 replicas, and then start 2 clients. These aren't your ordinary clients though. They bombard paxos with lots of mgs, making sure our system can do work.
 
