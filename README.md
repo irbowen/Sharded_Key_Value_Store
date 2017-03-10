@@ -9,7 +9,7 @@ Each binary requires several command line arguments, as well as a configuration 
 
 Run `python3 setup_scripts.py -p 8000 -f 1`, with whatever ports and f values you would like to start with.
 
-This will create a start.sh file that looks like this
+This will create a `start_paxos.sh` file that looks like this
 
 ```bash
 ./paxos_server --port 8000 --host 127.0.0.1 --config config.txt --id 0 --holes holes.txt &
