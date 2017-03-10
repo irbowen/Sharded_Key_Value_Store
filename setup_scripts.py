@@ -23,10 +23,10 @@ def main(num_replicas, port_number):
     output_str = ""
     config_file = ""
     for i in range(2 * num_replicas + 1):
-        output_str += "./%s --port %s --host %s --config %s --id %d &\n" % (
+        output_str += "./%s --port %s --host %s --config %s --id %d --holes no_holes.txt &\n" % (
             BINARY_NAME, (port_number + i), "127.0.0.1", CONFIG_FILE, i)
         config_file += "%s %s %d\n" % ("127.0.0.1", (port_number + i), i)
-    sf = open('start.sh', 'w')
+    sf = open('start_paxos.sh', 'w')
     sf.write(output_str)
     cf = open('config.txt', 'w')
     cf.write(config_file)
