@@ -36,3 +36,5 @@ If you'd prefer to not to deal with all of these command line arguments, we have
 - `test_holes.sh` - This starts up 3 replicas, and a few clients, and makes sure that the logs are consistent when the replica is instructed to skip a few seqnums to simulate msg failure.
 - `test_kill_one.sh` - This script starts up 3 replicas, launches a client, and then kills one of the replicas. It launches some more clients, and makes sure that the logs are still consistent for the replicas that are alive.
 - `test_kill_f.sh` - This sript starts up 5 replicas, launches a client, and then kills one replica. Then, it launches another client.  Then, it kills ANOTHER REPLICA, and then CREATES ANOTHER CLIENT. It then checks that all of the log files for the 3 replicas still up are consistent
+- `test_many.sh` - This starts up 3 replicas, and then start 2 clients. These aren't your ordinary clients though. They bombard paxos with lots of mgs, making sure our system can do work.
+- `test_many_with_kill.sh` - All the jass of the last one, except that it also kill paxos replicas! It launches 5 replicas, a few nasy clients that hit the system hard, and it kills 2 of the 5 replicas.
