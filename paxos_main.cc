@@ -17,14 +17,15 @@ int main(int argc, char* argv[]) {
         {"port", required_argument, 0, 'p'},
         {"id", required_argument, 0, 'i'},
         {"config", required_argument, 0, 'c'},
+        {"holes", optional_argument, 0, 'g'},
         {0,0,0,0},
     };
     int index;
     int iarg = 0;
-    string host, config;
+    string host, config, holes = "";
     int port = -1, id = -1;
     while (iarg != -1) {
-        iarg = getopt_long(argc, argv, "h:p:i:c:", longopts, &index);
+        iarg = getopt_long(argc, argv, "h:p:i:c:g::", longopts, &index);
         switch (iarg) {
             case 'h':
                 host = optarg;
@@ -38,13 +39,17 @@ int main(int argc, char* argv[]) {
             case 'c':
                 config = optarg;
                 break;
+            case 'g':
+                if(optarg != NULL)
+                    holes = optarg;
+                break;
             case '?':
                 COUT << "Argument for -h and -p required\n";
                 exit(1);
         }
     }
     assert(port != -1 && id != -1);
-    replica r(port, host, id, config);
+    replica r(port, host, id, config, holes);
     r.start();
     COUT << "Get's here, so thats cool\n";
 }
