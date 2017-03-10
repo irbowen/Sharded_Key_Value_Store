@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define MAXBUFLEN 2048
+#define MAXBUFLEN 65536
 #define LOCALHOST "127.0.0.1"
 
 #define DEBUGZ
