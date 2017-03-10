@@ -43,6 +43,8 @@ void Learner::print_log() {
     string log_filename = "log_" + to_string(id) + ".txt";
     ostringstream oss;
     for (auto& msg : chat_log) {
+        if(msg == "")
+            msg = NO_OP;
         oss << msg << ", ";
     }
     ofstream outfile;
