@@ -7,9 +7,15 @@
 
 #define CLIENT_PORT	6023 	// Assume one client for now
 
-client_lib::client_lib(int _port, string _host) : port(_port), host(_host), net(_port, _host) {
+client_lib::client_lib(int _port, string _host, string config_filename) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;
     client_seq_num = 0;
+
+    string h, p, rep_id;
+    ifstream config_fs(config_filename);
+    while (config_fs >> h >> p >> rep_id) {
+        replicas.push_back(node(stoi(p), h));
+    }
 }
 
 void client_lib::add_chat_message(std::string chat_message){
@@ -26,13 +32,8 @@ void client_lib::add_chat_message(std::string chat_message){
 
     msg.sender = node(port, host);
 
-    int replica_start_port = 8000;
-    /* TEST MODE - adding 1 client that send messages to the 3 replicas*/
-    for(int i = 0; i < 3; i++){
-        node n;
-        n.port = replica_start_port + i;
-        n.host = LOCALHOST;
-        msg.receivers.push_back(n);
+    for(auto& r : replicas){
+        msg.receivers.push_back(r);
     }
 
     // the client will keep trying until success

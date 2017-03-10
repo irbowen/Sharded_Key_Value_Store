@@ -20,8 +20,9 @@ private:
     uint cur_view_num = 0;
     int client_seq_num;
     network net;
+    std::vector<node> replicas;
 public:
-    client_lib(int _port, string _host);
+    client_lib(int _port, string _host, string config_filename);
     // Blocking until success, may retry multiple times under the hood
     // Primary, upon receiving learn msg itself, will reply to client
     void add_chat_message(std::string msg);
