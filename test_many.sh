@@ -19,12 +19,10 @@ sleep 3s
 # Make concurrent requests to the paxos system
 echo ""
 echo "Start up clients..."
-./chat_client_1.out &
-./chat_client_2.out &
+./chat_client_3.out &
+./chat_client_4.out &
 
-echo ""
-echo "Check the log files!"
-sleep 5s
+sleep 10s
 
 echo ""
 echo "The log file diffs!"
