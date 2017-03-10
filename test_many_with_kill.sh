@@ -19,7 +19,7 @@ echo -e "\nSleep 5s for the paxos system to start up..."
 sleep 5s
 
 echo -e "\nWe are starting up one client..."
-./chat_client_1.out &
+./chat_client_3.out &
 
 echo -e "\nHere are all of the processes, we are going to kill on of them later..."
 ps aux | grep paxos_server
@@ -31,7 +31,7 @@ ps aux | grep paxos_server
 
 # Make concurrent requests to the paxos system
 echo -e "\nStart up a client after failure..."
-./chat_client_2.out &
+./chat_client_4.out &
 
 echo -e "\nHere are all of the processes, we are going to kill on of them later..."
 ps aux | grep paxos_server
@@ -42,7 +42,7 @@ echo -e "\nHere are all of the processes now..."
 ps aux | grep paxos_server
 
 echo -e "\nStart up a client after failure..."
-./chat_client_5.out &
+./chat_client_5.out
 
 echo -e "\nCheck the log files!"
 sleep 5s
@@ -52,10 +52,9 @@ diff log_2.txt log_3.txt
 diff log_2.txt log_4.txt
 echo "Diff ends here. If you see nothing, it worked!"
 
-echo -e "\nHere is the contents of log_2.txt"
-cat log_2.txt
-
 ps aux | grep paxos_server | awk '{print $2}' | xargs kill
+ps aux | grep chat_client | awk '{print $2}' | xargs kill
+
 
 
 

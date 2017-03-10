@@ -1,5 +1,5 @@
 
-./kill_all.sh
+ps aux | grep paxos_server | awk '{print $2}' | xargs kill 
 
 echo ""
 echo "Remove old log files..."
@@ -35,4 +35,4 @@ echo "Diff ends here. If you see nothing, it worked!"
 echo "Here is the contents of log_0.txt"
 cat log_0.txt
 
-./kill_all.sh
+ps aux | grep paxos_server | awk '{print $2}' | xargs kill 
