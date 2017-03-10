@@ -19,8 +19,11 @@ private:
 
     std::vector<node> replicas;
 
+    std::vector<int> seq_holes;
     std::vector<std::vector<view_val>> all_acceptors_state;
 
+    bool is_seq_hole(int seq);
+    
     /* Proposer shares the network library of the replica */
     network *net;
 public:
@@ -30,7 +33,7 @@ public:
     /* Did this primary just become the new primary === Fix required */
     bool is_new_primary = false;
 
-    void init(vector<node> _replicas, int _id, network *net);
+    void init(vector<node> _replicas, int _id, network *net, vector<int> seq_holes);
 
     // If we have already reached a quorum for this view_num
     // there is no need to run the firs step of paxos again

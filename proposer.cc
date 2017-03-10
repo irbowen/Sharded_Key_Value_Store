@@ -1,10 +1,11 @@
 
 #include "proposer.h"
 
-void Proposer::init(vector<node> _replicas, int _id, network* net) {
+void Proposer::init(vector<node> _replicas, int _id, network* net, vector<int> holes) {
     replicas = _replicas;
+    seq_holes = holes;
     quorum = (1 + _replicas.size()) >> 1;
-    COUT << "zQuorum is: " << quorum << endl;
+    //COUT << "zQuorum is: " << quorum << endl;
     id = _id;
     this->net = net;
 }
@@ -19,7 +20,11 @@ Message* Proposer::handle_start_prepare(int view_num) {
 bool Proposer::reached_quroum(int view_num) {
     return count[view_num] >= quorum;
 }
-
+bool Proposer::is_seq_hole(int seq){
+    if (std::find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end())
+        return true;
+    return false;
+}
 Message* Proposer::handle_prepare_accept_fast(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
 
@@ -97,6 +102,12 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         }
         // update sequence number to max_length
         seq_num = static_cast<int>(max_length_acceptor->size());
+        
+        while(is_seq_hole(seq_num)){
+            cout << "Seq num " << seq_num << " is a hole. skipping to next seq num\n";
+            seq_num += 1;
+        }
+        
         // update seq_num if required based on acceptor state
         // seq_num = new_seq_num;
         is_new_primary = false;

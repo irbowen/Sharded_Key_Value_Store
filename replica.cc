@@ -23,7 +23,7 @@
 #include "message.h"
 
 /* Setting up the replica with the provided port and host */
-replica::replica(int _port, string _host, int _id, string _config_file) :
+replica::replica(int _port, string _host, int _id, string _config_file, string _holes_file) :
 port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
 {
     string h, p, rep_id;
@@ -32,10 +32,19 @@ port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
         // letting vector use move semantics underneath
         replicas.push_back(node(stoi(p), h));
     }
+
+    if(_holes_file != ""){
+        string hole;
+        ifstream holes_fs(_holes_file);
+        while (holes_fs >> hole) {
+            // letting vector use move semantics underneath
+            seq_holes.push_back(stoi(hole));
+        }
+    }
     num_replicas = replicas.size();
     acceptor.init(num_replicas, id);
     learner.init(num_replicas, id);
-    proposer.init(replicas, id, &net);
+    proposer.init(replicas, id, &net, seq_holes);
 }
 
 /* Start listening on the provided port and host */
@@ -59,12 +68,18 @@ bool replica::is_primary(int view_num) {
     return cur_view_num % num_replicas == id && proposer.reached_quroum(view_num);
 }
 
+bool replica::is_seq_hole(int seq){
+    if (std::find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end())
+        return true;
+    return false;
+}
+
 /* Handle the given message */
 void replica::handle_msg(Message *message) {
     // The simple answer to all of your concurreny problems
     // unique_lock<mutex> lock(m);
     Message* reply = new Message();
-    COUT << "Msg in handle_msg: " << message->serialize() << endl;
+    //COUT << "Msg in handle_msg: " << message->serialize() << endl;
     COUT << "Current view is: " << cur_view_num << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
@@ -107,6 +122,11 @@ void replica::handle_msg(Message *message) {
             if (is_primary(message->view_num)) {
                 // Keep track of which seqnum maps to which client, so that when it is commited, we know who to tell
                 int tmp_seq_num = learner.get_seqnum();
+                while(is_seq_hole(tmp_seq_num)){
+                    cout << "Seq num " << tmp_seq_num << " is a hole. skipping to next seq num\n";
+                    tmp_seq_num += 1;
+                }
+                
                 seq_to_client_map[tmp_seq_num] = message->sender;
 
                 // BIG BUG
@@ -135,7 +155,7 @@ void replica::handle_msg(Message *message) {
         case MessageType::PREPARE_ACCEPT:
         {
             // TODO: when will the below handle_prepare be called - what should the seq number be?
-            int dummy_seq = 99;
+            int dummy_seq = 0;
             reply = proposer.handle_prepare_accept(message->acceptor_state, message->view_num, message->value, dummy_seq);
             // add all the acceptors to the receiver list
             // Acceptor vector check

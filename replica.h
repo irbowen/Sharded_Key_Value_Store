@@ -26,6 +26,9 @@ private:
     // replica id
     int id;
 
+    // holes that we need to simulate
+    vector<int> seq_holes;
+
     // current view number that this replica thinks it is in
     int cur_view_num = -1;
 
@@ -33,6 +36,8 @@ private:
     size_t num_replicas = 0;
 
     network net;
+
+    bool is_seq_hole(int seq);
 
     // list of replicas in the system
     std::vector<node> replicas;
@@ -54,7 +59,7 @@ private:
 public:
     bool is_primary(int view_num);
 
-    replica(int _port, std::string _host, int _id, std::string _config_file);
+    replica(int _port, std::string _host, int _id, std::string _config_file, std::string _holes_file);
     void start();
 };
 
