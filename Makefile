@@ -3,7 +3,7 @@ DEBUG = -g
 RELEASE = -O3
 VERSION = $(DEBUG)
 
-CXXFLAGS = -std=c++1z $(VERSION) -pedantic -Wall -pthread
+CXXFLAGS = -std=c++1z $(VERSION) -pedantic
 
 BOTH_LIB := network.o message.o
 SERVER_LIB := paxos_main.o replica.o acceptor.o learner.o proposer.o $(BOTH_LIB)

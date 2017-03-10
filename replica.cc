@@ -80,7 +80,7 @@ void replica::handle_msg(Message *message) {
     // unique_lock<mutex> lock(m);
     Message* reply = new Message();
     //COUT << "Msg in handle_msg: " << message->serialize() << endl;
-    COUT << "Current view is: " << cur_view_num << endl;
+    //COUT << "Current view is: " << cur_view_num << endl;
     switch (message->msg_type) {
         case MessageType::NO_ACTION:
             // do nothing in this case
@@ -107,6 +107,7 @@ void replica::handle_msg(Message *message) {
             if (message->view_num > cur_view_num) {
                 // scenario 2
                 cur_view_num = message->view_num;
+                COUT << "Current view is: " << cur_view_num << endl;
                 if (cur_view_num % num_replicas == id) {
                     // Becoming the primary and fix previous sate
                     // TODO

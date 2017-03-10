@@ -32,7 +32,7 @@ Message* network::recv_from() {
     ssize_t numbytes = 0;
 
     while (true) {
-        COUT << "listener: waiting to recv_from...\n";
+        //COUT << "listener: waiting to recv_from...\n";
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
         // COUT << "Num bytes: " << numbytes << endl;
         if (numbytes < 0) {

@@ -27,10 +27,10 @@ echo "Check the log files!"
 sleep 5s
 
 echo ""
-echo "The log file diffs!"
+echo "The log file diffs::"
 diff log_0.txt log_1.txt
 diff log_0.txt log_2.txt
-echo "Diff ends here. If you see nothing, it worked!"
+echo "::Diff ends here. If you see nothing, it worked!"
 
 echo "Here is the contents of log_0.txt"
 cat log_0.txt
