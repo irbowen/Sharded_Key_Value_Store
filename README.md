@@ -1,4 +1,4 @@
-# paxos
+# Distributed Chat Service (using paxos)
 
 irbowen and pranavr
 
