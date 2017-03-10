@@ -9,9 +9,9 @@ rm log_*.txt
 # Start up 2f+1 replicas, where f =1
 echo ""
 echo "Start up paxos servers..."
-./paxos_server --port 8000 --host 127.0.0.1 --config config.txt --id 0 &
-./paxos_server --port 8001 --host 127.0.0.1 --config config.txt --id 1 &
-./paxos_server --port 8002 --host 127.0.0.1 --config config.txt --id 2 &
+./paxos_server --port 8000 --host 127.0.0.1 --config config.txt --id 0 --holes no_holes.txt &
+./paxos_server --port 8001 --host 127.0.0.1 --config config.txt --id 1 --holes no_holes.txt &
+./paxos_server --port 8002 --host 127.0.0.1 --config config.txt --id 2 --holes no_holes.txt &
 
 # Let them start up
 sleep 3s
