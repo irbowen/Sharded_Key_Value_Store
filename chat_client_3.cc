@@ -4,9 +4,13 @@
 using namespace std;
 
 int main(){
-  client_lib c_lib(6002, "127.0.0.1");
+  client_lib c_lib(6002, "127.0.0.1", "config.txt");
 
-  vector<string> messages = {"C3 msg 1", "C3 msg 2", "C3 msg 3"};
+  vector<string> messages;
+  for (int i = 0; i < 100; i++) {
+    messages.push_back("C3M" + to_string(i));
+  }
+
   for (auto &message : messages){
     cout << "Trying to add " << message << endl;
     c_lib.add_chat_message(message);
