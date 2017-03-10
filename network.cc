@@ -97,11 +97,6 @@ void network::sendto(Message* message) {
                 (struct sockaddr *)&to_addr, sizeof(to_addr));
         //COUT << "ret value " << retvalue << endl;
         //COUT << "errno value " << errno << endl;
-        //perror("sendto");
     }
-    //to_addr.sin_port = message->port;
-    // Look into the message, get the destination from the message
-    // Fill in addr using this info, and then fire it off
-    // sendto(socket, &message, sizeof(message), 0, (struct sockaddr *)&addr, sizeof(sockaddr));
 }
 

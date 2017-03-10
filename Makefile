@@ -1,7 +1,7 @@
 
 DEBUG = -g
 RELEASE = -O3
-VERSION = $(DEBUG)
+VERSION = $(RELEASE)
 
 CXXFLAGS = -std=c++1z $(VERSION) -pedantic
 

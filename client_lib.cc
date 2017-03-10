@@ -5,8 +5,6 @@
 
 #include "client_lib.h"
 
-#define CLIENT_PORT	6023 	// Assume one client for now
-
 client_lib::client_lib(int _port, string _host, string config_filename) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;
     client_seq_num = 0;
