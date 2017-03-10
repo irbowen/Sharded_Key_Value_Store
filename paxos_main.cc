@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
         {"port", required_argument, 0, 'p'},
         {"id", required_argument, 0, 'i'},
         {"config", required_argument, 0, 'c'},
-        {"holes", optional_argument, 0, 'g'},
+        {"holes", required_argument, 0, 'g'},
         {0,0,0,0},
     };
     int index;
@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     string host, config, holes = "";
     int port = -1, id = -1;
     while (iarg != -1) {
-        iarg = getopt_long(argc, argv, "h:p:i:c:g::", longopts, &index);
+        iarg = getopt_long(argc, argv, "h:p:i:c:g:", longopts, &index);
         switch (iarg) {
             case 'h':
                 host = optarg;
