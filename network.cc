@@ -10,8 +10,8 @@ network::network(int _port, std::string _host) : port(_port), host(_host) {
     struct sockaddr_in addr;
     memset(&addr, 0 , sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_addr.s_addr = inet_addr(host.c_str());
-    //addr.sin_addr.s_addr = htonl(INADDR_ANY);
+    //addr.sin_addr.s_addr = inet_addr(host.c_str());
+    addr.sin_addr.s_addr = htonl(INADDR_ANY);
     COUT << "Port: " << port << endl;
     addr.sin_port = htons(port);
 
@@ -88,15 +88,14 @@ void network::sendto(Message* message) {
     for (auto serv : message->receivers) {
         to_addr.sin_family = AF_INET;
         to_addr.sin_port = htons(serv.port);
-        inet_aton("127.0.0.1" , &to_addr.sin_addr);
+        inet_aton(serv.host.c_str(), &to_addr.sin_addr);
         //COUT << "@@@ host " << ntohl(to_addr.sin_addr.s_addr) << endl;
         //COUT << "@@@ port " << ntohs(to_addr.sin_port) << endl;
         auto msg_buf = message->serialize();
-        //auto retvalue = 
+        //auto retvalue =
         ::sendto(serverfd, msg_buf.c_str(), msg_buf.size(), 0,
                 (struct sockaddr *)&to_addr, sizeof(to_addr));
         //COUT << "ret value " << retvalue << endl;
         //COUT << "errno value " << errno << endl;
     }
 }
-

@@ -16,11 +16,11 @@ This will create a `start_paxos.sh` file that looks like this
 ./paxos_server --port 8001 --host 127.0.0.1 --config config.txt --id 1 --holes holes.txt &
 ./paxos_server --port 8002 --host 127.0.0.1 --config config.txt --id 2 --holes holes.txt &
 ```
---port: The port the replica will listen on
---host: The host ip address. We used 127.0.0.1 to make testing easier, but this can be changed
---config: The config file containing the host and port info for all replicas. This file must be the same and available on all systems where paxos is reunning.
---id: The id number of this replica, used to determine if we are the primary
---holes: The file that contains the seqnums that we should skip to simulate msg loss
+* --port: The port the replica will listen on
+* --host: The host ip address. We used 127.0.0.1 to make testing easier, but this can be changed
+* --config: The config file containing the host and port info for all replicas. This file must be the same and available on all systems where paxos is reunning.
+* --id: The id number of this replica, used to determine if we are the primary
+* --holes: The file that contains the seqnums that we should skip to simulate msg loss
 
 And a config.txt that looks like this
 
@@ -43,4 +43,3 @@ If you'd prefer to not to deal with all of these command line arguments, we have
 - `test_many.sh` - This starts up 3 replicas, and then start 2 clients. These aren't your ordinary clients though. They bombard paxos with lots of mgs, making sure our system can do work.
 
 - `test_many_with_kill.sh` - All the jass of the last one, except that it also kill paxos replicas! It launches 5 replicas, a few nasy clients that hit the system hard, and it kills 2 of the 5 replicas.
-
