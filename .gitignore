@@ -1,3 +1,4 @@
 log_*.txt
-bin/*
-objs/*
+bin/paxos_server
+bin/*.out
+objs/*.o
