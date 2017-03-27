@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "client_lib.h"
+#include "../headers/client_lib.h"
 
 client_lib::client_lib(int _port, string _host, string config_filename) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;

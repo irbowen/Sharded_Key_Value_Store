@@ -1,7 +1,7 @@
 
 #include <iostream>
 
-#include "learner.h"
+#include "../headers/learner.h"
 
 using namespace std;
 

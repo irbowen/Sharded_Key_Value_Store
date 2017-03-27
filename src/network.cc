@@ -1,4 +1,4 @@
-#include "network.h"
+#include "../headers/network.h"
 
 network::network(int _port, std::string _host) : port(_port), host(_host) {
     // Set up the socket for this communication

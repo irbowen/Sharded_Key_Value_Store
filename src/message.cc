@@ -1,6 +1,6 @@
 
 #include <sstream>
-#include "message.h"
+#include "../headers/message.h"
 
 std::string Message::serialize() {
     std::ostringstream oss;

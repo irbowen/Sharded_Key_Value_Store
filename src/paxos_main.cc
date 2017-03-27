@@ -4,7 +4,7 @@
 #include <getopt.h>
 
 //Project
-#include "replica.h"
+#include "../headers/replica.h"
 
 #define no_argument 0
 #define required_argument 1

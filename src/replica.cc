@@ -19,8 +19,8 @@
 #include <fstream>
 #include <thread>
 
-#include "replica.h"
-#include "message.h"
+#include "../headers/replica.h"
+#include "../headers/message.h"
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file, string _holes_file) :

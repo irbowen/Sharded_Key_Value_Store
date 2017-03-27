@@ -1,5 +1,5 @@
 
-#include "acceptor.h"
+#include "../headers/acceptor.h"
 
 Message* Acceptor::accept_prepare_msg(int in_view) {
     Message *msg = new Message;

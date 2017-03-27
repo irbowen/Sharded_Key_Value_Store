@@ -13,17 +13,17 @@ CLIENT_LIB := objs/client_lib.o $(BOTH_LIB)
 default: all
 all: paxos_server clients
 
-DEPS := $(wildcard *.h)
+DEPS := $(wildcard headers/*.h)
 
 .PRECIOUS: objs/%.o
-objs/%.o: %.cc $(DEPS)
+objs/%.o: src/%.cc $(DEPS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
 paxos_server: $(SERVER_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
-CLIENT_SRC :=$(wildcard chat_client_*.cc)
-CLIENTS := $(patsubst %.cc,%.out,$(CLIENT_SRC))
+CLIENT_SRC :=$(wildcard src/chat_client_*.cc)
+CLIENTS := $(patsubst src/%.cc,%.out,$(CLIENT_SRC))
 
 clients: $(CLIENTS)
 

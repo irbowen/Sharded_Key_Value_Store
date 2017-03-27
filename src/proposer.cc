@@ -1,5 +1,5 @@
 
-#include "proposer.h"
+#include "../headers/proposer.h"
 
 void Proposer::init(vector<node> _replicas, int _id, network* net, vector<int> holes) {
     replicas = _replicas;
