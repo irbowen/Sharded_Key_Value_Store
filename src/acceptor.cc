@@ -29,7 +29,7 @@ Message* Acceptor::accept_propose_msg(int in_view, std::string new_value, int se
         // the viewnumber that proposed it.
         accepted_values.at(seq_num) = view_val(cur_view, value);
         // Broadcast the fact that this acceptor has accepted to all learners
-        msg->msg_type = MessageType::BRDCST_LEARNERS;
+        msg->msg_type = MessageType::ACCEPT_VALUE;
         msg->value = value;
         msg->seq_num = seq_num;
         this->value = "";
