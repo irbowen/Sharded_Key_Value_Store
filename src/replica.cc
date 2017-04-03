@@ -206,15 +206,20 @@ void replica::handle_msg(Message* message) {
             make_broadcast(reply);
             break;
         }
-        /* Accept messages are hanlded by the learner */
-    case MessageType::ACCEPT_VALUE:
-        {
-            reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value);
-            make_broadcast(reply);
-            break;
-        }
-        /* Value learned msg's are handled by the primary, and sent on to the client
-         */
+    /* Accept messages are hanlded by the learner */
+    case MessageType::ACCEPT_VALUE: {
+        reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value);
+        make_broadcast(reply);
+        break;
+    }
+    case MessageType::STATUS_REQUEST: {
+        reply = learner.answer_status_request(message->seq_num);
+        // One of these
+        reply->receivers.push_back(message->get_client_node());
+        reply->receivers.push_back(message->sender);
+        break;
+    }
+    /* Value learned msg's are handled by the primary, and sent on to the client */
     case MessageType::PROPOSAL_LEARNT:
         {
             std::string client_id = message->get_client_id();

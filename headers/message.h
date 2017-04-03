@@ -29,6 +29,11 @@ struct view_val {
     view_val() {view_num = -1; value = NO_OP;}
 };
 
+enum Status {
+    UNKNOWN = 0,
+    KNOWN = 1
+};
+
 enum MessageType {
     NO_ACTION = 0,
     START_PREPARE = 1,
@@ -39,13 +44,16 @@ enum MessageType {
     PROPOSE_ACCEPT = 6,
     PROPOSE_REJECT = 7,
     ACCEPT_VALUE = 8,
-    PROPOSAL_LEARNT = 9
+    PROPOSAL_LEARNT = 9,
+    STATUS_REQUEST = 10,
+    STATUS = 11
 };
 
 class Message {
     char div_char = ':';
 public:
     MessageType msg_type = MessageType::NO_ACTION;
+    Status status = Status::UNKNOWN;
     int view_num = -1;
     int seq_num = 0;
     std::string value = "";

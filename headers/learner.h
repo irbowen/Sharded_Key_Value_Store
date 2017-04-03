@@ -17,12 +17,12 @@ struct Score {
 
 class Learner {
 private:
-	std::mutex m;
+    std::mutex m;
     size_t quorum;
     size_t id;
     std::map<int, Score> score_map;
     std::vector<std::string> log;
-    
+
 public:
     void init(size_t replica_count, size_t _id);
 
@@ -34,7 +34,7 @@ public:
     Message* broadcast_learn(int seq_num);
 
     // Get the status of this sequence in the log.
-    Message* status(int seq_num);
+    Message* answer_status_request(int seq_num);
 
     void print_log();
     int get_seqnum();

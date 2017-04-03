@@ -5,15 +5,12 @@
 
 using namespace std;
 
-Message* Learner::handle_learn_msg(int in_view, int seq_num, string value){
+Message* Learner::handle_learn_msg(int in_view, int seq_num, string value) {
     lock_guard<mutex> lock(m);
-    Message *reply = new Message;
-
-    Message m;
-    m.value = value;
+    Message* reply = new Message;
 
     score_map[seq_num].tally += 1;
-    score_map[seq_num].value = m.get_value();
+    score_map[seq_num].value = value;
     // If this is the message that made us equal to the qurom
     if (score_map[seq_num].tally == quorum) {
         // We should broadcast a proposal learned msg to everyone
@@ -22,12 +19,28 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value){
         reply->value = value;
         reply->view_num = in_view;
         // commit message to local chat log
-        // set seq_num -> seq_num + 1
         if (static_cast<int>(log.size()) <= seq_num) {
             log.resize(seq_num + 1);
         }
-        log.at(seq_num) = m.get_value();
+        log.at(seq_num) = value;
         print_log();
+    }
+    return reply;
+}
+
+Message* Learner::answer_status_request(int seq_num) {
+    lock_guard<mutex> lock(m);
+
+    Message* reply = new Message;
+    reply->msg_type = MessageType::STATUS;
+    reply->seq_num = seq_num;
+
+    if (log.size() <= seq_num) {
+        reply->status = UNKNOWN;
+    }
+    else if (log.at(seq_num) != "") {
+        reply->status = KNOWN;
+        reply->value = log.at(seq_num);
     }
     return reply;
 }
