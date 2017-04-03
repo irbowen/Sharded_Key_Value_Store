@@ -2,11 +2,12 @@
 #ifndef replica_h
 #define replica_h
 
-#include <iostream>
-#include <string>
-#include <fstream>
-#include <sstream>
 #include <condition_variable>
+#include <fstream>
+#include <iostream>
+#include <set>
+#include <sstream>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -28,6 +29,9 @@ private:
 
     // holes that we need to simulate
     vector<int> seq_holes;
+
+    // holes that we need to simulate
+    set<int> seen_views;
 
     // current view number that this replica thinks it is in
     int cur_view_num = -1;
@@ -58,6 +62,7 @@ private:
 
 public:
     bool is_primary(int view_num);
+    bool is_previous_view(int view_num);
 
     replica(int _port, std::string _host, int _id, std::string _config_file, std::string _holes_file);
     void start();

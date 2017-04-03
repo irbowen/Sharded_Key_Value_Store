@@ -1,6 +1,8 @@
 
 #include "../headers/proposer.h"
 
+using namespace std;
+
 void Proposer::init(vector<node> _replicas, int _id, network* net, vector<int> holes) {
     replicas = _replicas;
     seq_holes = holes;
@@ -17,14 +19,6 @@ Message* Proposer::handle_start_prepare(int view_num) {
     return msg;
 }
 
-bool Proposer::reached_quroum(int view_num) {
-    return count[view_num] >= quorum;
-}
-bool Proposer::is_seq_hole(int seq){
-    if (std::find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end())
-        return true;
-    return false;
-}
 Message* Proposer::handle_prepare_accept_fast(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
 
@@ -149,3 +143,12 @@ Message* Proposer::handle_propose_reject(int view_num) {
     // if the proposal gets rejected, we are back to the prepare phase
     return handle_start_prepare(view_num + 1);
 }
+
+bool Proposer::reached_quroum(int view_num) {
+    return count[view_num] >= quorum;
+}
+
+bool Proposer::is_seq_hole(int seq){
+    return find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end();
+}
+

@@ -66,6 +66,10 @@ bool replica::is_primary(int view_num) {
     return cur_view_num % num_replicas == id && proposer.reached_quroum(view_num);
 }
 
+bool replica::is_previous_view(int view_num) {
+    return seen_views.count(view_num) == 1;
+}
+
 bool replica::is_seq_hole(int seq) {
     if (std::find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end())
         return true;
@@ -158,18 +162,13 @@ void replica::handle_msg(Message* message) {
             //            }
             break;
         }
-    case MessageType::PREPARE_ACCEPT:
-        {
-            // TODO: when will the below handle_prepare be called - what should the
-            // seq number be?
-            int dummy_seq = 0;
-            reply = proposer.handle_prepare_accept(
-                message->acceptor_state, message->view_num, message->value, dummy_seq);
-            // add all the acceptors to the receiver list
-            // Acceptor vector check
-            make_broadcast(reply);
-            break;
-        }
+    case MessageType::PREPARE_ACCEPT: {
+        int dummy_seq = 0;
+        reply = proposer.handle_prepare_accept(
+            message->acceptor_state, message->view_num, message->value, dummy_seq);
+        make_broadcast(reply);
+        break;
+    }
     case MessageType::PREPARE_REJECT:
         {
             reply = proposer.handle_prepare_reject(message->view_num);
@@ -221,24 +220,23 @@ void replica::handle_msg(Message* message) {
     }
     /* Value learned msg's are handled by the primary, and sent on to the client */
     case MessageType::PROPOSAL_LEARNT:
-        {
-            std::string client_id = message->get_client_id();
-            int client_seq_number = message->get_client_seq_num();
-            // TODO this could be a problem if the primary dies before alerting the
-            // client
-            if (is_primary(message->view_num)) {
-                // if a response has already been sent to the client, don't send again
-                if (client_progress_map.count(client_id) != 0 &&
-                    client_progress_map[client_id] >= client_seq_number) {
-                    break;
-                }
-                // primary is responsible for sending it back to the client
-                reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(message->get_client_node());
+    {
+        std::string client_id = message->get_client_id();
+        int client_seq_number = message->get_client_seq_num();
+        // TODO this could be a problem if the primary dies before alerting the client
+        if (is_primary(message->view_num) || is_previous_view(message->view_num)) {
+            // if a response has already been sent to the client, don't send again
+            if (client_progress_map.count(client_id) != 0 &&
+                client_progress_map[client_id] >= client_seq_number) {
+                break;
             }
-            client_progress_map[client_id] = client_seq_number;
-            break;
+            // primary is responsible for sending it back to the client
+            reply->msg_type = MessageType::PROPOSAL_LEARNT;
+            reply->receivers.push_back(message->get_client_node());
         }
+        client_progress_map[client_id] = client_seq_number;
+        break;
+    }
     }
     delete(message);
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
