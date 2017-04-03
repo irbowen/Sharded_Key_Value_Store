@@ -4,7 +4,7 @@
 using namespace std;
 
 int main(){
-  client_lib c_lib(6005, "127.0.0.1", "config5.txt");
+  client_lib c_lib(6001, "127.0.0.1", "configs/config5.txt");
 
   vector<string> messages = {"C55M1", "C55M2", "C55M3"};
   for (auto &message : messages){

@@ -14,7 +14,6 @@ BASE_PORT=8000
 echo -e "\nStart up paxos servers..."
 
 for i in {0..2..1}; do
-
     ./bin/paxos_server \
         --port "$((BASE_PORT + i))" \
         --host 127.0.0.1 \

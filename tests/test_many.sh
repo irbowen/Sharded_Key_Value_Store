@@ -1,31 +1,39 @@
+#!/bin/bash
 
-ps aux | grep paxos_server | awk '{print $2}' | xargs kill
-
-echo ""
-echo "Remove old log files..."
+echo -e "\nRemove old log files..."
 touch log_0.txt
 rm log_*.txt
 
-# Start up 2f+1 replicas, where f =1
+# Start up 2f+1 replicas, where f=1
+BASE_PORT=8000
+
 echo -e "\nStart up paxos servers..."
-../paxos_server --port 8000 --host 127.0.0.1 --config ../configs/config.txt --id 0 --holes ../configs/no_holes.txt &
-../paxos_server --port 8001 --host 127.0.0.1 --config ../configs/config.txt --id 1 --holes ../configs/no_holes.txt &
-../paxos_server --port 8002 --host 127.0.0.1 --config ../configs/config.txt --id 2 --holes ../configs/no_holes.txt &
+
+for i in {0..2..1}; do
+    ./bin/paxos_server \
+        --port "$((BASE_PORT + i))" \
+        --host 127.0.0.1 \
+        --config configs/config5.txt \
+        --id "$i" \
+        --holes configs/no_holes.txt &
+done
 
 # Let them start up
 sleep 3s
 
 # Make concurrent requests to the paxos system
 echo "Start up clients..."
-./chat_client_3.out &
-./chat_client_4.out &
+./bin/chat_client_3.out &
+./bin/chat_client_4.out &
 
 sleep 10s
 
-echo ""
-echo "The log file diffs!"
+echo -e "\nThe log file diffs!"
+echo -e "\n########################"
 diff log_0.txt log_1.txt
 diff log_0.txt log_2.txt
+echo -e "\n########################"
 echo "Diff ends here. If you see nothing, it worked!"
 
-ps aux | grep paxos_server | awk '{print $2}' | xargs kill
+ps aux | grep paxos_server | awk '{print $2}' | xargs kill 
+ps aux | grep chat_client_ | awk '{print $2}' | xargs kill 
