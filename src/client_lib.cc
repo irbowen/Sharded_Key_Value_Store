@@ -5,6 +5,8 @@
 
 #include "../headers/client_lib.h"
 
+using namespace std;
+
 client_lib::client_lib(int _port, string _host, string config_filename) : port(_port), host(_host), net(_port, _host) {
     cur_view_num = 0;
     client_seq_num = 0;
@@ -14,6 +16,15 @@ client_lib::client_lib(int _port, string _host, string config_filename) : port(_
     while (config_fs >> h >> p >> rep_id) {
         replicas.push_back(node(stoi(p), h));
     }
+}
+
+
+string client_lib::get(string key) {
+    // TODO
+}
+
+void client_lib::put(string key, string value) {
+    // TODO
 }
 
 void client_lib::add_chat_message(std::string chat_message){

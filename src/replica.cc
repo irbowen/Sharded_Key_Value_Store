@@ -97,7 +97,7 @@ void replica::handle_msg(Message* message) {
             if (client_progress_map.count(in_client_id) != 0 &&
                 client_progress_map[in_client_id] >= in_client_seq_number) {
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(message->get_client_node());
+                reply->receivers.push_back(message->sender);
                 break;
             }
             proposer.to_propose = message->value;
@@ -123,7 +123,6 @@ void replica::handle_msg(Message* message) {
                 }
             }
 
-            // If we already know that we are the primary
             if (is_primary(message->view_num)) {
                 // Keep track of which seqnum maps to which client, so that when it is
                 // commited, we know who to tell
@@ -135,31 +134,11 @@ void replica::handle_msg(Message* message) {
 
                 seq_to_client_map[tmp_seq_num] = message->sender;
 
-                // BIG BUG
-                // cannot just call acceptor's propse_msg
-                // reply = acceptor.accept_propose_msg(message->view_num,
-                // message->value, tmp_seq_num);
-
-                // The fix :
                 reply = proposer.handle_prepare_accept_fast(
                     message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
                 make_broadcast(reply);
                 break;
             }
-            //            if (cur_view_num % num_replicas == id) {
-            //                // does this happen only for the very first primary?
-            //                // for all other primaries that come up, they are bound
-            //                to enter the scenario 2
-            //                // and will definitely get a quorum right?
-            //
-            //                // assert(false);
-            //                // Check for holes
-            //                // add the initial value to be proposed to proposer
-            //                state
-            //                proposer.to_propose = message->value;
-            //                reply = proposer.start_prepare(message->view_num);
-            //                make_broadcast(reply);
-            //            }
             break;
         }
     case MessageType::PREPARE_ACCEPT: {
@@ -213,26 +192,22 @@ void replica::handle_msg(Message* message) {
     }
     case MessageType::STATUS_REQUEST: {
         reply = learner.answer_status_request(message->seq_num);
-        // One of these
-        reply->receivers.push_back(message->get_client_node());
         reply->receivers.push_back(message->sender);
         break;
     }
     /* Value learned msg's are handled by the primary, and sent on to the client */
-    case MessageType::PROPOSAL_LEARNT:
-    {
+    case MessageType::PROPOSAL_LEARNT: {
         std::string client_id = message->get_client_id();
         int client_seq_number = message->get_client_seq_num();
-        // TODO this could be a problem if the primary dies before alerting the client
+        // If we are the primary or this was a previous view, we should respond to the client
         if (is_primary(message->view_num) || is_previous_view(message->view_num)) {
             // if a response has already been sent to the client, don't send again
             if (client_progress_map.count(client_id) != 0 &&
                 client_progress_map[client_id] >= client_seq_number) {
                 break;
             }
-            // primary is responsible for sending it back to the client
             reply->msg_type = MessageType::PROPOSAL_LEARNT;
-            reply->receivers.push_back(message->get_client_node());
+            reply->receivers.push_back(message->sender);
         }
         client_progress_map[client_id] = client_seq_number;
         break;
