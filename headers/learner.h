@@ -21,9 +21,10 @@ private:
     size_t quorum;
     size_t id;
     std::map<int, Score> score_map;
-    std::vector<std::string> log;
 
 public:
+    /* KV Store needs access to the data log */
+    std::vector<std::string> log;
     void init(size_t replica_count, size_t _id);
 
     // For all of the below methods, the caller is responsible for freeing the memory
