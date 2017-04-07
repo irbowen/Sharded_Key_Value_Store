@@ -9,7 +9,6 @@
 #include "replica.h"
 #include "message.h"
 #include "network.h"
-#include "node.h"
 
 class client_lib {
 private:
@@ -26,6 +25,8 @@ public:
     // Blocking until success, may retry multiple times under the hood
     // Primary, upon receiving learn msg itself, will reply to client
     void add_chat_message(std::string msg);
+    std::string get(std::string key);
+    void put(std::string key, std::string value);
 };
 
 #endif

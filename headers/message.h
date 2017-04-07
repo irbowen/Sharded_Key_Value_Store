@@ -7,7 +7,6 @@
 #include <sstream>
 #include <iostream>
 #include <vector>
-#include "node.h"
 
 using namespace std;
 
@@ -27,6 +26,14 @@ struct view_val {
     string value;
     view_val(int n, string v) : view_num(n), value(v) {}
     view_val() {view_num = -1; value = NO_OP;}
+};
+
+struct node {
+    int port;
+    std::string host;
+    // any other info regarding a server
+    node(int _port, std::string _host) : port(_port), host(_host) {}
+    node(){}
 };
 
 enum MessageType {

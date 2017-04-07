@@ -14,7 +14,6 @@
 #include "acceptor.h"
 #include "learner.h"
 #include "network.h"
-#include "node.h"
 #include "proposer.h"
 
 class replica {

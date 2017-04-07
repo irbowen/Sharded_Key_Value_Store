@@ -7,7 +7,6 @@
 #include <string>
 #include <map>
 #include "message.h"
-#include "node.h"
 #include "network.h"
 
 class Proposer {
