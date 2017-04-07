@@ -3,7 +3,7 @@ DEBUG = -g
 RELEASE = -O3
 VERSION = $(RELEASE)
 
-CXXFLAGS = -std=c++1z $(VERSION) -pedantic
+CXXFLAGS = -std=c++1z $(VERSION) -pedantic -pthread
 
 BOTH_LIB := objs/network.o objs/message.o
 SERVER_LIB := objs/paxos_main.o objs/replica.o objs/acceptor.o objs/learner.o objs/proposer.o objs/kv_store.o $(BOTH_LIB)

@@ -14,6 +14,9 @@ std::string Message::serialize() {
     oss << seq_num;
     oss << div_char;
 
+    oss << key;
+    oss << div_char;
+
     oss << value;
     oss << div_char;
 
@@ -58,6 +61,7 @@ void Message::deserialize(std::string in) {
 
     view_num = stoi(array.at(index++));
     seq_num = stoi(array.at(index++));
+    key = array.at(index++);
     value = array.at(index++);
     sender.port = stoi(array.at(index++));
     sender.host = array.at(index++);

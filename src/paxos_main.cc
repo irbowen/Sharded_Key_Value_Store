@@ -51,5 +51,4 @@ int main(int argc, char* argv[]) {
     assert(port != -1 && id != -1);
     replica r(port, host, id, config, holes);
     r.start();
-    COUT << "Get's here, so thats cool\n";
 }

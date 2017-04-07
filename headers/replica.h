@@ -39,6 +39,7 @@ private:
     size_t num_replicas = 0;
 
     network net;
+    network kv_net;
 
     bool is_seq_hole(int seq);
 
@@ -50,6 +51,7 @@ private:
     std::map<string, int> client_progress_map;
 
     void handle_msg(Message*);
+    void handle_kv_msg(Message*);
 
     /* Adds all the replicas in the system to the receiver list of the reply message */
     void make_broadcast(Message *reply);
@@ -65,6 +67,8 @@ public:
 
     replica(int _port, std::string _host, int _id, std::string _config_file, std::string _holes_file);
     void start();
+    void recv();
+    void kv_recv();
 };
 
 #endif

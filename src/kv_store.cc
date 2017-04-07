@@ -11,4 +11,5 @@ Message* KV_Store::handle_get_msg(Message* get_msg) {
 
 Message* KV_Store::handle_put_msg(Message* put_msg) {
     // We can pretty much just respond right away
+    // Only primary should answer
 }
