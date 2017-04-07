@@ -21,7 +21,6 @@ Message* Proposer::handle_start_prepare(int view_num) {
 
 Message* Proposer::handle_prepare_accept_fast(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
-
     // regular case where proposer proposes the original value
     msg->msg_type = MessageType::PROPOSE;
     // bug fixed : view num can never be -1 (we did this earlier since we had n_a)
@@ -45,26 +44,26 @@ Message* Proposer::handle_prepare_accept_fast(std::vector<view_val> acceptor_sta
 Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num) {
     Message *msg = new Message;
 
-    if(is_new_primary){
+    if (is_new_primary) {
         all_acceptors_state.push_back(acceptor_state);
     }
     count[view_num] += 1;
     if (count[view_num] == quorum && is_new_primary) {
         // i am the new primary, i have reached a quorum, i have f+1 acceptor states
         // i can begin the fix process
-        
+
         // find longest acceptor state
         auto max_length_acceptor = std::max_element(all_acceptors_state.begin(), all_acceptors_state.end(),
-                                                    []( const std::vector<view_val> &a, const std::vector<view_val> &b )
-                                                    {
-                                                        return a.size() < b.size();
-                                                    });
+                []( const std::vector<view_val> &a, const std::vector<view_val> &b )
+                {
+                return a.size() < b.size();
+                });
         // for each column
-        for(int j = 0; j < max_length_acceptor->size(); j++){
+        for (int j = 0; j < max_length_acceptor->size(); j++) {
             // for each item in that column
             std::map<int, int> quorum_count;
             bool quorum_reached = false;
-            
+
             // Note: best_view_val has -1 view num and no_op value by default
             // if it doesn't get updated in the below loop, we can decide accordingly
             view_val best_view_val;
@@ -84,7 +83,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
                 reply->value = best_view_val.value; // will automatically be no_op if that is the best
                 reply->seq_num = j; // jth column becomes the sequence number
                 reply->msg_type = MessageType::PROPOSE;
-                
+
                 //broadcast message
                 for (auto& r : replicas) {
                     reply->receivers.push_back(r);
@@ -96,35 +95,16 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         }
         // update sequence number to max_length
         seq_num = static_cast<int>(max_length_acceptor->size());
-        
-        while(is_seq_hole(seq_num)){
-            cout << "Seq num " << seq_num << " is a hole. skipping to next seq num\n";
-            seq_num += 1;
-        }
-        
         // update seq_num if required based on acceptor state
         // seq_num = new_seq_num;
         is_new_primary = false;
         all_acceptors_state.clear();
     }
-    
-    if(count[view_num] == quorum){
-        // regular case where proposer proposes the original value
-        msg->msg_type = MessageType::PROPOSE;
-        // bug fixed : view num can never be -1 (we did this earlier since we had n_a)
-        if (value == "") {
-            // Propose the original value
-            msg->value = to_propose;
-            msg->view_num = view_num;
-        } else {
-            // Propose the already accepted value
-            msg->value = value;
-            msg->view_num = view_num;
-        }
-        // TODO : Need to add sequence number to this message (Important) - Pranav
-        // if quorum is not reached, the message type default is NO_ACTION
-        msg->seq_num = seq_num;
+
+    if (count[view_num] == quorum) {
+        return handle_prepare_accept_fast(acceptor_state, view_num, value, seq_num);
     }
+
     return msg;
 }
 

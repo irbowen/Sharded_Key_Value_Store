@@ -43,7 +43,6 @@ std::string Message::serialize() {
 }
 
 void Message::deserialize(std::string in) {
-
     std::vector<std::string> array;
     size_t pos = 0, found;
     while ((found = in.find_first_of(div_char, pos)) != std::string::npos) {

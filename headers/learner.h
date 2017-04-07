@@ -33,9 +33,6 @@ public:
     Message* handle_learn_msg(int view_num, int seq_num, std::string value);
     Message* broadcast_learn(int seq_num);
 
-    // Get the status of this sequence in the log.
-    Message* answer_status_request(int seq_num);
-
     void print_log();
     int get_seqnum();
     int get_seqnum_with_skip();

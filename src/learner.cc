@@ -28,23 +28,6 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value) {
     return reply;
 }
 
-Message* Learner::answer_status_request(int seq_num) {
-    lock_guard<mutex> lock(m);
-
-    Message* reply = new Message;
-    reply->msg_type = MessageType::STATUS;
-    reply->seq_num = seq_num;
-
-    if (log.size() <= seq_num) {
-        reply->status = UNKNOWN;
-    }
-    else if (log.at(seq_num) != "") {
-        reply->status = KNOWN;
-        reply->value = log.at(seq_num);
-    }
-    return reply;
-}
-
 void Learner::print_log() {
     string log_filename = "log_" + to_string(id) + ".txt";
     ostringstream oss;
