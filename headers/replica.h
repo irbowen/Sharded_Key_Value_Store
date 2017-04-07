@@ -56,10 +56,14 @@ private:
     /* Adds all the replicas in the system to the receiver list of the reply message */
     void make_broadcast(Message *reply);
 
-    /* Replica can take up any one of the following roles */
+    /* Replica can perform all of the following roles
+       in its paxos component */
     Acceptor acceptor;
     Proposer proposer;
     Learner learner;
+
+    /* Replica also runs the key value server in another thread */
+    KV_Store kv_store;
 
 public:
     bool is_primary(int view_num);

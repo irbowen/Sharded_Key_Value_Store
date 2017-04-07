@@ -15,6 +15,13 @@ struct Score {
     std::string value;
 };
 
+struct Object {
+    std::string key;
+    std::string value;
+    Object(std::string _key, std::string _value) : key(_key), value(_value) {}
+    Object(){}
+};
+
 class Learner {
 private:
     std::mutex m;
@@ -25,6 +32,7 @@ private:
 public:
     /* KV Store needs access to the data log */
     std::vector<std::string> log;
+    std::vector<std::string> object_log;
     void init(size_t replica_count, size_t _id);
 
     // For all of the below methods, the caller is responsible for freeing the memory

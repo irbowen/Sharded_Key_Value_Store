@@ -91,15 +91,17 @@ bool replica::is_seq_hole(int seq) {
 }
 
 void replica::handle_kv_msg(Message* message) {
-    Message* reply = new Message();
+    Message* reply;
     // COUT <<"Msg in handle_msg: " <<message->serialize() <<endl;
     // COUT <<"Current view is: " <<cur_view_num <<endl;
     switch (message->msg_type) {
         case MessageType::PUT: {
             // Broadcast a start prepare msg to everyone with the key and value and seq num
+            reply = kv_store.handle_put_msg(message);
             break;
         }
         case MessageType::GET: {
+            reply = kv_store.handle_put_msg(message);
             break;
         }
     }

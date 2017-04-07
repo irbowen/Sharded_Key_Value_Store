@@ -23,6 +23,8 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value) {
             log.resize(seq_num + 1);
         }
         log.at(seq_num) = value;
+        //TODO
+        //object_log.at(seq_num) = Object(key, value);
         print_log();
     }
     return reply;
