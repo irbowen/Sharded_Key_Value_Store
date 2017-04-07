@@ -8,9 +8,6 @@ std::string Message::serialize() {
     oss << msg_type;
     oss << div_char;
 
-    oss << status;
-    oss << div_char;
-
     oss << view_num;
     oss << div_char;
 
@@ -59,9 +56,6 @@ void Message::deserialize(std::string in) {
 
     int msg_int = stoi(array.at(index++));
     msg_type = static_cast<MessageType>(msg_int);
-
-    int status_int = stoi(array.at(index++));
-    status = static_cast<Status>(status_int);
 
     view_num = stoi(array.at(index++));
     seq_num = stoi(array.at(index++));
