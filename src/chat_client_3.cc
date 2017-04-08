@@ -1,5 +1,7 @@
 #include "../headers/client_lib.h"
 #include <cstring>
+#include <chrono>
+#include <thread>
 
 using namespace std;
 
@@ -14,5 +16,6 @@ int main(){
   for (auto &message : messages){
     cout << "Trying to add " << message << endl;
     c_lib.add_chat_message(message);
+    this_thread::sleep_for(1s);
   }
 }
