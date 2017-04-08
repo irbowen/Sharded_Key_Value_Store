@@ -22,12 +22,12 @@ objs/%.o: src/%.cc $(DEPS)
 paxos_server: $(SERVER_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
-CLIENT_SRC :=$(wildcard src/chat_client_*.cc)
+CLIENT_SRC :=$(wildcard src/kv_client_*.cc)
 CLIENTS := $(patsubst src/%.cc,%.out,$(CLIENT_SRC))
 
 clients: $(CLIENTS)
 
-chat_client_%.out: objs/chat_client_%.o $(CLIENT_LIB)
+kv_client_%.out: objs/kv_client_%.o $(CLIENT_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 ########################################

@@ -180,7 +180,7 @@ void replica::handle_msg(Message* message) {
         }
             /* Accept messages are hanlded by the learner */
         case MessageType::ACCEPT_VALUE: {
-            reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value);
+            reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value, message);
             make_broadcast(reply);
             break;
         }

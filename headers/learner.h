@@ -2,13 +2,14 @@
 #ifndef learner_h
 #define learner_h
 
-#include <stdio.h>
-#include <string>
+
 #include <fstream>
-#include "message.h"
 #include <map>
 #include <mutex>
+#include <experimental/optional>
+#include <string>
 #include <thread>
+#include "message.h"
 
 struct Score {
     size_t tally;
@@ -32,16 +33,17 @@ private:
 public:
     /* KV Store needs access to the data log */
     std::vector<std::string> log;
-    std::vector<std::string> object_log;
+    std::vector<Object> object_log;
     void init(size_t replica_count, size_t _id);
 
     // For all of the below methods, the caller is responsible for freeing the memory
     // used by the messages that are returned
 
     // Process the ACCEPT_VALUE msg, and create the correct response msg
-    Message* handle_learn_msg(int view_num, int seq_num, std::string value);
+    Message* handle_learn_msg(int view_num, int seq_num, std::string value, Message* msg);
     Message* broadcast_learn(int seq_num);
 
+    std::experimental::optional<std::string> get_latest_value(std::string key);
     void print_log();
     int get_seqnum();
     int get_seqnum_with_skip();

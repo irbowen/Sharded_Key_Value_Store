@@ -46,11 +46,15 @@ void KV_Store::handle_kv_msg(Message* message) {
 
 
 Message* KV_Store::handle_get_msg(Message* get_msg) {
-    // Scan log and get data
+    Message* ack_msg;
+    ack_msg->msg_type = MessageType::GET_ACK;
+    ack_msg->receivers.push_back(get_msg->sender);
+    ack_msg->key = get_msg->key;
+    ack_msg->value = learner_->get_latest_value(get_msg->key).value_or("err");
+    return ack_msg;
 }
 
 Message* KV_Store::handle_put_msg(Message* put_msg) {
-    // We want to run paxos on this key/value proposal
     Message msg;
     msg.msg_type = MessageType::START_PREPARE;
 
@@ -79,7 +83,14 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
         cur_view_num += 1;
     }
 
-    // Paxos run done
-    // TODO respond to the client telling them that this key has beena added to the log
-
+    Message* ack_msg;
+    ack_msg->msg_type = MessageType::PUT_ACK;
+    ack_msg->receivers.push_back(put_msg->get_client_node());
+    return ack_msg;
 }
+
+
+
+
+
+
