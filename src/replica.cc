@@ -24,8 +24,7 @@
 
 /* Setting up the replica with the provided port and host */
 replica::replica(int _port, string _host, int _id, string _config_file, string _holes_file) :
-    port(_port), host(_host), id(_id), cur_view_num(-1),
-    net(_port, _host), kv_net(_port + 10, _host)
+    port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
 {
     string h, p, rep_id;
     ifstream config_fs(_config_file);
@@ -43,14 +42,14 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
     acceptor.init(num_replicas, id);
     learner.init(num_replicas, id);
     proposer.init(replicas, id, &net, seq_holes);
-    kv_store.init(&learner);
+
+    /* Set up the key value store object */
+    kv_store_ = make_unique<KV_Store>(port + 10, host, _config_file);
+    kv_store_->init(&learner);
 }
 
 void replica::kv_recv() {
-    while (true) {
-        Message* msg = kv_net.recv_from();
-        handle_kv_msg(msg);
-    }
+    kv_store_->kv_recv();
 }
 
 void replica::recv() {
@@ -88,28 +87,6 @@ bool replica::is_seq_hole(int seq) {
     return false;
 }
 
-void replica::handle_kv_msg(Message* message) {
-    Message* reply;
-    COUT << "Msg in handle_kv_msg: " << message->serialize() << endl;
-    switch (message->msg_type) {
-        case MessageType::PUT: {
-            // Broadcast a start prepare msg to everyone with the key and value and seq num
-            reply = kv_store.handle_put_msg(message);
-            break;
-        }
-        case MessageType::GET: {
-            reply = kv_store.handle_put_msg(message);
-            break;
-        }
-    }
-    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        reply->sender.host = host;
-        reply->sender.port = port;
-        net.sendto(reply);
-    }
-    delete(message);
-    delete(reply);
-}
 
 /* Handle the given message */
 void replica::handle_msg(Message* message) {

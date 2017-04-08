@@ -12,9 +12,18 @@ private:
     int port_;
     std::string host_;
     std::vector<node> replicas_;
+    network net_;
 
 public:
-    void init(Learner* learner, int port, std::string host, std::string config_filename);
+    /* Setup and shit */
+    KV_Store(int port, std::string host, std::string config_filename);
+    void init(Learner* learner);
+
+    /* Listen for messages */
+    void kv_recv();
+
+    /* The key value stuff! */
+    void handle_kv_msg(Message* message);
     Message* handle_get_msg(Message* get_msg);
     Message* handle_put_msg(Message* put_msg);
 };

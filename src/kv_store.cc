@@ -1,17 +1,49 @@
 
 #include "../headers/kv_store.h"
 
-void KV_Store::init(Learner* learner, int port, std::string host, std::string config_filename) {
-    learner_ = learner;
-    port_ = port;
-    host_ = host;
-
+KV_Store::KV_Store(int port, std::string host, std::string config_filename)
+    : port_(port), host_(host), net_(port, host)
+{
     string h, p, rep_id;
     ifstream config_fs(config_filename);
     while (config_fs >> h >> p >> rep_id) {
         replicas_.push_back(node(stoi(p), h));
     }
 }
+
+void KV_Store::init(Learner* learner) {
+    learner_ = learner;
+}
+
+void KV_Store::kv_recv() {
+    while (true) {
+        Message* msg = net_.recv_from();
+        handle_kv_msg(msg);
+    }
+}
+
+void KV_Store::handle_kv_msg(Message* message) {
+    Message* reply;
+    COUT << "Msg in handle_kv_msg: " << message->serialize() << endl;
+    switch (message->msg_type) {
+        case MessageType::PUT: {
+            reply = handle_put_msg(message);
+            break;
+        }
+        case MessageType::GET: {
+            reply = handle_put_msg(message);
+            break;
+        }
+    }
+    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
+        reply->sender.host = host_;
+        reply->sender.port = port_;
+        net_.sendto(reply);
+    }
+    delete(message);
+    delete(reply);
+}
+
 
 Message* KV_Store::handle_get_msg(Message* get_msg) {
     // Scan log and get data
@@ -38,8 +70,8 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     int cur_view_num = 0;
     while (true) {
         msg.view_num = cur_view_num;
-        net.sendto(&msg);
-        Message *reply = net.recv_from_with_timeout();
+        net_.sendto(&msg);
+        Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             COUT << "Key, Value pair: " << msg.key << " " << msg.value << endl;
             delete(reply);

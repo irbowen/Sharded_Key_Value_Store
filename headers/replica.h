@@ -5,6 +5,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <iostream>
+#include <memory>
 #include <set>
 #include <sstream>
 #include <string>
@@ -40,7 +41,6 @@ private:
     size_t num_replicas = 0;
 
     network net;
-    network kv_net;
 
     bool is_seq_hole(int seq);
 
@@ -64,7 +64,7 @@ private:
     Learner learner;
 
     /* Replica also runs the key value server in another thread */
-    KV_Store kv_store;
+    std::unique_ptr<KV_Store> kv_store_;
 
 public:
     bool is_primary(int view_num);
