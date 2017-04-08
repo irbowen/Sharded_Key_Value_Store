@@ -30,15 +30,12 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
     string h, p, rep_id;
     ifstream config_fs(_config_file);
     while (config_fs >> h >> p >> rep_id) {
-        // letting vector use move semantics underneath
         replicas.push_back(node(stoi(p), h));
     }
-
     if (_holes_file != "") {
         string hole;
         ifstream holes_fs(_holes_file);
         while (holes_fs >> hole) {
-            // letting vector use move semantics underneath
             seq_holes.push_back(stoi(hole));
         }
     }
@@ -46,6 +43,7 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
     acceptor.init(num_replicas, id);
     learner.init(num_replicas, id);
     proposer.init(replicas, id, &net, seq_holes);
+    kv_store.init(&learner);
 }
 
 void replica::kv_recv() {
@@ -92,8 +90,7 @@ bool replica::is_seq_hole(int seq) {
 
 void replica::handle_kv_msg(Message* message) {
     Message* reply;
-    // COUT <<"Msg in handle_msg: " <<message->serialize() <<endl;
-    // COUT <<"Current view is: " <<cur_view_num <<endl;
+    COUT << "Msg in handle_kv_msg: " << message->serialize() << endl;
     switch (message->msg_type) {
         case MessageType::PUT: {
             // Broadcast a start prepare msg to everyone with the key and value and seq num
@@ -105,6 +102,13 @@ void replica::handle_kv_msg(Message* message) {
             break;
         }
     }
+    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
+        reply->sender.host = host;
+        reply->sender.port = port;
+        net.sendto(reply);
+    }
+    delete(message);
+    delete(reply);
 }
 
 /* Handle the given message */

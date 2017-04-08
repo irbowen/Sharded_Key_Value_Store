@@ -15,6 +15,7 @@
 #include "learner.h"
 #include "network.h"
 #include "proposer.h"
+#include "kv_store.h"
 
 class replica {
 private:
