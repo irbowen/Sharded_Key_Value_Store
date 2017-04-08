@@ -50,6 +50,10 @@ Message* network::recv_from() {
     }
 }
 
+void network::set_start_timeout_factor(int factor) {
+    micro_second_delay *= factor;
+}
+
 Message* network::recv_from_with_timeout() {
 
     char* buf = new char[MAXBUFLEN];

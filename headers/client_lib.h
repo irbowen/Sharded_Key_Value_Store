@@ -20,6 +20,7 @@ private:
     int client_seq_num;
     network net;
     std::vector<node> replicas;
+    std::vector<node> kv_replicas;
 public:
     client_lib(int _port, string _host, string config_filename);
     // Blocking until success, may retry multiple times under the hood

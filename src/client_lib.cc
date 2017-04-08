@@ -15,16 +15,55 @@ client_lib::client_lib(int _port, string _host, string config_filename) : port(_
     ifstream config_fs(config_filename);
     while (config_fs >> h >> p >> rep_id) {
         replicas.push_back(node(stoi(p), h));
+        kv_replicas.push_back(node(stoi(p) + 10, h));
     }
 }
 
 
 string client_lib::get(string key) {
-    // TODO
+    Message msg;
+    msg.msg_type = MessageType::GET;
+    msg.key = key;
+    msg.sender = node(port, host);
+    for(auto& r : kv_replicas){
+        msg.receivers.push_back(r);
+    }
+    net.set_start_timeout_factor(2);
+    int cur_view_num = 0;
+    while (true) {
+        msg.view_num = cur_view_num;
+        net.sendto(&msg);
+        Message *reply = net.recv_from_with_timeout();
+        if (reply != nullptr && reply->msg_type == MessageType::GET_ACK) {
+            string val = reply->value;
+            delete(reply);
+            return val;
+        }
+        cur_view_num += 1;
+    }
 }
 
 void client_lib::put(string key, string value) {
-    // TODO
+    Message msg;
+    msg.msg_type = MessageType::PUT;
+    msg.key = key;
+    msg.value = value;
+    msg.sender = node(port, host);
+    for(auto& r : kv_replicas){
+        msg.receivers.push_back(r);
+    }
+    net.set_start_timeout_factor(2);
+    int cur_view_num = 0;
+    while (true) {
+        msg.view_num = cur_view_num;
+        net.sendto(&msg);
+        Message *reply = net.recv_from_with_timeout();
+        if (reply != nullptr && reply->msg_type == MessageType::PUT_ACK) {
+            delete(reply);
+            return;
+        }
+        cur_view_num += 1;
+    }
 }
 
 void client_lib::add_chat_message(std::string chat_message){

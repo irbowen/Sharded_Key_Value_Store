@@ -36,6 +36,7 @@ private:
     
 public:
     network(int port, std::string ip_addr);
+    void set_start_timeout_factor(int factor);
     void sendto(Message* message);
     Message* recv_from();
     Message* recv_from_with_timeout();
