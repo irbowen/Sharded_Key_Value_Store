@@ -35,7 +35,6 @@ void KV_Store::handle_kv_msg(Message* message) {
             break;
         }
     }
-    this_thread::sleep_for(1s);
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
         COUT << "reply in handle_kv_msg: " << reply->serialize() << endl;
         reply->sender.host = host_;
@@ -58,7 +57,6 @@ Message* KV_Store::handle_get_msg(Message* get_msg) {
     ack_msg->receivers.push_back(get_msg->sender);
     ack_msg->key = get_msg->key;
     ack_msg->value = learner_->get_latest_value(get_msg->key).value_or("err");
-    COUT << "About to respond with this GET msg::::" << ack_msg->serialize() << endl;
     return ack_msg;
 }
 
@@ -92,7 +90,7 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            COUT << "Key, Value pair: " << msg.key << " " << msg.value << "Replica: " << replica_id_ << endl;
+            //COUT << "Key, Value pair: " << msg.key << " " << msg.value << "Replica: " << replica_id_ << endl;
             break;
         }
         cur_view_num += 1;
@@ -102,9 +100,4 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     ack_msg->receivers.push_back(put_msg->sender);
     return ack_msg;
 }
-
-
-
-
-
 

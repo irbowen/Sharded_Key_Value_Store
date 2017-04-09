@@ -12,15 +12,14 @@ network::network(int _port, std::string _host) : port(_port), host(_host) {
     addr.sin_family = AF_INET;
     //addr.sin_addr.s_addr = inet_addr(host.c_str());
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    COUT << "Port: " << port << endl;
     addr.sin_port = htons(port);
 
     // Allow us to resuse address
     assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
     assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
     addr_len = sizeof(addr);
-    COUT << "@@@ socketfd: " << serverfd << endl;
-    COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << endl;
+    COUT << "@@@ socketfd: " << serverfd << " ";
+    COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << " ";
     COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
 
