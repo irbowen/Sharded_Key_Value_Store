@@ -95,21 +95,25 @@ std::vector<std::string> split(std::string in) {
     return array;
 }
 
-std::string Message::get_value() {
+std::string Message::get_key() {
     return split(value).at(0);
+}
+
+std::string Message::get_value() {
+    return split(value).at(1);
 }
 
 std::string Message::get_client_id() {
     auto array = split(value);
-    return array.at(1) + "#" + array.at(2);
+    return array.at(2) + "#" + array.at(3);
 }
 
 int Message::get_client_seq_num() {
-    return stoi(split(value).at(3));
+    return stoi(split(value).at(4));
 }
 
 node Message::get_client_node() {
     auto array =  split(value);
-    return node(stoi(array.at(1)), array.at(2));
+    return node(stoi(array.at(2)), array.at(3));
 }
 

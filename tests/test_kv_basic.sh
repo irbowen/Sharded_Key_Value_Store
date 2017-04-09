@@ -26,9 +26,9 @@ done
 sleep 3s
 
 echo -e "\nStart up clients..."
-./bin/kv_client_1.out &
+./bin/kv_client_1.out 
 
-sleep 5
+sleep 2
 
 ps aux | grep chat_client_ | awk '{print $2}' | xargs kill
 ps aux | grep paxos_server | awk '{print $2}' | xargs kill

@@ -66,6 +66,7 @@ public:
     std::vector<view_val> acceptor_state;
     std::string serialize();
     void deserialize(std::string in);
+    std::string get_key();
     std::string get_value();
     std::string get_client_id();
     int get_client_seq_num();

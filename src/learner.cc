@@ -25,7 +25,8 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value, Messa
             object_log.resize(seq_num + 1);
         }
         log.at(seq_num) = value;
-        object_log.at(seq_num) = Object(msg->key, msg->value);
+        cout << "Msg key and value " << msg->key << " " << msg->value << endl;
+        object_log.at(seq_num) = Object(msg->get_key(), msg->get_value());
         print_log();
     }
     return reply;

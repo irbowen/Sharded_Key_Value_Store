@@ -10,6 +10,9 @@ int main(){
     client_lib c_lib(6001, "127.0.0.1", "configs/config3.txt");
 
     c_lib.put("money", "is power");
+    cout << "The value is:::::::::::::" << c_lib.get("money") << endl;
+    assert("is power" == c_lib.get("money"));
+
     assert(c_lib.get("money") == "is power");
     std::this_thread::sleep_for (std::chrono::milliseconds(500));
 
@@ -21,4 +24,6 @@ int main(){
     assert(c_lib.get("money") == "is great");
     std::this_thread::sleep_for (std::chrono::milliseconds(500));
 
+    cout << "EVERYTHING WORKED\n" << endl;
+    return 0;
 }

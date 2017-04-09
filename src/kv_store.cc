@@ -23,19 +23,21 @@ void KV_Store::kv_recv() {
 }
 
 void KV_Store::handle_kv_msg(Message* message) {
-    Message* reply;
-    COUT << "Msg in handle_kv_msg: " << message->serialize() << endl;
+    Message* reply = new Message();
+//    COUT << "Msg in handle_kv_msg: " << message->serialize() << endl;
     switch (message->msg_type) {
         case MessageType::PUT: {
             reply = handle_put_msg(message);
             break;
         }
         case MessageType::GET: {
-            reply = handle_put_msg(message);
+            reply = handle_get_msg(message);
             break;
         }
     }
+    this_thread::sleep_for(1s);
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
+        COUT << "reply in handle_kv_msg: " << reply->serialize() << endl;
         reply->sender.host = host_;
         reply->sender.port = port_;
         net_.sendto(reply);
@@ -46,25 +48,32 @@ void KV_Store::handle_kv_msg(Message* message) {
 
 
 Message* KV_Store::handle_get_msg(Message* get_msg) {
-    Message* ack_msg;
+    if (get_msg->view_num % replicas_.size() != replica_id_) {
+        Message* msg = new Message();
+        msg->msg_type = MessageType::NO_ACTION;
+        return msg;
+    }
+    Message* ack_msg = new Message();
     ack_msg->msg_type = MessageType::GET_ACK;
     ack_msg->receivers.push_back(get_msg->sender);
     ack_msg->key = get_msg->key;
     ack_msg->value = learner_->get_latest_value(get_msg->key).value_or("err");
+    COUT << "About to respond with this GET msg::::" << ack_msg->serialize() << endl;
     return ack_msg;
 }
 
 Message* KV_Store::handle_put_msg(Message* put_msg) {
-
     if (put_msg->view_num % replicas_.size() != replica_id_) {
-        Message* msg;
+        Message* msg = new Message();
         msg->msg_type = MessageType::NO_ACTION;
         return msg;
     }
+
     Message msg;
     msg.msg_type = MessageType::START_PREPARE;
 
-    string true_value = put_msg->value
+    string true_value = put_msg->key
+        + "#" + put_msg->value
         + "#" + to_string(port_)
         + "#" + host_
         + "#" + to_string(0); // TODO: Remove?
@@ -83,14 +92,12 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            COUT << "Key, Value pair: " << msg.key << " " << msg.value << endl;
-            delete(reply);
+            COUT << "Key, Value pair: " << msg.key << " " << msg.value << "Replica: " << replica_id_ << endl;
             break;
         }
         cur_view_num += 1;
     }
-
-    Message* ack_msg;
+    Message* ack_msg = new Message();
     ack_msg->msg_type = MessageType::PUT_ACK;
     ack_msg->receivers.push_back(put_msg->sender);
     return ack_msg;

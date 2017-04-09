@@ -61,6 +61,7 @@ void client_lib::put(string key, string value) {
         Message *reply = net.recv_from_with_timeout();
         COUT << "Msg in client lib put: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PUT_ACK) {
+            COUT << "\nTHIS IS A PUT ACK\n" << endl;
             delete(reply);
             return;
         }
