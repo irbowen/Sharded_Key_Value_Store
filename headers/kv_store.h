@@ -9,6 +9,7 @@
 class KV_Store {
 private:
     Learner* learner_;
+    int replica_id_;
     int port_;
     std::string host_;
     std::vector<node> replicas_;
@@ -16,7 +17,7 @@ private:
 
 public:
     /* Setup and shit */
-    KV_Store(int port, std::string host, std::string config_filename);
+    KV_Store(int replica_id, int port, std::string host, std::string config_filename);
     void init(Learner* learner);
 
     /* Listen for messages */

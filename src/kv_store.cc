@@ -1,8 +1,8 @@
 
 #include "../headers/kv_store.h"
 
-KV_Store::KV_Store(int port, std::string host, std::string config_filename)
-    : port_(port), host_(host), net_(port, host)
+KV_Store::KV_Store(int replica_id, int port, std::string host, std::string config_filename)
+    : replica_id_(replica_id), port_(port), host_(host), net_(port, host)
 {
     string h, p, rep_id;
     ifstream config_fs(config_filename);
@@ -55,6 +55,12 @@ Message* KV_Store::handle_get_msg(Message* get_msg) {
 }
 
 Message* KV_Store::handle_put_msg(Message* put_msg) {
+
+    if (put_msg->view_num % replicas_.size() != replica_id_) {
+        Message* msg;
+        msg->msg_type = MessageType::NO_ACTION;
+        return msg;
+    }
     Message msg;
     msg.msg_type = MessageType::START_PREPARE;
 
@@ -79,13 +85,14 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             COUT << "Key, Value pair: " << msg.key << " " << msg.value << endl;
             delete(reply);
+            break;
         }
         cur_view_num += 1;
     }
 
     Message* ack_msg;
     ack_msg->msg_type = MessageType::PUT_ACK;
-    ack_msg->receivers.push_back(put_msg->get_client_node());
+    ack_msg->receivers.push_back(put_msg->sender);
     return ack_msg;
 }
 

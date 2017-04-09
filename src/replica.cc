@@ -44,7 +44,7 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
     proposer.init(replicas, id, &net, seq_holes);
 
     /* Set up the key value store object */
-    kv_store_ = make_unique<KV_Store>(port + 10, host, _config_file);
+    kv_store_ = make_unique<KV_Store>(id, port + 10, host, _config_file);
     kv_store_->init(&learner);
 }
 

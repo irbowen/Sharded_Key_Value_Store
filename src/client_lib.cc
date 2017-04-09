@@ -28,12 +28,13 @@ string client_lib::get(string key) {
     for(auto& r : kv_replicas){
         msg.receivers.push_back(r);
     }
-    net.set_start_timeout_factor(2);
+    net.set_start_timeout_factor(4);
     int cur_view_num = 0;
     while (true) {
         msg.view_num = cur_view_num;
         net.sendto(&msg);
         Message *reply = net.recv_from_with_timeout();
+        COUT << "Msg in client lib get: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::GET_ACK) {
             string val = reply->value;
             delete(reply);
@@ -52,12 +53,13 @@ void client_lib::put(string key, string value) {
     for(auto& r : kv_replicas){
         msg.receivers.push_back(r);
     }
-    net.set_start_timeout_factor(2);
+    net.set_start_timeout_factor(4);
     int cur_view_num = 0;
     while (true) {
         msg.view_num = cur_view_num;
         net.sendto(&msg);
         Message *reply = net.recv_from_with_timeout();
+        COUT << "Msg in client lib put: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PUT_ACK) {
             delete(reply);
             return;
