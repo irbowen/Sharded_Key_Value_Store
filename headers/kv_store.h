@@ -13,11 +13,10 @@ private:
     int port_;
     std::string host_;
     std::vector<node> replicas_;
-    network net_;
 
 public:
     /* Setup and shit */
-    KV_Store(int replica_id, int port, std::string host, std::string config_filename);
+    KV_Store(int replica_id, int port, std::string host, std::vector<node> replicas);
     void init(Learner* learner);
 
     /* Listen for messages */

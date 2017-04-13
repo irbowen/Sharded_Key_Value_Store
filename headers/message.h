@@ -48,9 +48,7 @@ enum MessageType {
     ACCEPT_VALUE = 8,
     PROPOSAL_LEARNT = 9,
     PUT = 10,
-    PUT_ACK = 11,
-    GET = 12,
-    GET_ACK = 13
+    GET = 11
 };
 
 class Message {
@@ -62,6 +60,7 @@ public:
     std::string key = "";
     std::string value = "";
     node sender;
+    node client;
     std::vector<node> receivers;
     std::vector<view_val> acceptor_state;
     std::string serialize();

@@ -15,7 +15,6 @@ client_lib::client_lib(int _port, string _host, string config_filename) : port(_
     ifstream config_fs(config_filename);
     while (config_fs >> h >> p >> rep_id) {
         replicas.push_back(node(stoi(p), h));
-        kv_replicas.push_back(node(stoi(p) + 10, h));
     }
 }
 
@@ -25,7 +24,7 @@ string client_lib::get(string key) {
     msg.msg_type = MessageType::GET;
     msg.key = key;
     msg.sender = node(port, host);
-    for(auto& r : kv_replicas){
+    for(auto& r : replicas){
         msg.receivers.push_back(r);
     }
     net.set_start_timeout_factor(4);
@@ -35,7 +34,7 @@ string client_lib::get(string key) {
         net.sendto(&msg);
         Message *reply = net.recv_from_with_timeout();
   //      COUT << "Msg in client lib get: " << reply->serialize() << endl;
-        if (reply != nullptr && reply->msg_type == MessageType::GET_ACK) {
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             string val = reply->value;
             delete(reply);
             return val;
@@ -50,7 +49,7 @@ void client_lib::put(string key, string value) {
     msg.key = key;
     msg.value = value;
     msg.sender = node(port, host);
-    for(auto& r : kv_replicas){
+    for(auto& r : replicas){
         msg.receivers.push_back(r);
     }
     net.set_start_timeout_factor(4);
@@ -58,9 +57,10 @@ void client_lib::put(string key, string value) {
     while (true) {
         msg.view_num = cur_view_num;
         net.sendto(&msg);
+        cout << "Sending msg: " << msg.serialize() << endl;
         Message *reply = net.recv_from_with_timeout();
 //        COUT << "Msg in client lib put: " << reply->serialize() << endl;
-        if (reply != nullptr && reply->msg_type == MessageType::PUT_ACK) {
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
  //           COUT << "\nTHIS IS A PUT ACK\n" << endl;
             delete(reply);
             return;
