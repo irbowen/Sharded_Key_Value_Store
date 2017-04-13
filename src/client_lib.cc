@@ -28,14 +28,13 @@ string client_lib::get(string key) {
         msg.receivers.push_back(r);
     }
     net.set_start_timeout_factor(4);
-    int cur_view_num = 0;
     while (true) {
         msg.view_num = cur_view_num;
         net.sendto(&msg);
         Message *reply = net.recv_from_with_timeout();
   //      COUT << "Msg in client lib get: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            string val = reply->get_value();
+            string val = reply->value;
             cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
             delete(reply);
             return val;
@@ -54,7 +53,6 @@ void client_lib::put(string key, string value) {
         msg.receivers.push_back(r);
     }
     net.set_start_timeout_factor(4);
-    int cur_view_num = 0;
     while (true) {
         msg.view_num = cur_view_num;
         net.sendto(&msg);
