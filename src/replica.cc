@@ -87,6 +87,17 @@ void replica::handle_msg(Message* message) {
         case MessageType::NO_ACTION:
             break;
         case MessageType::START_PREPARE: {
+            std::string in_client_id = message->get_client_id();
+            int in_client_seq_number = message->get_client_seq_num();
+
+            // if the client's request is already learnt, but didn't get a response
+            // send a response right away
+            if(client_progress_map.count(in_client_id) != 0 &&
+                client_progress_map[in_client_id] >= in_client_seq_number){
+                reply->msg_type = MessageType::PROPOSAL_LEARNT;
+                reply->receivers.push_back(message->get_client_node());
+                break;
+            }
             proposer.to_propose = message->value;
             if (message->view_num > cur_view_num) {
                 cur_view_num = message->view_num;
@@ -99,6 +110,7 @@ void replica::handle_msg(Message* message) {
             }
             if (is_primary(message->view_num)) {
                 int tmp_seq_num = learner.get_seqnum();
+                seq_to_client_map[tmp_seq_num] = message->sender;
                 reply = proposer.handle_prepare_accept_fast(
                         message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
                 make_broadcast(reply);
@@ -145,11 +157,17 @@ void replica::handle_msg(Message* message) {
         }
         /* Value learned msg's are handled by the primary, and sent on to the client */
         case MessageType::PROPOSAL_LEARNT: {
-            if (is_primary(message->view_num) || is_previous_view(message->view_num)) {
+            std::string client_id = message->get_client_id();
+            int client_seq_number = message->get_client_seq_num();
+            if (is_primary(message->view_num)) {
+                if(client_progress_map.count(client_id) != 0 &&
+                   client_progress_map[client_id] >= client_seq_number)
+                    break;
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
                 reply->value = message->value;
                 reply->receivers.push_back(message->get_client_node());
             }
+            client_progress_map[client_id] = client_seq_number;
             break;
         }
         case MessageType::PUT: {
