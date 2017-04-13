@@ -61,7 +61,8 @@ void client_lib::put(string key, string value) {
         cout << "Sending msg: " << msg.serialize() << endl;
         Message *reply = net.recv_from_with_timeout();
 //        COUT << "Msg in client lib put: " << reply->serialize() << endl;
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT 
+                && reply->get_key() == key && reply->get_value() == value) {
 //           COUT << "\nTHIS IS A PUT ACK\n" << endl;
             delete(reply);
             return;

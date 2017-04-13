@@ -36,7 +36,8 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     string true_value = put_msg->key
         + "#" + put_msg->value
         + "#" + to_string(put_msg->sender.port)
-        + "#" + put_msg->sender.host;
+        + "#" + put_msg->sender.host
+        + "#" + to_string(0);
     msg->value = true_value;
 
     msg->sender = node(port_, host_);
