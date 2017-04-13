@@ -44,7 +44,6 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     for (auto& r : replicas_) {
         msg->receivers.push_back(r);
     }
-    cout << "Got a put I could answer: " << endl << put_msg->serialize() << endl << msg->serialize() << endl;
     return msg;
 }
 
