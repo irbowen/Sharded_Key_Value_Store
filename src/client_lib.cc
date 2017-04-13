@@ -45,6 +45,7 @@ string client_lib::get(string key) {
 
 void client_lib::put(string key, string value) {
     Message msg;
+    msg.seq_num = client_seq_num;
     msg.msg_type = MessageType::PUT;
     msg.key = key;
     msg.value = value;
@@ -61,7 +62,8 @@ void client_lib::put(string key, string value) {
 //        COUT << "Msg in client lib put: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT 
                 && reply->get_key() == key && reply->get_value() == value) {
-//           COUT << "\nTHIS IS A PUT ACK\n" << endl;
+            cout << "THIS IS A PUT ACK{{" << val << "}}" << endl;
+            client_seq_num++;
             delete(reply);
             return;
         }
