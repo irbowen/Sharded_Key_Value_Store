@@ -60,7 +60,6 @@ public:
     std::string key = "";
     std::string value = "";
     node sender;
-    node client;
     std::vector<node> receivers;
     std::vector<view_val> acceptor_state;
     std::string serialize();

@@ -103,10 +103,6 @@ void replica::handle_msg(Message* message) {
                         message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
                 make_broadcast(reply);
             }
-            reply->client = message->sender;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         case MessageType::PREPARE_ACCEPT: {
@@ -114,10 +110,6 @@ void replica::handle_msg(Message* message) {
             reply = proposer.handle_prepare_accept(
                     message->acceptor_state, message->view_num, message->value, dummy_seq);
             make_broadcast(reply);
-            reply->client = message->client;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         case MessageType::PREPARE_REJECT: {
@@ -127,10 +119,6 @@ void replica::handle_msg(Message* message) {
         }
         case MessageType::PROPOSE_ACCEPT: {
             reply = proposer.handle_propose_accept(message->view_num);
-            reply->client = message->client;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         case MessageType::PROPOSE_REJECT: {
@@ -142,38 +130,27 @@ void replica::handle_msg(Message* message) {
         case MessageType::PREPARE: {
             reply = acceptor.accept_prepare_msg(message->view_num);
             reply->receivers.push_back(message->sender);
-            reply->client = message->client;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         case MessageType::PROPOSE: {
             reply = acceptor.accept_propose_msg(message->view_num, message->value, message->seq_num);
             make_broadcast(reply);
-            reply->client = message->client;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         /* Accept messages are hanlded by the learner */
         case MessageType::ACCEPT_VALUE: {
             reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value, message);
             make_broadcast(reply);
-            reply->client = message->client;
-            reply->key = message->key;
-            reply->value = message->value;
-            reply->view_num = message->view_num;
             break;
         }
         /* Value learned msg's are handled by the primary, and sent on to the client */
         case MessageType::PROPOSAL_LEARNT: {
-            cout << "Got a learned msg: " << message->serialize() << endl;
             if (is_primary(message->view_num) || is_previous_view(message->view_num)) {
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(message->client);
+                reply->value = message->value;
+                reply->receivers.push_back(message->get_client_node());
             }
+            break;
         }
         case MessageType::PUT: {
             reply = kv_store_->handle_put_msg(message);

@@ -25,11 +25,6 @@ std::string Message::serialize() {
     oss << sender.host;
     oss << div_char;
 
-    oss << client.port;
-    oss << div_char;
-    oss << client.host;
-    oss << div_char;
-
     oss << receivers.size();
     oss << div_char;
     for (auto& r : receivers) {
@@ -70,8 +65,6 @@ void Message::deserialize(std::string in) {
     value = array.at(index++);
     sender.port = stoi(array.at(index++));
     sender.host = array.at(index++);
-    client.port = stoi(array.at(index++));
-    client.host = array.at(index++);
     int num_recv = stoi(array.at(index++));
     // COUT << "Num recv: " << num_recv << endl;
     for (int k = 0; k < num_recv; k++) {

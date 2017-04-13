@@ -33,16 +33,17 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     }
     msg->msg_type = MessageType::START_PREPARE;
     msg->view_num = put_msg->view_num;
-    msg->key = put_msg->key;
-    msg->value = put_msg->value;
+    string true_value = put_msg->key
+        + "#" + put_msg->value
+        + "#" + to_string(put_msg->sender.port)
+        + "#" + put_msg->sender.host;
+    msg->value = true_value;
+
     msg->sender = node(port_, host_);
-    msg->client = put_msg->sender;
     for (auto& r : replicas_) {
         msg->receivers.push_back(r);
     }
-    cout << "Got a put I could answer\n";
-    cout << put_msg->serialize() << endl;
-    cout << msg->serialize() << endl;
+    cout << "Got a put I could answer: " << endl << put_msg->serialize() << endl << msg->serialize() << endl;
     return msg;
 }
 
