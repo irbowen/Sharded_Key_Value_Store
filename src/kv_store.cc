@@ -21,7 +21,7 @@ Message* KV_Store::handle_get_msg(Message* get_msg) {
     ack_msg->msg_type = MessageType::PROPOSAL_LEARNT;
     ack_msg->receivers.push_back(get_msg->sender);
     ack_msg->key = get_msg->key;
-    ack_msg->value = learner_->get_latest_value(get_msg->key).value_or("err");
+    ack_msg->value = learner_->get_latest_value(get_msg->key);
     return ack_msg;
 }
 

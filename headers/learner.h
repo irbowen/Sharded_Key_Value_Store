@@ -6,7 +6,6 @@
 #include <fstream>
 #include <map>
 #include <mutex>
-#include <experimental/optional>
 #include <string>
 #include <thread>
 #include "message.h"
@@ -43,7 +42,7 @@ public:
     Message* handle_learn_msg(int view_num, int seq_num, std::string value, Message* msg);
     Message* broadcast_learn(int seq_num);
 
-    std::experimental::optional<std::string> get_latest_value(std::string key);
+    std::string get_latest_value(std::string key);
     void print_log();
     int get_seqnum();
     int get_seqnum_with_skip();

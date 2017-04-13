@@ -31,14 +31,14 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value, Messa
     return reply;
 }
 
-experimental::optional<string> Learner::get_latest_value(string key) {
+string Learner::get_latest_value(string key) {
     lock_guard<mutex> lock(m);
     auto res = find_if(object_log.rbegin(), object_log.rend(),
         [key](auto& obj) {
             return obj.key == key;
     });
     if (res == object_log.rend()) {
-        return {};
+        return "ERROR: Key not found";
     }
     return res->value;
 
