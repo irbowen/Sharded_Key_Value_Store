@@ -12,14 +12,17 @@ int main(){
     c_lib.put("money", "is power");
     assert(c_lib.get("money") == "is power");
     std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    cout << "1st Put - Get successful!" << endl;
 
     c_lib.put("greed", "is good");
     assert(c_lib.get("greed") == "is good");
     std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    cout << "2nd Put - Get successful!" << endl;
 
     c_lib.put("money", "is great");
     assert(c_lib.get("money") == "is great");
     std::this_thread::sleep_for (std::chrono::milliseconds(500));
+    cout << "3rd Put - Get successful!" << endl;
 
     cout << "EVERYTHING WORKED\n" << endl;
     return 0;
