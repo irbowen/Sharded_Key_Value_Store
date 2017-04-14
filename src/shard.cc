@@ -17,8 +17,26 @@ void Shard::run() {
     unique_lock<mutex> lock(m);
     while (true) {
         cv.wait(lock);
-        // Grab next thing from queue
-        // Call put,get, and then return to client
+        Message* next_msg = msg_queue_.front();
+        msg_queue_.pop();
+        Message* reply = new Message();
+        switch (next_msg->msg_type) {
+            case MessageType::NO_ACTION:
+                break;
+            case MessageType::GET: {
+                reply = handle_get(next_msg->key);
+                break;
+            }
+            case MessageType::PUT: {
+                reply = handle_put(next_msg->key, next_msg->value);
+                break;
+            }
+            case MessageType::DELETE: {
+                reply = handle_delete(next_msg->key);
+                break;
+            }
+            break;
+        }
     }
 }
 
@@ -28,8 +46,7 @@ void Shard::register_msg(Message* message) {
     cv.notify_one();
 }
 
-string Shard::get(string key) {
-    // TODO CHECK QUEUE
+Message* Shard::handle_get(string key) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::GET;
@@ -47,15 +64,14 @@ string Shard::get(string key) {
             string val = reply->value;
             cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
             client_seq_num_++;
-            delete(reply);
-            return val;
+            // Send the same message we just got back to the client
+            return reply;
         }
         cur_view_num_ += 1;
     }
 }
 
-void Shard::put(string key, string value) {
-    // TODO CHECK QUEUE
+Message* Shard::handle_put(string key, string value) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::PUT;
@@ -71,14 +87,19 @@ void Shard::put(string key, string value) {
         net_.sendto(&msg);
         cout << "Sending msg: " << msg.serialize() << endl;
         Message *reply = net_.recv_from_with_timeout();
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT 
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT
                 && reply->get_key() == key && reply->get_value() == value) {
-            cout << "THIS IS A PUT ACK{{" << reply->get_key() << " " << reply->get_value()  << "}}" << endl;
+            cout << "THIS IS A PUT ACK{{" << reply->get_key()
+                << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
-            delete(reply);
-            return;
+            // Send the same message we just got back to the client
+            return reply;
         }
         cur_view_num_ += 1;
     }
+}
+
+Message* Shard::handle_delete(string key) {
+    return handle_put(key, "ERROR: Key not found");
 }
 
