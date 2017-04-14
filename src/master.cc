@@ -35,7 +35,3 @@ void Master::handle_msg(Message* message) {
     shards_.at(shard_id).register_msg(message);
 }
 
-int main(int argc, char* argv[]) {
-    Master m(5000, "127.0.0.1", "configs/master_config3.txt");
-    m.recv();
-}
