@@ -4,9 +4,9 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
 #include <vector>
 
-#include "replica.h"
 #include "message.h"
 #include "network.h"
 

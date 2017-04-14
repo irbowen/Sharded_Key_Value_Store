@@ -21,6 +21,7 @@ client_lib::client_lib(int _port, string _host, string config_filename) : port(_
 
 string client_lib::get(string key) {
     Message msg;
+    msg.seq_num = client_seq_num;
     msg.msg_type = MessageType::GET;
     msg.key = key;
     msg.sender = node(port, host);
@@ -36,6 +37,7 @@ string client_lib::get(string key) {
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             string val = reply->value;
             cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
+            client_seq_num++;
             delete(reply);
             return val;
         }
@@ -62,7 +64,7 @@ void client_lib::put(string key, string value) {
 //        COUT << "Msg in client lib put: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT 
                 && reply->get_key() == key && reply->get_value() == value) {
-            cout << "THIS IS A PUT ACK{{" << val << "}}" << endl;
+            cout << "THIS IS A PUT ACK{{" << reply->get_key() << " " << reply->get_value()  << "}}" << endl;
             client_seq_num++;
             delete(reply);
             return;
