@@ -31,13 +31,12 @@ clients: $(CLIENTS)
 kv_client_%.out: objs/kv_client_%.o $(CLIENT_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
-
 master: $(MASTER_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 ########################################
 clean:
-	touch bin/paxos_server
+	touch bin/paxos_server bin/master
 	touch log_0.txt
 	touch objs/dummy.o bin/dummy.out
-	rm objs/*.o bin/*.out log_*.txt bin/paxos_server
+	rm objs/*.o bin/*.out log_*.txt bin/master bin/paxos_server

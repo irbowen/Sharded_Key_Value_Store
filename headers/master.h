@@ -17,6 +17,8 @@ private:
 
     int tolerated_failures_;
 
+    /* The master uses this to communicate
+       with the clients */
     network net_;
 
 public:

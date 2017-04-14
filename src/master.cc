@@ -1,12 +1,4 @@
 
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
-
 #include "../headers/master.h"
 #include "../headers/message.h"
 
@@ -21,9 +13,7 @@ Master::Master(int port, string host, string master_config_file)
     assert(h == host);
     config_fs >> f;
     tolerated_failures_ = stoi(f);
-    while (config_fs >> h >> p >> rep_id) {
-        replicas.push_back(node(stoi(p), h));
-    }
+    // TODO: read in shards
 }
 
 void Master::recv() {
@@ -33,30 +23,19 @@ void Master::recv() {
     }
 }
 
-void Master::get_shard_id(Message* message) {
+int Master::get_shard_id(Message* message) {
     // TODO. For now, all on shard 0
     return 0;
 }
 
 void Master::handle_msg(Message* message) {
+    // TODO handle moves - this only works for put/get
     /* Figure out which shard is responsible for this key, and send the call to it */
     int shard_id = get_shard_id(message);
-    Message* reply = shards_.at(shard_id).handle_msg(message);
-    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        reply->sender.host = host_;
-        reply->sender.port = port_;
-        cout << "[Master] Sending reply: " << reply->serialize() << endl;
-        net_.sendto(reply);
-    }
-    delete(message);
-    delete(reply);
-    // See if there are any queued up messages for this shard
-    Message* reply = shards_.at(shard_id).check_queue();
-    if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        reply->sender.host = host_;
-        reply->sender.port = port_;
-        cout << "[Master] Sending reply: " << reply->serialize() << endl;
-        net_.sendto(reply);
-    }
-    delete(reply);
+    shards_.at(shard_id).register_msg(message);
+}
+
+int main(int argc, char* argv[]) {
+    Master m(5000, "127.0.0.1", "configs/master_config3.txt");
+    m.recv();
 }
