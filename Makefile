@@ -12,7 +12,7 @@ MASTER_LIB := objs/master_main.o objs/master.o objs/shard.o $(BOTH_LIB)
 
 ########################################
 default: all
-all: paxos_server clients master
+all: paxos_server clients kv_master
 
 DEPS := $(wildcard headers/*.h)
 
@@ -31,12 +31,12 @@ clients: $(CLIENTS)
 kv_client_%.out: objs/kv_client_%.o $(CLIENT_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
-master: $(MASTER_LIB)
+kv_master: $(MASTER_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 ########################################
 clean:
-	touch bin/paxos_server bin/master
+	touch bin/paxos_server bin/kv_master
 	touch log_0.txt
 	touch objs/dummy.o bin/dummy.out
-	rm objs/*.o bin/*.out log_*.txt bin/master bin/paxos_server
+	rm objs/*.o bin/*.out log_*.txt bin/kv_master bin/paxos_server
