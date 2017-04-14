@@ -29,9 +29,13 @@ int Master::get_shard_id(Message* message) {
 }
 
 void Master::handle_msg(Message* message) {
-    // TODO handle moves - this only works for put/get
     /* Figure out which shard is responsible for this key, and send the call to it */
-    int shard_id = get_shard_id(message);
-    shards_.at(shard_id).register_msg(message);
+    if (message->msg_type == MessageType::GET ||
+            message->msg_type == MessageType::PUT ||
+            message->msg_type == MessageType::DELETE) {
+        int shard_id = get_shard_id(message);
+        shards_.at(shard_id).register_msg(message);
+    }
+    // TODO handle moves - this only works for put/get
 }
 
