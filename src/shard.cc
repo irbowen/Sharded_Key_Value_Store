@@ -8,9 +8,12 @@ Shard::Shard(int port, std::string host, std::string config_filename)
 {
     string h, p, rep_id;
     ifstream config_fs(config_filename);
+    cout << "Shard is online with these replicas: ";
     while (config_fs >> h >> p >> rep_id) {
         replicas_.push_back(node(stoi(p), h));
+        cout << " " << host << ":" << p << ", ";
     }
+    cout << endl;
 }
 
 void Shard::run() {

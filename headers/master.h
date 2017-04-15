@@ -13,7 +13,7 @@ class Master {
 private:
     int port_;
     std::string host_;
-    std::vector<Shard> shards_;
+    std::vector<Shard*> shards_;
 
     int tolerated_failures_;
 

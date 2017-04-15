@@ -49,7 +49,8 @@ enum MessageType {
     PROPOSAL_LEARNT = 9,
     PUT = 10,
     GET = 11,
-    DELETE = 12
+    DELETE = 12,
+    ADD_SHARD = 13
 };
 
 class Message {

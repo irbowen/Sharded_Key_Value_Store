@@ -6,14 +6,24 @@
 Master::Master(int port, string host, string master_config_file)
     : port_(port), host_(host), net_(port, host) 
 {
-    string h, p, rep_id, f;
+    /* The master reads in the host and port that it will listen on
+       for client requests */
+    string h, p, id, f;
     ifstream config_fs(master_config_file);
+    /* Make sure the command line and config file agree */
     config_fs >> h >> p;
     assert(stoi(p) == port);
     assert(h == host);
     config_fs >> f;
     tolerated_failures_ = stoi(f);
-    // TODO: read in shards
+    /* Read in each config file name. Each file describes on shard */
+    int counter = 1;
+    string file_name;
+    while (config_fs >> file_name) {
+        Shard* s = new Shard(port_ + counter, host_, file_name);
+        shards_.push_back(s);
+        counter++;
+    }
 }
 
 void Master::recv() {
@@ -29,13 +39,16 @@ int Master::get_shard_id(Message* message) {
 }
 
 void Master::handle_msg(Message* message) {
-    /* Figure out which shard is responsible for this key, and send the call to it */
+    /* Figure out which shard is responsible for this key,
+       and send the call to it */
     if (message->msg_type == MessageType::GET ||
             message->msg_type == MessageType::PUT ||
             message->msg_type == MessageType::DELETE) {
         int shard_id = get_shard_id(message);
-        shards_.at(shard_id).register_msg(message);
+        shards_.at(shard_id)->register_msg(message);
     }
-    // TODO handle moves - this only works for put/get
+    if (message->msg_type == MessageType::ADD_SHARD) {
+        // TODO handle moves - this only works for put/get
+    }
 }
 
