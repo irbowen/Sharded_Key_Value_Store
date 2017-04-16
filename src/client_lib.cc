@@ -61,3 +61,17 @@ void client_lib::delete_key(std::string key) {
         }
     }
 }
+
+void client_lib::add_shard() {
+    Message msg;
+    msg.msg_type = MessageType::ADD_SHARD;
+    msg.sender = node(client_port_, client_host_);
+    msg.receivers.push_back(node(master_port_, master_host_));
+    while (true) {
+        net_.sendto(&msg);
+        Message *reply = net_.recv_from();
+        if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
+            return;
+        }
+    }
+}
