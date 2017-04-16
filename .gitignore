@@ -4,3 +4,4 @@ bin/*.out
 objs/*.o
 configs/shard*.txt
 configs/master_config.txt
+scripts/start_replicas.sh
