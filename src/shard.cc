@@ -19,9 +19,12 @@ Shard::Shard(int port, std::string host, std::string config_filename)
 void Shard::run() {
     unique_lock<mutex> lock(m);
     while (true) {
-        cv.wait(lock);
+        while (msg_queue_.empty()) {
+            cv.wait(lock);
+        }
         Message* next_msg = msg_queue_.front();
         msg_queue_.pop();
+        lock.unlock();
         Message* reply = new Message();
         switch (next_msg->msg_type) {
             case MessageType::NO_ACTION:

@@ -50,7 +50,8 @@ enum MessageType {
     PUT = 10,
     GET = 11,
     DELETE = 12,
-    ADD_SHARD = 13
+    ADD_SHARD = 13,
+    MASTER_ACK = 14
 };
 
 class Message {

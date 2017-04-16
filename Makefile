@@ -12,7 +12,7 @@ MASTER_LIB := objs/master_main.o objs/master.o objs/shard.o $(BOTH_LIB)
 
 ########################################
 default: all
-all: paxos_server clients kv_master
+all: paxos_server kv_master
 
 DEPS := $(wildcard headers/*.h)
 

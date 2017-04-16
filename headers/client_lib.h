@@ -2,32 +2,21 @@
 #ifndef CLIENT_LIB_H
 #define CLIENT_LIB_H
 
-#include <iostream>
 #include <string>
-#include <fstream>
-#include <vector>
 
 #include "message.h"
 #include "network.h"
 
 class client_lib {
 private:
-	int port;
-	std::string host;
-    std::string current_primary;
-    std::string find_master();
-    uint cur_view_num = 0;
-    int client_seq_num;
-    network net;
-    std::vector<node> replicas;
-    std::vector<node> kv_replicas;
+    int master_port_, client_port_;
+    std::string master_host_, master_port_;
+    network net_;
 public:
-    client_lib(int _port, string _host, string config_filename);
-    // Blocking until success, may retry multiple times under the hood
-    // Primary, upon receiving learn msg itself, will reply to client
-    void add_chat_message(std::string msg);
+    client_lib(int master_port, std::string master_host, int client_port, std::string client_host);
     std::string get(std::string key);
     void put(std::string key, std::string value);
+    void delete_key(std::string key);
 };
 
 #endif
