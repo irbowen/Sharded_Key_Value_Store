@@ -40,7 +40,7 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
     }
     num_replicas = replicas.size();
     acceptor.init(num_replicas, id);
-    learner.init(num_replicas, id);
+    learner.init(num_replicas, id, port);
     proposer.init(replicas, id, &net, seq_holes);
 
     /* Set up the key value store object */
@@ -176,6 +176,10 @@ void replica::handle_msg(Message* message) {
         }
         case MessageType::GET: {
             reply = kv_store_->handle_get_msg(message);
+            break;
+        }
+        case MessageType::GET_KEYS: {
+            reply = kv_store_->handle_get_all_keys(message);
             break;
         }
     }
