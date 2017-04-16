@@ -38,9 +38,9 @@ public:
     void run();
     /* These functions assume that this shard has the key that you want */
     void register_msg(Message* message);
-    Message* handle_get(std::string key);
-    Message* handle_put(std::string key, std::string value);
-    Message* handle_delete(std::string key);
+    Message* handle_get(std::string key, node sender);
+    Message* handle_put(std::string key, std::string value, node sender);
+    Message* handle_delete(std::string key, node sender);
 };
 
 #endif

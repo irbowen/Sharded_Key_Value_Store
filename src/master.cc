@@ -21,6 +21,8 @@ Master::Master(int port, string host, string master_config_file)
     string file_name;
     while (config_fs >> file_name) {
         Shard* s = new Shard(port_ + counter, host_, file_name);
+        thread t(&Shard::run, s);
+        t.detach();
         shards_.push_back(s);
         counter++;
     }

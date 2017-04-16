@@ -21,7 +21,9 @@ string client_lib::get(string key) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
         Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             string val = reply->value;
             delete(reply);
@@ -39,10 +41,12 @@ void client_lib::put(string key, string value) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
         Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
-            string val = reply->value;
             delete(reply);
+            return;
         }
     }
 }
@@ -55,10 +59,11 @@ void client_lib::delete_key(std::string key) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
         Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
-            string val = reply->value;
-            delete(reply);
+            return;
         }
     }
 }

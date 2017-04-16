@@ -10,8 +10,8 @@ int main(){
     client_lib c_lib(7000, "127.0.0.1", 5000, "127.0.0.1");
 
     string str;
+    cout << "put, get, or delete?\n";
     while (getline(cin, str)) {
-        cout << "put, get, or delete?\n";
         if (str == "put") {
             string key, value;
             cout << "Key?:" << endl;
@@ -35,6 +35,7 @@ int main(){
         else if (str == "break") {
             break;
         }
+        cout << "put, get, or delete?\n";
     }
 
     return 0;

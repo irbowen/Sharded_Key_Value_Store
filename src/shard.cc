@@ -4,11 +4,11 @@
 using namespace std;
 
 Shard::Shard(int port, std::string host, std::string config_filename)
-    : config_filename_(config_filename), net_(port, host)
+    : port_(port), host_(host), config_filename_(config_filename), net_(port, host)
 {
     string h, p, rep_id;
     ifstream config_fs(config_filename);
-    cout << "Shard is online with these replicas: ";
+    cout << "Shard(" << port << ", " << host << ") is online with these replicas: ";
     while (config_fs >> h >> p >> rep_id) {
         replicas_.push_back(node(stoi(p), h));
         cout << " " << host << ":" << p << ", ";
@@ -30,19 +30,26 @@ void Shard::run() {
             case MessageType::NO_ACTION:
                 break;
             case MessageType::GET: {
-                reply = handle_get(next_msg->key);
+                reply = handle_get(next_msg->key, next_msg->sender);
                 break;
             }
             case MessageType::PUT: {
-                reply = handle_put(next_msg->key, next_msg->value);
+                reply = handle_put(next_msg->key, next_msg->value, next_msg->sender);
                 break;
             }
             case MessageType::DELETE: {
-                reply = handle_delete(next_msg->key);
+                reply = handle_delete(next_msg->key, next_msg->sender);
                 break;
             }
             break;
         }
+        if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
+            reply->sender = node(port_, host_);
+            cout << "[SHARD] - Sending reply: " << reply->serialize() << endl;
+            net_.sendto(reply);
+        }
+        delete(next_msg);
+        delete(reply);
     }
 }
 
@@ -52,7 +59,7 @@ void Shard::register_msg(Message* message) {
     cv.notify_one();
 }
 
-Message* Shard::handle_get(string key) {
+Message* Shard::handle_get(string key, node sender) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::GET;
@@ -71,13 +78,16 @@ Message* Shard::handle_get(string key) {
             cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
             client_seq_num_++;
             // Send the same message we just got back to the client
+            reply->msg_type = MessageType::MASTER_ACK;
+            reply->receivers.clear();
+            reply->receivers.push_back(sender);
             return reply;
         }
         cur_view_num_ += 1;
     }
 }
 
-Message* Shard::handle_put(string key, string value) {
+Message* Shard::handle_put(string key, string value, node sender) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::PUT;
@@ -99,13 +109,17 @@ Message* Shard::handle_put(string key, string value) {
                 << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
             // Send the same message we just got back to the client
+            reply->msg_type = MessageType::MASTER_ACK;
+            reply->receivers.clear();
+            reply->receivers.push_back(sender);
+            cout << "RETURNING THIS: " << reply->serialize() << endl;
             return reply;
         }
         cur_view_num_ += 1;
     }
 }
 
-Message* Shard::handle_delete(string key) {
-    return handle_put(key, "ERROR: Key not found");
+Message* Shard::handle_delete(string key, node sender) {
+    return handle_put(key, "ERROR: Key not found", sender);
 }
 
