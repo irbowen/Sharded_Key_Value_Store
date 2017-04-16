@@ -7,104 +7,63 @@
 
 using namespace std;
 
-client_lib::client_lib(int _port, string _host, string config_filename) : port(_port), host(_host), net(_port, _host) {
-    cur_view_num = 0;
-    client_seq_num = 0;
-
-    string h, p, rep_id;
-    ifstream config_fs(config_filename);
-    while (config_fs >> h >> p >> rep_id) {
-        replicas.push_back(node(stoi(p), h));
-    }
+client_lib::client_lib(int master_port, string master_host, int client_port, string client_host) :
+    master_port_(master_port), master_host_(master_host), client_port_(client_port), client_host_(client_host), net_(client_port, client_host)
+{
 }
 
 
 string client_lib::get(string key) {
     Message msg;
-    msg.seq_num = client_seq_num;
     msg.msg_type = MessageType::GET;
     msg.key = key;
-    msg.sender = node(port, host);
-    for(auto& r : replicas){
-        msg.receivers.push_back(r);
-    }
-    net.set_start_timeout_factor(4);
+    msg.sender = node(client_port_, client_host_);
+    msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
-        msg.view_num = cur_view_num;
-        net.sendto(&msg);
-        Message *reply = net.recv_from_with_timeout();
-  //      COUT << "Msg in client lib get: " << reply->serialize() << endl;
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
+        net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
+        Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
+        if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             string val = reply->value;
-            cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
-            client_seq_num++;
             delete(reply);
             return val;
         }
-        cur_view_num += 1;
     }
 }
 
 void client_lib::put(string key, string value) {
     Message msg;
-    msg.seq_num = client_seq_num;
     msg.msg_type = MessageType::PUT;
     msg.key = key;
     msg.value = value;
-    msg.sender = node(port, host);
-    for(auto& r : replicas){
-        msg.receivers.push_back(r);
-    }
-    net.set_start_timeout_factor(4);
+    msg.sender = node(client_port_, client_host_);
+    msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
-        msg.view_num = cur_view_num;
-        net.sendto(&msg);
-        cout << "Sending msg: " << msg.serialize() << endl;
-        Message *reply = net.recv_from_with_timeout();
-//        COUT << "Msg in client lib put: " << reply->serialize() << endl;
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT 
-                && reply->get_key() == key && reply->get_value() == value) {
-            cout << "THIS IS A PUT ACK{{" << reply->get_key() << " " << reply->get_value()  << "}}" << endl;
-            client_seq_num++;
+        net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
+        Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
+        if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             delete(reply);
             return;
         }
-        cur_view_num += 1;
     }
 }
 
-void client_lib::add_chat_message(std::string chat_message){
+void client_lib::delete_key(std::string key) {
     Message msg;
-    msg.msg_type = MessageType::START_PREPARE;
-    msg.view_num = cur_view_num;
-
-    string true_value = chat_message 
-        + "#" + to_string(port)
-        + "#" + host
-        + "#" + to_string(client_seq_num);
-
-    msg.value = true_value;
-
-    msg.sender = node(port, host);
-
-    for(auto& r : replicas){
-        msg.receivers.push_back(r);
-    }
-
-    // the client will keep trying until success
+    msg.msg_type = MessageType::DELETE;
+    msg.key = key;
+    msg.sender = node(client_port_, client_host_);
+    msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
-        msg.view_num = cur_view_num;
-        net.sendto(&msg);
-        Message *reply = net.recv_from_with_timeout();
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            // the client library blocks until success so a return is a success to the client
-            delete(reply);
-            COUT << chat_message << " has been added to the chat log" << endl;
-            client_seq_num++;
+        net_.sendto(&msg);
+        cout << "Sent: " << msg.serialize() << endl;
+        Message *reply = net_.recv_from();
+        cout << "Recv: " << reply->serialize() << endl;
+        if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             return;
         }
-        cur_view_num += 1;
     }
-
-    return;
 }
