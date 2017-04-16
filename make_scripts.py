@@ -19,7 +19,7 @@ for i in range(0, int(n)):
     f_ = open(shard_config, 'w')
     f_.write(shard_data)
 
-f_ = open('scripts/all_start.sh', 'w')
+f_ = open('scripts/start_replicas.sh', 'w')
 f_.write(startup)
 f_ = open('configs/master_config.txt', 'w')
 f_.write(master_config_data)
