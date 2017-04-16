@@ -42,6 +42,14 @@ std::string Message::serialize() {
         oss << v.value;
         oss << div_char;
     }
+
+    oss << all_keys.size();
+    oss << div_char;
+    for (auto &v : all_keys){
+        oss << v;
+        oss << div_char;
+    }
+
     return oss.str();
 }
 
@@ -80,6 +88,10 @@ void Message::deserialize(std::string in) {
         v.view_num = stoi(array.at(index++));
         v.value = array.at(index++);
         acceptor_state.push_back(v);
+    }
+    int num_keys = stoi(array.at(index++));
+    for(int k = 0;k < num_keys; k++){
+        all_keys.push_back(array.at(index++));
     }
     // COUT << "Num recv: " << num_recv << endl;
 }
