@@ -1,7 +1,7 @@
 
 #include "../headers/master.h"
 #include "../headers/message.h"
-
+#include <ctype.h>
 /* Setting up the replica with the provided port and host */
 Master::Master(int port, string host, string master_config_file)
     : port_(port), host_(host), net_(port, host) 
@@ -37,7 +37,9 @@ void Master::recv() {
 
 int Master::get_shard_id(Message* message) {
     // TODO. For now, all on shard 0
-    return 0;
+    int shard_id = (int)(tolower(message->key[0])-'a') % shards_.size();
+    cout << "assigned shard is " << shard_id << endl;
+    return shard_id;
 }
 
 void Master::handle_msg(Message* message) {
