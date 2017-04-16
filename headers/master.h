@@ -20,7 +20,7 @@ private:
     /* The master uses this to communicate
        with the clients */
     network net_;
-
+    network move_net;
 public:
     /* Init and shit */
     Master(int port, std::string host, std::string master_config_file);
