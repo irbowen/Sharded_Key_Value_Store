@@ -26,6 +26,7 @@ public:
     void handle_kv_msg(Message* message);
     Message* handle_get_msg(Message* get_msg);
     Message* handle_put_msg(Message* put_msg);
+    Message* handle_get_all_keys(Message* get_msg);
 };
 
 #endif

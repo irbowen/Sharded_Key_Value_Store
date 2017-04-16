@@ -51,7 +51,8 @@ enum MessageType {
     GET = 11,
     DELETE = 12,
     ADD_SHARD = 13,
-    MASTER_ACK = 14
+    MASTER_ACK = 14,
+    GET_KEYS = 15
 };
 
 class Message {
@@ -62,6 +63,7 @@ public:
     int seq_num = 0;
     std::string key = "";
     std::string value = "";
+    std::vector<std::string> all_keys;
     node sender;
     std::vector<node> receivers;
     std::vector<view_val> acceptor_state;
