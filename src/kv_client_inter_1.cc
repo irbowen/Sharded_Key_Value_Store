@@ -24,11 +24,13 @@ int main(){
         else if (str == "get") {
             string key;
             cout << "Enter key: ";
+            getline(cin, key);
             cout << c_lib.get(key) << endl;
         }
         else if (str == "delete") {
             string key;
             cout << "Enter key: ";
+            getline(cin, key);
             cout << c_lib.get(key) << endl;
         }
         else if (str == "exit") {
