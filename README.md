@@ -9,6 +9,10 @@ You can get started with
 ```bash
 git@github.com:irbowen/Sharded_Key_Value_Store.git
 cd Sharded_Key_Value_Store
+
+# generate config files based on #shards and #tolerated failures
+python make_scripts.py
+
 make
 ./scripts/start_master.sh; ./scripts/all_start.sh 
 ```
