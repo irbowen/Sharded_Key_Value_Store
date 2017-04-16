@@ -28,12 +28,12 @@ private:
     size_t quorum;
     size_t id;
     std::map<int, Score> score_map;
-
+    int port;
 public:
     /* KV Store needs access to the data log */
     std::vector<std::string> log;
     std::vector<Object> object_log;
-    void init(size_t replica_count, size_t _id);
+    void init(size_t replica_count, size_t _id, int port);
 
     // For all of the below methods, the caller is responsible for freeing the memory
     // used by the messages that are returned
@@ -43,6 +43,7 @@ public:
     Message* broadcast_learn(int seq_num);
 
     std::string get_latest_value(std::string key);
+    std::vector<std::string> get_all_keys();
     void print_log();
     int get_seqnum();
     int get_seqnum_with_skip();
