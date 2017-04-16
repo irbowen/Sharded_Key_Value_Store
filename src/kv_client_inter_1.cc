@@ -10,7 +10,7 @@ int main(){
     client_lib c_lib(7000, "127.0.0.1", 5000, "127.0.0.1");
 
     string str;
-    cout << "put, get, delete or exit?\n";
+    cout << "put, get, delete, add or exit?\n";
     while (getline(cin, str)) {
         if (str == "put") {
             string key, value;
@@ -31,12 +31,17 @@ int main(){
             string key;
             cout << "Enter key: ";
             getline(cin, key);
-            cout << c_lib.get(key) << endl;
+            c_lib.delete_key(key);
+            cout << "Deleted key";
+        }
+        else if(str == "add") {
+            cout << "Adding shard\n";
+            c_lib.add_shard();
         }
         else if (str == "exit") {
             break;
         }
-        cout << "put, get, delete or exit\n";
+        cout << "put, get, delete, add or exit\n";
     }
 
     return 0;
