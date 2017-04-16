@@ -8,7 +8,7 @@ Shard::Shard(int port, std::string host, std::string config_filename)
 {
     string h, p, rep_id;
     ifstream config_fs(config_filename);
-    cout << "Shard(" << port << ", " << host << ") is online with these replicas: ";
+    cout << "[Master_Shard_Object] (" << port << ", " << host << ") is online with these replicas: ";
     while (config_fs >> h >> p >> rep_id) {
         replicas_.push_back(node(stoi(p), h));
         cout << " " << host << ":" << p << ", ";
@@ -45,7 +45,7 @@ void Shard::run() {
         }
         if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
             reply->sender = node(port_, host_);
-            cout << "[SHARD] - Sending reply: " << reply->serialize() << endl;
+            cout << "[Master_Shard_Object] - Sending reply: " << reply->serialize() << endl;
             net_.sendto(reply);
         }
         delete(next_msg);
@@ -75,9 +75,8 @@ Message* Shard::handle_get(string key, node sender) {
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             string val = reply->value;
-            cout << "THIS IS A GET ACK{{" << val << "}}" << endl;
+            cout << "[Master_Shard_Object] - Got value: " << val << endl;
             client_seq_num_++;
-            // Send the same message we just got back to the client
             reply->msg_type = MessageType::MASTER_ACK;
             reply->receivers.clear();
             reply->receivers.push_back(sender);
@@ -101,18 +100,15 @@ Message* Shard::handle_put(string key, string value, node sender) {
     while (true) {
         msg.view_num = cur_view_num_;
         net_.sendto(&msg);
-        cout << "Sending msg: " << msg.serialize() << endl;
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT
                 && reply->get_key() == key && reply->get_value() == value) {
-            cout << "THIS IS A PUT ACK{{" << reply->get_key()
+            cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
                 << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
-            // Send the same message we just got back to the client
             reply->msg_type = MessageType::MASTER_ACK;
             reply->receivers.clear();
             reply->receivers.push_back(sender);
-            cout << "RETURNING THIS: " << reply->serialize() << endl;
             return reply;
         }
         cur_view_num_ += 1;
