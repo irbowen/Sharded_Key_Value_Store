@@ -10,7 +10,7 @@
 class client_lib {
 private:
     int master_port_, client_port_;
-    std::string master_host_, master_port_;
+    std::string master_host_, client_host_;
     network net_;
 public:
     client_lib(int master_port, std::string master_host, int client_port, std::string client_host);

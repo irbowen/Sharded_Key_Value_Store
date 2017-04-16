@@ -47,7 +47,7 @@ void client_lib::put(string key, string value) {
     }
 }
 
-void client_lib::delete_key(std::string chat_message) {
+void client_lib::delete_key(std::string key) {
     Message msg;
     msg.msg_type = MessageType::DELETE;
     msg.key = key;
