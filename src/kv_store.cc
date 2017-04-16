@@ -10,7 +10,18 @@ KV_Store::KV_Store(int replica_id, int port, std::string host, vector<node> repl
 void KV_Store::init(Learner* learner) {
     learner_ = learner;
 }
-
+Message* KV_Store::handle_get_all_keys(Message* get_msg){
+    if (get_msg->view_num % replicas_.size() != replica_id_) {
+        Message* msg = new Message();
+        msg->msg_type = MessageType::NO_ACTION;
+        return msg;
+    }
+    Message* ack_msg = new Message();
+    ack_msg->msg_type = MessageType::PROPOSAL_LEARNT;
+    ack_msg->receivers.push_back(get_msg->sender);
+    ack_msg->all_keys = learner_->get_all_keys();
+    return ack_msg;
+}
 Message* KV_Store::handle_get_msg(Message* get_msg) {
     if (get_msg->view_num % replicas_.size() != replica_id_) {
         Message* msg = new Message();
