@@ -17,8 +17,8 @@ Shard::Shard(int port, std::string host, std::string config_filename)
 }
 
 void Shard::run() {
-    unique_lock<mutex> lock(m);
     while (true) {
+        unique_lock<mutex> lock(m);
         while (msg_queue_.empty()) {
             cv.wait(lock);
         }
@@ -116,6 +116,6 @@ Message* Shard::handle_put(string key, string value, node sender) {
 }
 
 Message* Shard::handle_delete(string key, node sender) {
-    return handle_put(key, "ERROR: Key not found", sender);
+    return handle_put(key, "ERROR - Key not found", sender);
 }
 
