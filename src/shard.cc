@@ -41,6 +41,10 @@ void Shard::run() {
                 reply = handle_delete(next_msg->key, next_msg->sender);
                 break;
             }
+            case MessageType::GET_KEYS: {
+                reply = handle_get_all_keys(next_msg->sender);
+                break;
+            }
             break;
         }
         if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
@@ -114,8 +118,31 @@ Message* Shard::handle_put(string key, string value, node sender) {
         cur_view_num_ += 1;
     }
 }
-
+Message* Shard::handle_get_all_keys(node sender){
+    Message msg;
+    msg.seq_num = client_seq_num_;
+    msg.msg_type = MessageType::GET_KEYS;
+    msg.sender = node(port_, host_);
+    for(auto& r : replicas_){
+        msg.receivers.push_back(r);
+    }
+    net_.set_start_timeout_factor(4);
+    while (true) {
+        msg.view_num = cur_view_num_;
+        net_.sendto(&msg);
+        Message *reply = net_.recv_from_with_timeout();
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
+            cout << "[Master_Shard_Object] - Get all keys - ack {{" << "}}" << endl;
+            client_seq_num_++;
+            reply->msg_type = MessageType::MASTER_ACK;
+            reply->receivers.clear();
+            reply->receivers.push_back(sender);
+            return reply;
+        }
+        cur_view_num_ += 1;
+    }
+}
 Message* Shard::handle_delete(string key, node sender) {
-    return handle_put(key, "ERROR - Key not found", sender);
+    return handle_put(key, "DELETED_KEY", sender);
 }
 
