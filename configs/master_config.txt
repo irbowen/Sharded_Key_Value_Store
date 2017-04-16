@@ -1,4 +1,0 @@
-127.0.0.1 7000
-2
-configs/shard_0.txt
-configs/shard_1.txt
