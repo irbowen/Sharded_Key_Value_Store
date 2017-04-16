@@ -1,7 +1,7 @@
 
 #include <iostream>
 #include <algorithm>
-
+#include <unordered_set>
 #include "../headers/learner.h"
 
 using namespace std;
@@ -37,28 +37,41 @@ string Learner::get_latest_value(string key) {
         [key](auto& obj) {
             return obj.key == key;
     });
-    if (res == object_log.rend()) {
+    if (res == object_log.rend() || res->value == "DELETED_KEY") {
         return "ERROR - Key not found";
     }
     return res->value;
 
 }
-
+vector<string> Learner::get_all_keys(){
+    lock_guard<mutex> lock(m);
+    unordered_set<string> seen_keys;
+    vector<string> _all_keys;
+    for(int i = object_log.size() - 1; i >=0; i--){
+        string key = object_log[i].key;
+        if(key != "DELETED_KEY" &&  seen_keys.count(key) == 0){
+            _all_keys.push_back(key);
+            seen_keys.insert(key);
+        }
+    }
+    return _all_keys;
+}
 void Learner::print_log() {
-    string log_filename = "log_" + to_string(id) + ".txt";
+    string log_filename = "log_" + to_string(port) + "_" + to_string(id) +  + ".txt";
     ostringstream oss;
-    for (auto& msg : log) {
-        if(msg == "")
-            msg = NO_OP;
-        oss << msg << ", ";
+    for (auto& msg : object_log) {
+//        if(msg. == "")
+//            msg = NO_OP;
+        oss << msg.key << ":" << msg.value << ", ";
     }
     ofstream outfile;
     outfile.open(log_filename, ios_base::app);
-    outfile << oss.str() << endl;
+    outfile << oss.str() << endl << endl;
 }
 
 
-void Learner::init(size_t replica_count, size_t _id) {
+void Learner::init(size_t replica_count, size_t _id, int port) {
+    this->port = port;
     quorum = (1 + replica_count) >> 1;
     id = _id;
 }
