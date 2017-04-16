@@ -1,6 +1,8 @@
+.DS_Store
 log_*.txt
 bin/paxos_server
 bin/*.out
+bin/*
 objs/*.o
 configs/shard*.txt
 configs/master_config.txt
