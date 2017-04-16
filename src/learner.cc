@@ -38,7 +38,7 @@ string Learner::get_latest_value(string key) {
             return obj.key == key;
     });
     if (res == object_log.rend()) {
-        return "ERROR: Key not found";
+        return "ERROR - Key not found";
     }
     return res->value;
 
