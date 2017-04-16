@@ -10,32 +10,31 @@ int main(){
     client_lib c_lib(7000, "127.0.0.1", 5000, "127.0.0.1");
 
     string str;
-    cout << "put, get, or delete?\n";
+    cout << "put, get, delete or exit?\n";
     while (getline(cin, str)) {
         if (str == "put") {
             string key, value;
-            cout << "Key?:" << endl;
+            cout << "Enter key: " << endl;
             getline(cin, key);
-            cout << "Value?:";
+            cout << "Enter value: ";
             getline(cin, value);
-            cout << "Working..." << endl;
             c_lib.put(key, value);
-            cout << "Done!" << endl;
+            cout << "Key-Value pair added!" << endl;
         }
         else if (str == "get") {
             string key;
-            cout << "Key?:";
+            cout << "Enter key: ";
             cout << c_lib.get(key) << endl;
         }
         else if (str == "delete") {
             string key;
-            cout << "Key?:";
+            cout << "Enter key: ";
             cout << c_lib.get(key) << endl;
         }
-        else if (str == "break") {
+        else if (str == "exit") {
             break;
         }
-        cout << "put, get, or delete?\n";
+        cout << "put, get, delete or exit\n";
     }
 
     return 0;
