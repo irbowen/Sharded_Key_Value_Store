@@ -20,7 +20,7 @@ Master::Master(int port, string host, string master_config_file)
     config_fs >> f;
     tolerated_failures_ = stoi(f);
 
-    ring_size = 300;
+    ring_size = 300; //1 << 20;
 
     /* Read in each config file name. Each file describes on shard */
     int counter = 1;
@@ -32,8 +32,7 @@ Master::Master(int port, string host, string master_config_file)
         t.detach();
         shards_.push_back(s);
         string what_to_hash = s->get_port_host();
-//        _ring.push_back(hash(what_to_hash));
-        _ring.push_back(rand() % ring_size);
+        _ring.push_back(hash(what_to_hash));
         counter++;
     }
 }
@@ -48,11 +47,8 @@ void Master::recv() {
 int Master::hash(string input){
     // compute hash_val TODO
     // hash function goes here
-    int hash_val = 0;
-    for(int i = 0; i< input.size(); i++){
-        hash_val += (int)input[i];
-    }
-    return hash_val % ring_size;
+    std::hash<string> str_hash;
+    return str_hash(input) % ring_size;
 }
 int Master::get_shard_id(Message* message) {
     // TODO. For now, all on shard 0
@@ -90,7 +86,7 @@ void Master::create_shard(string config){
 void Master::handle_add_shard(Message *message){
     create_shard(message->value);   // value stores the config file name
 
-    int hash_new_shard = rand() % ring_size; //hash(message->value);  // hash the config file
+    int hash_new_shard = hash(message->value);  // hash the config file
 
     // initialize to smallest
     //auto it = min_element(_ring.begin(), _ring.end());
@@ -110,7 +106,7 @@ void Master::handle_add_shard(Message *message){
 
     for(auto key: keys){
         // hash each get and decide which needs to go where
-        if (hash(key) <= hash_new_shard)
+        if (hash(key) <= hash_new_shard || hash(key) > _ring[successor_id])
             to_move_keys.push_back(key);
     }
 
