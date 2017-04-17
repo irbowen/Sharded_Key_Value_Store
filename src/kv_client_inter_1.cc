@@ -32,7 +32,7 @@ int main(){
             cout << "Enter key: ";
             getline(cin, key);
             c_lib.delete_key(key);
-            cout << "Deleted key";
+            cout << "Deleted key\n";
         }
         else if(str == "add") {
             string config;
