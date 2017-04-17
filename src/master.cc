@@ -44,7 +44,9 @@ void Master::recv() {
 int Master::hash(string input){
     // hash function goes here
     std::hash<string> str_hash;
-    return str_hash(input) % ring_size;
+    auto temp = str_hash(input) % ring_size;
+    cout << "hash of " << input << " is " << temp << endl;
+    return temp;
 }
 int Master::get_shard_id(Message* message) {
     return get_successor(hash(message->key));
@@ -75,9 +77,9 @@ void Master::create_shard(string config){
 void Master::handle_add_shard(Message *message){
     create_shard(message->value);   // value stores the config file name
 
-    int hash_new_shard = hash(message->value);  // hash the config file
-    int successor_id = get_successor(hash_new_shard);
-    _ring.push_back(hash_new_shard);
+    int new_shard_hash = hash(message->value);  // hash the config file
+    int successor_id = get_successor(new_shard_hash);
+    _ring.push_back(new_shard_hash);
     int new_shard_id = (int)shards_.size() - 1; // last added shard is the new shard
 
     Message *get_all_message = new Message;
@@ -88,11 +90,19 @@ void Master::handle_add_shard(Message *message){
     vector<string> keys = reply->all_keys;
 
     vector<string> to_move_keys;
-
+    int successor_hash = _ring[successor_id];
     for(auto key: keys){
         // hash each get and decide which needs to go where
-        if (hash(key) <= hash_new_shard || hash(key) > _ring[successor_id])
-            to_move_keys.push_back(key);
+        auto key_hash = hash(key);
+        if(successor_hash > new_shard_hash){
+            if(key_hash > successor_hash || key_hash <= new_shard_hash){
+                to_move_keys.push_back(key);
+            }
+        } else{
+            if(key_hash > successor_hash && key_hash <= new_shard_hash){
+                to_move_keys.push_back(key);
+            }
+        }
     }
 
     for(auto key: to_move_keys){
