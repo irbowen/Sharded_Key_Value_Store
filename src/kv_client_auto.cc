@@ -33,9 +33,15 @@ int main(){
         c_lib.put(key[i], value[i]);
         map[key[i]] = value[i];
 
-        if(i%500 == 0 && i!=0){
+        if(i % (N/2) == 0 && i != 0){
             // add new shard in the middle
-            c_lib.add_shard("configs/shard_1.txt");
+            c_lib.add_shard("configs/shard_2.txt");
+            c_lib.add_shard("configs/shard_3.txt");
+            c_lib.add_shard("configs/shard_4.txt");
+        }
+        if(i % (3*N/4) == 0 && i != 0){
+            c_lib.add_shard("configs/shard_5.txt");
+            c_lib.add_shard("configs/shard_6.txt");
         }
     }
     for(int i = 0; i< N; i ++){
