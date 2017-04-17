@@ -2,6 +2,9 @@
 #include "../headers/master.h"
 #include "../headers/message.h"
 #include <ctype.h>
+#include <time.h>
+#include <cstdlib>
+
 /* Setting up the replica with the provided port and host */
 Master::Master(int port, string host, string master_config_file)
     : port_(port), host_(host), net_(port, host) , move_net(port - 1, host)
@@ -16,14 +19,21 @@ Master::Master(int port, string host, string master_config_file)
     assert(h == host);
     config_fs >> f;
     tolerated_failures_ = stoi(f);
+
+    ring_size = 300;
+
     /* Read in each config file name. Each file describes on shard */
     int counter = 1;
     string file_name;
+    srand((unsigned int)time(NULL));
     while (config_fs >> file_name) {
         Shard* s = new Shard(port_ + counter, host_, file_name);
         thread t(&Shard::run, s);
         t.detach();
         shards_.push_back(s);
+        string what_to_hash = s->get_port_host();
+//        _ring.push_back(hash(what_to_hash));
+        _ring.push_back(rand() % ring_size);
         counter++;
     }
 }
@@ -35,18 +45,108 @@ void Master::recv() {
     }
 }
 
-
+int Master::hash(string input){
+    // compute hash_val TODO
+    // hash function goes here
+    int hash_val = 0;
+    for(int i = 0; i< input.size(); i++){
+        hash_val += (int)input[i];
+    }
+    return hash_val % ring_size;
+}
 int Master::get_shard_id(Message* message) {
     // TODO. For now, all on shard 0
-    int shard_id = (int)(tolower(message->key[0])-'a') % shards_.size();
-    cout << "assigned shard is " << shard_id << endl;
-    return shard_id;
-
+    // int shard_id = (int)(tolower(message->key[0])-'a') % shards_.size();
+    // cout << "assigned shard is " << shard_id << endl;
+    // return shard_id;
+    return get_successor(hash(message->key));
 
     // int ring_size = 300;
     // vector<int> ring(ring_size, 0);
 }
+int Master::get_successor(int hash){
+    int min_index = -1;
+    int min_val = ring_size;
+    for(int i = 0; i < _ring.size(); i++){
+        if(_ring[i] >= hash){
+            if(min_val > _ring[i]){
+                min_index = i;
+                min_val = _ring[i];
+            }
+        }
+    }
+    if(min_index == -1){
+        min_index = static_cast<int>(min_element(_ring.begin(), _ring.end()) - _ring.begin());
+    }
+    return min_index;
+}
+void Master::create_shard(string config){
+    int shard_port = port_ + (int)shards_.size() + 1;
+    Shard* s = new Shard(shard_port, host_, config);
+    thread t(&Shard::run, s);
+    t.detach();
+    shards_.push_back(s);
+}
+void Master::handle_add_shard(Message *message){
+    create_shard(message->value);   // value stores the config file name
 
+    int hash_new_shard = rand() % ring_size; //hash(message->value);  // hash the config file
+
+    // initialize to smallest
+    //auto it = min_element(_ring.begin(), _ring.end());
+
+    int successor_id = get_successor(hash_new_shard);
+    _ring.push_back(hash_new_shard);
+    int new_shard_id = (int)shards_.size() - 1; // last added shard is the new shard
+
+    Message *get_all_message = new Message;
+    get_all_message->sender = node(port_ - 1, host_);
+    get_all_message->msg_type = MessageType::GET_KEYS;
+    shards_.at(successor_id)->register_msg(get_all_message);
+    Message *reply = move_net.recv_from();
+    vector<string> keys = reply->all_keys;
+
+    vector<string> to_move_keys;
+
+    for(auto key: keys){
+        // hash each get and decide which needs to go where
+        if (hash(key) <= hash_new_shard)
+            to_move_keys.push_back(key);
+    }
+
+    for(auto key: to_move_keys){
+        // get key_value from old shard
+        Message *mess = new Message;
+        mess->sender = node(port_ - 1, host_);
+        mess->msg_type = MessageType::GET;
+        mess->key = key;
+        shards_.at(successor_id)->register_msg(mess);
+
+        // put key_value to new shard
+        mess = move_net.recv_from();
+        mess->sender = node(port_ - 1, host_);
+        mess->msg_type = MessageType::PUT;
+        shards_.at(new_shard_id)->register_msg(mess);
+
+        // delete key_value from old shard
+        mess = move_net.recv_from();
+        mess->key = key;
+        mess->sender = node(port_ - 1, host_);
+        mess->msg_type = MessageType::DELETE;
+        shards_.at(successor_id)->register_msg(mess);
+        mess = move_net.recv_from();
+        delete(mess);
+    }
+    // note : the master is blocking on the above add shard operation
+    // hence new requests from clients will be queued up in net_
+    // but we use move_net for moving keys from shards
+    
+    // send success to client
+    reply = new Message;
+    reply->msg_type = MessageType::MASTER_ACK;
+    reply->receivers.push_back(message->sender);
+    net_.sendto(reply);
+}
 void Master::handle_msg(Message* message) {
     /* Figure out which shard is responsible for this key,
        and send the call to it */
@@ -57,55 +157,7 @@ void Master::handle_msg(Message* message) {
         shards_.at(shard_id)->register_msg(message);
     }
     if (message->msg_type == MessageType::ADD_SHARD) {
-        int successor_id = 0; // get successor id
-        int new_shard_id = 1; // get new shard id
-        Message *get_all_message = new Message;
-        get_all_message->sender = node(port_ - 1, host_);
-        get_all_message->msg_type = MessageType::GET_KEYS;
-        shards_.at(successor_id)->register_msg(get_all_message);
-        Message *reply = move_net.recv_from();
-        vector<string> keys = reply->all_keys;
-
-        vector<string> to_move_keys;
-        bool should_move = true;
-        for(auto key: keys){
-            // hash each get and decide which needs to go where
-            if (should_move)
-                to_move_keys.push_back(key);
-        }
-
-        for(auto key: to_move_keys){
-            // get key_value from old shard
-            Message *mess = new Message;
-            mess->sender = node(port_ - 1, host_);
-            mess->msg_type = MessageType::GET;
-            mess->key = key;
-            shards_.at(successor_id)->register_msg(mess);
-
-            // put key_value to new shard
-            mess = move_net.recv_from();
-            mess->sender = node(port_ - 1, host_);
-            mess->msg_type = MessageType::PUT;
-            shards_.at(new_shard_id)->register_msg(mess);
-
-            // delete key_value from old shard
-            mess = move_net.recv_from();
-            mess->key = key;
-            mess->sender = node(port_ - 1, host_);
-            mess->msg_type = MessageType::DELETE;
-            shards_.at(successor_id)->register_msg(mess);
-            mess = move_net.recv_from();
-            delete(mess);
-        }
-        // note : the master is blocking on the above add shard operation
-        // hence new requests from clients will be queued up in net_
-        // but we use move_net for moving keys from shards
-        
-        // send success to client
-        reply = new Message;
-        reply->msg_type = MessageType::MASTER_ACK;
-        reply->receivers.push_back(message->sender);
-        net_.sendto(reply);
+        handle_add_shard(message);
     }
 }
 
