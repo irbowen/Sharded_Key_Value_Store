@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <cstdlib>
+#include <algorithm>
 
 /* Setting up the replica with the provided port and host */
 Master::Master(int port, string host, string master_config_file)
