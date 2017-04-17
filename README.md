@@ -14,7 +14,7 @@ cd Sharded_Key_Value_Store
 python make_scripts.py
 
 make
-./scripts/start_master.sh; ./scripts/all_start.sh 
+./scripts/start_master.sh; ./scripts/start_replicas.sh 
 ```
 This will build the binares for the key-value/paxos replicas, the master, and all of the test clients.
 You can see all the running processes with
