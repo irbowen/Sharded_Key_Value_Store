@@ -36,6 +36,7 @@ private:
 public:
     Shard(int port, std::string host, std::string config_filename);
     void run();
+    std::string get_port_host();
     /* These functions assume that this shard has the key that you want */
     void register_msg(Message* message);
     Message* handle_get(std::string key, node sender);

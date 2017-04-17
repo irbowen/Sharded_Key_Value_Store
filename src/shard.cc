@@ -15,7 +15,9 @@ Shard::Shard(int port, std::string host, std::string config_filename)
     }
     cout << endl;
 }
-
+string Shard::get_port_host(){
+    return to_string(port_) + host_;
+}
 void Shard::run() {
     while (true) {
         unique_lock<mutex> lock(m);
