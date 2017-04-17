@@ -7,17 +7,15 @@ Our paxos implmentation is written in c++14.
 You can get started with the following
 
 ```bash
-git@github.com:irbowen/Sharded_Key_Value_Store.git
+git clone git@github.com:irbowen/Sharded_Key_Value_Store.git
 cd Sharded_Key_Value_Store
-mkdir bin
-mkdir objs
+mkdir bin objs
 
 # generate config files based on #shards and #tolerated failures
-python3 make_scripts.py
+./make_scripts.py
 
 # Make sure we can run the scripts
-chmod +x scripts/*
-chmod +x run.sh
+chmod +x scripts/start_replicas.sh
 
 # Run the whole setup!
 ./run.sh
