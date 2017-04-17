@@ -20,8 +20,6 @@ Master::Master(int port, string host, string master_config_file)
     config_fs >> f;
     tolerated_failures_ = stoi(f);
 
-    ring_size = 300; //1 << 20;
-
     /* Read in each config file name. Each file describes on shard */
     int counter = 1;
     string file_name;
@@ -36,29 +34,19 @@ Master::Master(int port, string host, string master_config_file)
         counter++;
     }
 }
-
 void Master::recv() {
     while (true) {
         Message* msg = net_.recv_from();
         handle_msg(msg);
     }
 }
-
 int Master::hash(string input){
-    // compute hash_val TODO
     // hash function goes here
     std::hash<string> str_hash;
     return str_hash(input) % ring_size;
 }
 int Master::get_shard_id(Message* message) {
-    // TODO. For now, all on shard 0
-    // int shard_id = (int)(tolower(message->key[0])-'a') % shards_.size();
-    // cout << "assigned shard is " << shard_id << endl;
-    // return shard_id;
     return get_successor(hash(message->key));
-
-    // int ring_size = 300;
-    // vector<int> ring(ring_size, 0);
 }
 int Master::get_successor(int hash){
     int min_index = -1;
@@ -87,10 +75,6 @@ void Master::handle_add_shard(Message *message){
     create_shard(message->value);   // value stores the config file name
 
     int hash_new_shard = hash(message->value);  // hash the config file
-
-    // initialize to smallest
-    //auto it = min_element(_ring.begin(), _ring.end());
-
     int successor_id = get_successor(hash_new_shard);
     _ring.push_back(hash_new_shard);
     int new_shard_id = (int)shards_.size() - 1; // last added shard is the new shard

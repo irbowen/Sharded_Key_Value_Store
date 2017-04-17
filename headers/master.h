@@ -14,7 +14,7 @@ private:
     int port_;
     std::string host_;
     std::vector<Shard*> shards_;
-    int ring_size;
+    const int ring_size = 300;
     int tolerated_failures_;
 
     /* The master uses this to communicate
