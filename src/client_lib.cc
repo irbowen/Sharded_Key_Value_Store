@@ -62,8 +62,9 @@ void client_lib::delete_key(std::string key) {
     }
 }
 
-void client_lib::add_shard() {
+void client_lib::add_shard(std::string config) {
     Message msg;
+    msg.value = config;
     msg.msg_type = MessageType::ADD_SHARD;
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));

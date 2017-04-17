@@ -17,7 +17,7 @@ public:
     std::string get(std::string key);
     void put(std::string key, std::string value);
     void delete_key(std::string key);
-    void add_shard();
+    void add_shard(std::string config);
 
 };
 
