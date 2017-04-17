@@ -35,8 +35,10 @@ int main(){
             cout << "Deleted key";
         }
         else if(str == "add") {
-            cout << "Adding shard\n";
-            c_lib.add_shard();
+            string config;
+            cout << "Enter config file\n";
+            getline(cin, config);
+            c_lib.add_shard(config);
         }
         else if (str == "exit") {
             break;
