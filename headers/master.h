@@ -2,6 +2,7 @@
 #ifndef master_h
 #define master_h
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
