@@ -3,6 +3,7 @@ import os, stat
 
 f = input('How many failures to tolerate per shard? ')
 n = input('How many shards? ')
+sn = input('How many shards should the master know about at start? ')
 p = input('Starting port (try 8000)? ')
 
 startup = ''
@@ -10,7 +11,8 @@ master_config_data = '127.0.0.1 7000\n%s\n' % f
 for i in range(0, int(n)):
     shard_port = int(p) + 100 * i
     shard_config = 'configs/shard_%d.txt' % i
-    master_config_data += shard_config + '\n'
+    if i < int(sn):
+        master_config_data += shard_config + '\n'
     shard_data = ''
     t = 2 * int(f) + 1
     for k in range(0, t):
