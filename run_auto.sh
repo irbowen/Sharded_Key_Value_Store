@@ -5,3 +5,4 @@ make clean; make;
 sleep 1
 clear;
 ./bin/kv_client_auto.out
+./scripts/kill_all.sh
