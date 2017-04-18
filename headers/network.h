@@ -23,7 +23,7 @@
 
 using namespace std;
 #define MICROSECONDS 1000
-#define START_TIMEOUT (1000 * MICROSECONDS)
+#define START_TIMEOUT (100 * MICROSECONDS)
 #define MICRO_PER_SECOND 1000000
 
 class network {

@@ -92,6 +92,8 @@ Message* Shard::handle_get(string key, node sender) {
             return reply;
         }
         cur_view_num_ += 1;
+        cout << "View Num Changed to: " << cur_view_num_ << endl;
+
     }
 }
 
@@ -121,6 +123,7 @@ Message* Shard::handle_put(string key, string value, node sender) {
             return reply;
         }
         cur_view_num_ += 1;
+        cout << "View Num Changed to: " << cur_view_num_ << endl;
     }
 }
 Message* Shard::handle_get_all_keys(node sender){

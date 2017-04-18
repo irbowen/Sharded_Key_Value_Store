@@ -64,9 +64,9 @@ Message* network::recv_from_with_timeout() {
         struct timeval tv;
         tv.tv_sec = micro_second_delay / MICRO_PER_SECOND;
         tv.tv_usec = micro_second_delay % MICRO_PER_SECOND;
-        tv.tv_sec = 10000000;
+        //tv.tv_sec = 10000000;
         assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
-        COUT << "listener: waiting to recv_from with delay of " << micro_second_delay << "\n";
+        //COUT << "listener: waiting to recv_from with delay of " << micro_second_delay << "\n";
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
         // COUT << "Num bytes: " << numbytes << endl;
         if (numbytes <= 0) {
