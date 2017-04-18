@@ -45,7 +45,7 @@ int Master::hash(string input){
     // hash function goes here
     std::hash<string> str_hash;
     auto temp = str_hash(input) % ring_size;
-    cout << "hash of " << input << " is " << temp << endl;
+    //cout << "hash of " << input << " is " << temp << endl;
     return temp;
 }
 int Master::get_shard_id(Message* message) {
