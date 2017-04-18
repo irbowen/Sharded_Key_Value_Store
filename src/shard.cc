@@ -78,10 +78,7 @@ Message* Shard::handle_get(string key, node sender) {
     while (true) {
         // run paxos for getting the message, so that the new primary if any is
         // up to date with the latest values that took place so far
-        Message *response = handle_put("READ_KEY", key, sender);
-        if(response == nullptr || response->msg_type != MessageType::PROPOSAL_LEARNT){
-            continue;
-        }
+        handle_put("READ_KEY", key, sender);
         msg.view_num = cur_view_num_;
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
