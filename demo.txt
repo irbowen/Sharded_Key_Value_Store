@@ -22,3 +22,7 @@ Demo 3 (Interactive clients + master processing multiple requests)
 4. pause entire shard 2
 5. Client 2 doesn't get responses to shard 2
 6. But client 1 gets response from shard 1
+
+Demo 4 (Unordered map verification)
+1. Three shards, 5 replicas, one shard in master_configs
+2. ./run.sh with kv_client_auto.cc
