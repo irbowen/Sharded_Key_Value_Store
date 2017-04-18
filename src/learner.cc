@@ -60,8 +60,9 @@ void Learner::print_log() {
     string log_filename = "log_" + to_string(port) + "_" + to_string(id) +  + ".txt";
     ostringstream oss;
     for (auto& msg : object_log) {
-//        if(msg. == "")
-//            msg = NO_OP;
+        if (msg.key == "READ_KEY") {
+            continue;
+        }
         oss << msg.key << ":" << msg.value << ", ";
     }
     ofstream outfile;
