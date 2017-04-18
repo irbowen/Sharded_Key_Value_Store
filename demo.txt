@@ -1,0 +1,24 @@
+Demo 1 (linearizability)
+0. python make script
+1. 5 replicas, 1 shard
+2. put hash good
+3. pause id 2
+4. put hash bad
+5. kill id 0 and 1
+6. Unpause
+7. get hash
+
+Demo 2 (killing + adding shard + view changes)
+1. 3 replicas, 2 shards
+2. bunch of puts
+3. kill first replica of all shards
+4. add shard
+5. view changes happen
+
+Demo 3 (Interactive clients + master processing multiple requests)
+1. Two shards, 5 replicas each
+2. Two interactive clients
+3. puts that go in both shards
+4. pause entire shard 2
+5. Client 2 doesn't get responses to shard 2
+6. But client 1 gets response from shard 1
