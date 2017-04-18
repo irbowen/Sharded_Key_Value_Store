@@ -112,8 +112,7 @@ Message* Shard::handle_put(string key, string value, node sender) {
         msg.view_num = cur_view_num_;
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
-        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT
-                && reply->get_key() == key && reply->get_value() == value) {
+        if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             //cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
             //    << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
