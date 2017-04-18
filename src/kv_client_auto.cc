@@ -35,13 +35,10 @@ int main(){
 
         if(i % (N/2) == 0 && i != 0){
             // add new shard in the middle
-            c_lib.add_shard("configs/shard_2.txt");
-            c_lib.add_shard("configs/shard_3.txt");
-            c_lib.add_shard("configs/shard_4.txt");
+            c_lib.add_shard("configs/shard_1.txt");
         }
         if(i % (3*N/4) == 0 && i != 0){
-            c_lib.add_shard("configs/shard_5.txt");
-            c_lib.add_shard("configs/shard_6.txt");
+            c_lib.add_shard("configs/shard_2.txt");
         }
     }
     for(int i = 0; i< N; i ++){
