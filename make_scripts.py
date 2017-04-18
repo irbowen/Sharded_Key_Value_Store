@@ -1,10 +1,14 @@
 #!/usr/bin/python3
-import os, stat
+import os, stat, shutil, os.path
 
 f = input('How many failures to tolerate per shard? ')
 n = input('How many shards? ')
 sn = input('How many shards should the master know about at start? ')
 p = input('Starting port (try 8000)? ')
+
+shutil.rmtree('configs') if os.path.isdir('configs') else None
+os.mkdir('configs')
+open('configs/holes.txt', 'w').write('0\n2\n4\n6\n')
 
 startup = ''
 master_config_data = '127.0.0.1 7000\n%s\n' % f
