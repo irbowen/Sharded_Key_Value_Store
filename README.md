@@ -14,9 +14,6 @@ mkdir bin objs
 # generate config files based on #shards and #tolerated failures
 ./make_scripts.py
 
-# Make sure we can run the scripts
-chmod +x scripts/start_replicas.sh
-
 # Run the whole setup!
 ./run.sh
 
