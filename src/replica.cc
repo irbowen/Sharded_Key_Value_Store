@@ -94,6 +94,8 @@ void replica::handle_msg(Message* message) {
             // send a response right away
             if(client_progress_map.count(in_client_id) != 0 &&
                 client_progress_map[in_client_id] >= in_client_seq_number){
+                reply->key = message->key;
+                reply->value = learner.get_latest_value(message->key);
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
                 reply->receivers.push_back(message->get_client_node());
                 break;
