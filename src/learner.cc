@@ -46,15 +46,26 @@ string Learner::get_latest_value(string key) {
 vector<string> Learner::get_all_keys(){
     lock_guard<mutex> lock(m);
     unordered_set<string> seen_keys;
-    vector<string> _all_keys;
-    for(int i = object_log.size() - 1; i >=0; i--){
-        string key = object_log[i].key;
-        if(key != "DELETED_KEY" &&  seen_keys.count(key) == 0){
-            _all_keys.push_back(key);
+    vector<Object> recent_obs;
+    for (auto it = object_log.rbegin(); it < object_log.rend(); it++) {
+        string key = it->key;
+        if (seen_keys.count(key) == 0) {
+            recent_obs.push_back(*it);
             seen_keys.insert(key);
         }
     }
-    return _all_keys;
+    vector<string> return_keys;
+    for (auto& obj : recent_obs) {
+        if (obj.value != "DELETED_KEY") {
+            return_keys.push_back(obj.key);
+        }
+    }
+    cout << "Moving keys\n";
+    for (auto& k : return_keys) {
+        cout << "Key: " << k << ", ";
+    }
+    cout << endl;
+    return return_keys;;
 }
 void Learner::print_log() {
     string log_filename = "log_" + to_string(port) + "_" + to_string(id) +  + ".txt";
