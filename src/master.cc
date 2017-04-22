@@ -127,7 +127,6 @@ void Master::handle_add_shard(Message *message){
         shards_.at(successor_id)->register_msg(mess);
         mess = move_net.recv_from();
         delete(mess);
-        std::this_thread::sleep_for(1s);
     }
     // note : the master is blocking on the above add shard operation
     // hence new requests from clients will be queued up in net_
