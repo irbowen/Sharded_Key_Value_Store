@@ -40,6 +40,7 @@ public:
     void sendto(Message* message);
     Message* recv_from();
     Message* recv_from_with_timeout();
+    Message* recv_from_with_fixed_timeout();
 };
 
 #endif

@@ -21,7 +21,7 @@ string client_lib::get(string key) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
-        Message *reply = net_.recv_from();
+        Message *reply = net_.recv_from_with_fixed_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             string val = reply->value;
             delete(reply);
@@ -39,7 +39,7 @@ void client_lib::put(string key, string value) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
-        Message *reply = net_.recv_from();
+        Message *reply = net_.recv_from_with_fixed_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             delete(reply);
             return;
@@ -55,7 +55,7 @@ void client_lib::delete_key(std::string key) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
-        Message *reply = net_.recv_from();
+        Message *reply = net_.recv_from_with_fixed_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             return;
         }
@@ -70,7 +70,7 @@ void client_lib::add_shard(std::string config) {
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
         net_.sendto(&msg);
-        Message *reply = net_.recv_from();
+        Message *reply = net_.recv_from_with_fixed_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             return;
         }
