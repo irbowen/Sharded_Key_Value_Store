@@ -3,7 +3,7 @@
 
 Isaac Bowen(irbowen) & Pranav Ramarao(pranavr)
 
-Our paxos implmentation is written in c++14.
+Our paxos implementation is written in c++14.
 You can get started with the following
 
 ```bash
