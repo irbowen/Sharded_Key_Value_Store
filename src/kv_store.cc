@@ -46,8 +46,8 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     msg->view_num = put_msg->view_num;
     string true_value = put_msg->key
         + "#" + put_msg->value
-        + "#" + to_string(put_msg->sender.port)
-        + "#" + put_msg->sender.host
+        + "#" + to_string(put_msg->sender.port_)
+        + "#" + put_msg->sender.host_
         + "#" + to_string(put_msg->seq_num);
     msg->value = true_value;
 
@@ -57,4 +57,3 @@ Message* KV_Store::handle_put_msg(Message* put_msg) {
     }
     return msg;
 }
-

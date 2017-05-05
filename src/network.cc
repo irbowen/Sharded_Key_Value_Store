@@ -112,8 +112,8 @@ void network::sendto(Message* message) {
     memset(&to_addr, 0 , sizeof(to_addr));
     for (auto serv : message->receivers) {
         to_addr.sin_family = AF_INET;
-        to_addr.sin_port = htons(serv.port);
-        inet_aton(serv.host.c_str(), &to_addr.sin_addr);
+        to_addr.sin_port = htons(serv.port_);
+        inet_aton(serv.host_.c_str(), &to_addr.sin_addr);
         auto msg_buf = message->serialize();
         ::sendto(serverfd, msg_buf.c_str(), msg_buf.size(), 0,
                 (struct sockaddr *)&to_addr, sizeof(to_addr));

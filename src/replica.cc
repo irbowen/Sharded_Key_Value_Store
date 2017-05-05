@@ -186,8 +186,8 @@ void replica::handle_msg(Message* message) {
         }
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        reply->sender.host = host;
-        reply->sender.port = port;
+        reply->sender.host_ = host;
+        reply->sender.port_ = port;
         // cout << "Sending reply: " << reply->serialize() << endl;
         net.sendto(reply);
     }

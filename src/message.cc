@@ -20,17 +20,17 @@ std::string Message::serialize() {
     oss << value;
     oss << div_char;
 
-    oss << sender.port;
+    oss << sender.port_;
     oss << div_char;
-    oss << sender.host;
+    oss << sender.host_;
     oss << div_char;
 
     oss << receivers.size();
     oss << div_char;
     for (auto& r : receivers) {
-        oss << r.port;
+        oss << r.port_;
         oss << div_char;
-        oss << r.host;
+        oss << r.host_;
         oss << div_char;
     }
 
@@ -71,15 +71,15 @@ void Message::deserialize(std::string in) {
     seq_num = stoi(array.at(index++));
     key = array.at(index++);
     value = array.at(index++);
-    sender.port = stoi(array.at(index++));
-    sender.host = array.at(index++);
+    sender.port_ = stoi(array.at(index++));
+    sender.host_ = array.at(index++);
     int num_recv = stoi(array.at(index++));
     // COUT << "Num recv: " << num_recv << endl;
     for (int k = 0; k < num_recv; k++) {
         // COUT << "at: " << array.at(start + i) << " " << array.at(start + 1 + i) << endl;
         node r;
-        r.port = stoi(array.at(index++));
-        r.host = array.at(index++);
+        r.port_ = stoi(array.at(index++));
+        r.host_ = array.at(index++);
         receivers.push_back(r);
     }
     num_recv = stoi(array.at(index++));
@@ -128,4 +128,3 @@ node Message::get_client_node() {
     auto array =  split(value);
     return node(stoi(array.at(2)), array.at(3));
 }
-

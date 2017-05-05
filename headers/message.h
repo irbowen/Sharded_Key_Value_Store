@@ -28,11 +28,12 @@ struct view_val {
     view_val() {view_num = -1; value = NO_OP;}
 };
 
-struct node {
-    int port;
-    std::string host;
-    // any other info regarding a server
-    node(int _port, std::string _host) : port(_port), host(_host) {}
+/* A class reprenting a single running replica */
+class node {
+public:
+    int port_;
+    std::string host_;
+    node(int port, std::string host) : port_(port), host_(host) {}
     node(){}
 };
 
