@@ -24,7 +24,7 @@
 
 /* Setting up the replica with the provided port and host */
 paxos::paxos(int _port, string _host, int _id, string _config_file, string _holes_file) :
-    port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
+    port(_port), host(_host), id(_id), cur_view_num(-1)
 {
     string h, p, rep_id;
     ifstream config_fs(_config_file);

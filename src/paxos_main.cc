@@ -5,13 +5,15 @@
 
 //Project
 #include "../headers/replica.h"
+#include "../headers/environment.h"
+
 
 #define no_argument 0
 #define required_argument 1
 #define optional_argument 2
 
 int main(int argc, char* argv[]) {
-    
+
     const struct option longopts[] = {
         {"host", required_argument, 0, 'h'},
         {"port", required_argument, 0, 'p'},
@@ -49,6 +51,9 @@ int main(int argc, char* argv[]) {
         }
     }
     assert(port != -1 && id != -1);
+    // Create the environment, and then pass that to the replica
+    network net(port, host);
+    environment env(port, host, id, config, &net);
     replica r(port, host, id, config, holes);
     r.start();
 }
