@@ -75,6 +75,8 @@ public:
     std::string get_client_id();
     int get_client_seq_num();
     node get_client_node();
+    bool is_paxos_msg();
+    bool is_kv_msg();
 };
 
 #endif /* message_h */

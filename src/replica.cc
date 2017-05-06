@@ -75,120 +75,19 @@ bool replica::is_previous_view(int view_num) {
     return seen_views.count(view_num) == 1;
 }
 
-
-/* Handle the given message */
+/* Handle the given message, handing off to whichever class should
+   be responsible for the given message */
 void replica::handle_msg(Message* message) {
-    // The simple answer to all of your concurreny problems
-    // unique_lock<mutex> lock(m);
     Message* reply = new Message();
-    // COUT <<"Msg in handle_msg: " <<message->serialize() <<endl;
-    // COUT <<"Current view is: " <<cur_view_num <<endl;
-    switch (message->msg_type) {
-        case MessageType::NO_ACTION:
-            break;
-        case MessageType::START_PREPARE: {
-            std::string in_client_id = message->get_client_id();
-            int in_client_seq_number = message->get_client_seq_num();
-
-            // if the client's request is already learnt, but didn't get a response
-            // send a response right away
-            if(client_progress_map.count(in_client_id) != 0 &&
-                client_progress_map[in_client_id] >= in_client_seq_number){
-                reply->key = message->key;
-                reply->value = learner.get_latest_value(message->key);
-                reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->receivers.push_back(message->get_client_node());
-                break;
-            }
-            proposer.to_propose = message->value;
-            if (message->view_num > cur_view_num) {
-                cur_view_num = message->view_num;
-                if (cur_view_num % num_replicas == id) {
-                    this->proposer.is_new_primary = true;
-                    reply = proposer.handle_start_prepare(cur_view_num);
-                    reply->value = message->value;
-                    make_broadcast(reply);
-                }
-            }
-            if (is_primary(message->view_num)) {
-                int tmp_seq_num = learner.get_seqnum();
-                seq_to_client_map[tmp_seq_num] = message->sender;
-                reply = proposer.handle_prepare_accept_fast(
-                        message->acceptor_state, cur_view_num, message->value, tmp_seq_num);
-                make_broadcast(reply);
-            }
-            break;
-        }
-        case MessageType::PREPARE_ACCEPT: {
-            int dummy_seq = 0;
-            reply = proposer.handle_prepare_accept(
-                    message->acceptor_state, message->view_num, message->value, dummy_seq);
-            make_broadcast(reply);
-            break;
-        }
-        case MessageType::PREPARE_REJECT: {
-            reply = proposer.handle_prepare_reject(message->view_num);
-            make_broadcast(reply);
-            break;
-        }
-        case MessageType::PROPOSE_ACCEPT: {
-            reply = proposer.handle_propose_accept(message->view_num);
-            break;
-        }
-        case MessageType::PROPOSE_REJECT: {
-            reply = proposer.handle_propose_reject(message->view_num);
-            make_broadcast(reply);
-            break;
-        }
-        /* Acceptors handle prepare and propose messages */
-        case MessageType::PREPARE: {
-            reply = acceptor.accept_prepare_msg(message->view_num);
-            reply->receivers.push_back(message->sender);
-            break;
-        }
-        case MessageType::PROPOSE: {
-            reply = acceptor.accept_propose_msg(message->view_num, message->value, message->seq_num);
-            make_broadcast(reply);
-            break;
-        }
-        /* Accept messages are hanlded by the learner */
-        case MessageType::ACCEPT_VALUE: {
-            reply = learner.handle_learn_msg(message->view_num, message->seq_num, message->value, message);
-            make_broadcast(reply);
-            break;
-        }
-        /* Value learned msg's are handled by the primary, and sent on to the client */
-        case MessageType::PROPOSAL_LEARNT: {
-            std::string client_id = message->get_client_id();
-            int client_seq_number = message->get_client_seq_num();
-            if (is_primary(message->view_num)) {
-                if(client_progress_map.count(client_id) != 0 &&
-                   client_progress_map[client_id] >= client_seq_number)
-                    break;
-                reply->msg_type = MessageType::PROPOSAL_LEARNT;
-                reply->value = message->value;
-                reply->receivers.push_back(message->get_client_node());
-            }
-            client_progress_map[client_id] = client_seq_number;
-            break;
-        }
-        case MessageType::PUT: {
-            reply = kv_store_->handle_put_msg(message);
-            break;
-        }
-        case MessageType::GET: {
-            reply = kv_store_->handle_get_msg(message);
-            break;
-        }
-        case MessageType::GET_KEYS: {
-            reply = kv_store_->handle_get_all_keys(message);
-            break;
-        }
+    if (message->is_paxos_msg()) {
+        reply = kv_store_.handle_msg(message);
+    }
+    if (message->is_kv_msg()) {
+        reply = paxos_.handle_msg(message);
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
         reply->sender.host_ = env_->server_.host_;
         reply->sender.port_ = env_->server_.port_;
-        // cout << "Sending reply: " << reply->serialize() << endl;
         env_->net_->sendto(reply);
     }
     delete(message);

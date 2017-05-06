@@ -96,6 +96,27 @@ void Message::deserialize(std::string in) {
     // COUT << "Num recv: " << num_recv << endl;
 }
 
+bool Message::is_paxos_msg() {
+    return (msg_type == MessageType::START_PREPARE ||
+        msg_type == MessageType::PREPARE ||
+        msg_type == MessageType::PREPARE_ACCEPT ||
+        msg_type == MessageType::PREPARE_REJECT ||
+        msg_type == MessageType::PROPOSE ||
+        msg_type == MessageType::PROPOSE_ACCEPT ||
+        msg_type == MessageType::PROPOSE_REJECT ||
+        msg_type == MessageType::ACCEPT_VALUE ||
+        msg_type == MessageType::PROPOSAL_LEARNT);
+}
+
+bool Message::is_kv_msg() {
+    return (msg_type == MessageType::PUT ||
+        msg_type == MessageType::GET ||
+        msg_type == MessageType::DELETE ||
+        msg_type == MessageType::ADD_SHARD ||
+        msg_type == MessageType::MASTER_ACK ||
+        msg_type == MessageType::GET_KEYS);
+}
+
 std::vector<std::string> split(std::string in) {
     std::vector<std::string> array;
     size_t pos = 0, found;
