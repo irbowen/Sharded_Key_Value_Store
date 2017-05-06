@@ -17,13 +17,12 @@
 #include "network.h"
 #include "proposer.h"
 #include "kv_store.h"
+#include "environment.h"
+#include "network.h"
 
 class replica {
 private:
-    mutex m;
-    // server info
-    int port;
-    std::string host;
+    environment* env_;
 
     // replica id
     int id;
@@ -39,8 +38,6 @@ private:
 
     // total number of replicas in the system
     size_t num_replicas = 0;
-
-    network net;
 
     bool is_seq_hole(int seq);
 
@@ -70,7 +67,7 @@ public:
     bool is_primary(int view_num);
     bool is_previous_view(int view_num);
 
-    replica(int _port, std::string _host, int _id, std::string _config_file, std::string _holes_file);
+    replica(environment* env, std::string _holes_file);
     void start();
     void recv();
     void kv_recv();

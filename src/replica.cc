@@ -22,15 +22,11 @@
 #include "../headers/replica.h"
 #include "../headers/message.h"
 
+using namespace std;
+
 /* Setting up the replica with the provided port and host */
-replica::replica(int _port, string _host, int _id, string _config_file, string _holes_file) :
-    port(_port), host(_host), id(_id), cur_view_num(-1), net(_port, _host)
+replica::replica(environment* env, string _holes_file) : cur_view_num(-1)
 {
-    string h, p, rep_id;
-    ifstream config_fs(_config_file);
-    while (config_fs >> h >> p >> rep_id) {
-        replicas.push_back(node(stoi(p), h));
-    }
     if (_holes_file != "") {
         string hole;
         ifstream holes_fs(_holes_file);
@@ -38,19 +34,23 @@ replica::replica(int _port, string _host, int _id, string _config_file, string _
             seq_holes.push_back(stoi(hole));
         }
     }
-    num_replicas = replicas.size();
+    auto id = env->id_;
+    auto port = env->server_.port_;
+    auto host = env->server_.host_;
+    auto num_replicas = env->num_replicas_;
     acceptor.init(num_replicas, id);
     learner.init(num_replicas, id, port);
-    proposer.init(replicas, id, &net, seq_holes);
+    proposer.init(replicas, id, env->net_, seq_holes);
 
     /* Set up the key value store object */
     kv_store_ = make_unique<KV_Store>(id, port, host, replicas);
     kv_store_->init(&learner);
+    env_ = env;
 }
 
 void replica::recv() {
     while (true) {
-        Message* msg = net.recv_from();
+        Message* msg = env_->net_->recv_from();
         handle_msg(msg);
     }
 }
@@ -186,10 +186,10 @@ void replica::handle_msg(Message* message) {
         }
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        reply->sender.host_ = host;
-        reply->sender.port_ = port;
+        reply->sender.host_ = env_->server_.host_;
+        reply->sender.port_ = env_->server_.port_;
         // cout << "Sending reply: " << reply->serialize() << endl;
-        net.sendto(reply);
+        env_->net_->sendto(reply);
     }
     delete(message);
     delete(reply);
