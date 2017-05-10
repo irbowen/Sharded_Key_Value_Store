@@ -17,9 +17,8 @@ struct Score {
 };
 
 struct Object {
-    std::string key;
-    std::string value;
-    Object(std::string _key, std::string _value) : key(_key), value(_value) {}
+    std::string key_, column_, value_;
+    Object(std::string key, std::string column, std::string value) : key_(key), column_(column), value_(value) {}
     Object(){}
 };
 
@@ -42,7 +41,7 @@ public:
     Message* handle_learn_msg(int view_num, int seq_num, std::string value, Message* msg);
     Message* broadcast_learn(int seq_num);
 
-    std::string get_latest_value(std::string key);
+    std::string get_latest_value(std::string key, std::string column);
     std::vector<std::string> get_all_keys();
     void print_log();
     int get_seqnum();

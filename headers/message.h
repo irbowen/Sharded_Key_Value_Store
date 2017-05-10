@@ -63,6 +63,7 @@ public:
     int view_num = -1;
     int seq_num = 0;
     std::string key = "";
+    std::string column = "";
     std::string value = "";
     std::vector<std::string> all_keys;
     node sender;
@@ -71,6 +72,7 @@ public:
     std::string serialize();
     void deserialize(std::string in);
     std::string get_key();
+    std::string get_column();
     std::string get_value();
     std::string get_client_id();
     int get_client_seq_num();

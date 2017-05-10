@@ -17,6 +17,7 @@ string client_lib::get(string key) {
     Message msg;
     msg.msg_type = MessageType::GET;
     msg.key = key;
+    msg.column= "column";
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
@@ -34,6 +35,7 @@ void client_lib::put(string key, string value) {
     Message msg;
     msg.msg_type = MessageType::PUT;
     msg.key = key;
+    msg.column= "column";
     msg.value = value;
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
@@ -51,6 +53,7 @@ void client_lib::delete_key(std::string key) {
     Message msg;
     msg.msg_type = MessageType::DELETE;
     msg.key = key;
+    msg.column= "column";
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {

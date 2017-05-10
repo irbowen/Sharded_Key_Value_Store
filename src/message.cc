@@ -17,6 +17,9 @@ std::string Message::serialize() {
     oss << key;
     oss << div_char;
 
+    oss << column;
+    oss << div_char;
+
     oss << value;
     oss << div_char;
 
@@ -70,6 +73,7 @@ void Message::deserialize(std::string in) {
     view_num = stoi(array.at(index++));
     seq_num = stoi(array.at(index++));
     key = array.at(index++);
+    column = array.at(index++);
     value = array.at(index++);
     sender.port_ = stoi(array.at(index++));
     sender.host_ = array.at(index++);
@@ -132,20 +136,24 @@ std::string Message::get_key() {
     return split(value).at(0);
 }
 
-std::string Message::get_value() {
+std::string Message::get_column() {
     return split(value).at(1);
+}
+
+std::string Message::get_value() {
+    return split(value).at(2);
 }
 
 std::string Message::get_client_id() {
     auto array = split(value);
-    return array.at(2) + "#" + array.at(3);
+    return array.at(3) + "#" + array.at(4);
 }
 
 int Message::get_client_seq_num() {
-    return stoi(split(value).at(4));
+    return stoi(split(value).at(5));
 }
 
 node Message::get_client_node() {
     auto array =  split(value);
-    return node(stoi(array.at(2)), array.at(3));
+    return node(stoi(array.at(3)), array.at(4));
 }

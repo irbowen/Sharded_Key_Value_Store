@@ -45,7 +45,7 @@ Message* KV_Store::handle_get_msg(Message* msg) {
     reply->msg_type = MessageType::PROPOSAL_LEARNT;
     reply->receivers.push_back(msg->sender);
     reply->key = msg->key;
-    reply->value = learner_->get_latest_value(msg->key);
+    reply->value = learner_->get_latest_value(msg->key, msg->column);
     return reply;
 }
 
@@ -58,10 +58,12 @@ Message* KV_Store::handle_put_msg(Message* msg) {
     reply->msg_type = MessageType::START_PREPARE;
     reply->view_num = msg->view_num;
     string true_value = msg->key
+        + "#" + msg->column
         + "#" + msg->value
         + "#" + to_string(msg->sender.port_)
         + "#" + msg->sender.host_
         + "#" + to_string(msg->seq_num);
+    cout << true_value;
     reply->value = true_value;
     reply->sender = env_->server_;
     env_->convert_msg_to_broadcast(reply);

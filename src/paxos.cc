@@ -62,7 +62,7 @@ Message* Paxos::handle_msg(Message* message) {
             if(client_progress_map.count(in_client_id) != 0 &&
                 client_progress_map[in_client_id] >= in_client_seq_number){
                 reply->key = message->key;
-                reply->value = learner_.get_latest_value(message->key);
+                reply->value = learner_.get_latest_value(message->key, message->column);
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
                 reply->receivers.push_back(message->get_client_node());
                 break;

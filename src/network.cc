@@ -18,9 +18,9 @@ network::network(int _port, std::string _host) : port(_port), host(_host) {
     assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
     assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
     addr_len = sizeof(addr);
-    COUT << "@@@ socketfd: " << serverfd << " ";
-    COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << " ";
-    COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
+    //COUT << "@@@ socketfd: " << serverfd << " ";
+    //COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << " ";
+    //COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
 
 /* Block recv on socket */
@@ -46,6 +46,7 @@ Message* network::recv_from() {
         delete[] buf;
         Message* msg = new Message();
         msg->deserialize(tmp);
+        cout << tmp;
         return msg;
     }
 }
