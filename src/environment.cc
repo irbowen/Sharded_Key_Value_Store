@@ -24,5 +24,5 @@ void Environment::convert_msg_to_broadcast(Message* msg) {
 }
 
 string Environment::get_host_port_id_string() {
-  return server_.host_ + ":" + server_.port_ + ":" + replica_id_;
+  return server_.host_ + ":" + to_string(server_.port_) + ":" + to_string(replica_id_);
 }

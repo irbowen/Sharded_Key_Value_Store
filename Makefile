@@ -38,7 +38,7 @@ kv_client_%.out: objs/kv_client_%.o $(CLIENT_LIB)
 
 ########################################
 clean:
-	touch bin/paxos_server bin/kv_master
+	touch bin/replica_exec bin/kv_master
 	touch log_0.txt
 	touch objs/dummy.o bin/dummy.out
-	rm objs/*.o bin/*.out log_*.txt bin/kv_master bin/paxos_server
+	rm objs/*.o bin/*.out log_*.txt bin/kv_master bin/replica_exec

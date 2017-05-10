@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <string>
 #include <map>
+
+#include "environment.h"
 #include "message.h"
 #include "network.h"
 
@@ -13,7 +15,7 @@ class Proposer {
 private:
     std::map<int, size_t> count;
 
-    size_t quorum;
+    size_t quorum_;
     int id;
 
     std::vector<node> replicas;
@@ -22,9 +24,9 @@ private:
     std::vector<std::vector<view_val>> all_acceptors_state;
 
     bool is_seq_hole(int seq);
-    
+
     /* Proposer shares the network library of the replica */
-    network *net;
+    Environment* env_;
 public:
     /* The value to be proposed */
     std::string to_propose;
@@ -32,7 +34,7 @@ public:
     /* Did this primary just become the new primary === Fix required */
     bool is_new_primary = false;
 
-    void init(vector<node> _replicas, int _id, network *net, vector<int> seq_holes);
+    void init(Environment* env, vector<int> seq_holes);
 
     // If we have already reached a quorum for this view_num
     // there is no need to run the firs step of paxos again
@@ -43,7 +45,7 @@ public:
 
     // Create a PROPOSE msg
     Message* handle_prepare_accept(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num);
-    
+
     Message* handle_prepare_accept_fast(std::vector<view_val> acceptor_state, int view_num, std::string value, int seq_num);
 
     Message* handle_prepare_reject(int view_num);

@@ -5,9 +5,9 @@
 #include <fstream>
 #include <string>
 #include <vector>
+
 #include "message.h"
 #include "network.h"
-
 
 /* Contains information about replicas, that can be easily passed
   down and injected into other classes */
