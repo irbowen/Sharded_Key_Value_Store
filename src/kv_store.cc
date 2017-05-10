@@ -12,7 +12,7 @@ bool KV_Store::is_primary(Message* msg) {
 
 Message* KV_Store::handle_msg(Message* msg) {
     Message* reply = new Message();
-    switch (message->msg_type) {
+    switch (msg->msg_type) {
         case MessageType::GET:
             return handle_get_msg(msg);
         case MessageType::PUT:
@@ -50,20 +50,20 @@ Message* KV_Store::handle_get_msg(Message* msg) {
 }
 
 Message* KV_Store::handle_put_msg(Message* msg) {
-    Message* msg = new Message();
+    Message* reply = new Message();
     if (!is_primary(msg)) {
-        msg->msg_type = MessageType::NO_ACTION;
+        reply->msg_type = MessageType::NO_ACTION;
         return msg;
     }
-    msg->msg_type = MessageType::START_PREPARE;
-    msg->view_num = msg->view_num;
+    reply->msg_type = MessageType::START_PREPARE;
+    reply->view_num = msg->view_num;
     string true_value = msg->key
         + "#" + msg->value
         + "#" + to_string(put_msg->sender.port_)
         + "#" + msg->sender.host_
         + "#" + to_string(msg->seq_num);
-    msg->value = true_value;
-    msg->sender = env_->server_;
-    env_->convert_msg_to_broadcast(msg);
-    return msg;
+    reply->value = true_value;
+    reply->sender = env_->server_;
+    env_->convert_msg_to_broadcast(reply);
+    return reply;
 }
