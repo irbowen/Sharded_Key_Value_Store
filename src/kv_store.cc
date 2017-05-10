@@ -1,59 +1,69 @@
 
 #include "../headers/kv_store.h"
 
-using namespace std;
-
-KV_Store::KV_Store(int replica_id, int port, std::string host, vector<node> replicas)
-    : replica_id_(replica_id), port_(port), host_(host), replicas_(replicas)
-{}
-
-void KV_Store::init(Learner* learner) {
+KV_Store::KV_Store(Environment* env, Learner* learner) {
+    env_ = env;
     learner_ = learner;
 }
-Message* KV_Store::handle_get_all_keys(Message* get_msg){
-    if (get_msg->view_num % replicas_.size() != replica_id_) {
-        Message* msg = new Message();
-        msg->msg_type = MessageType::NO_ACTION;
-        return msg;
-    }
-    Message* ack_msg = new Message();
-    ack_msg->msg_type = MessageType::PROPOSAL_LEARNT;
-    ack_msg->receivers.push_back(get_msg->sender);
-    ack_msg->all_keys = learner_->get_all_keys();
-    return ack_msg;
-}
-Message* KV_Store::handle_get_msg(Message* get_msg) {
-    if (get_msg->view_num % replicas_.size() != replica_id_) {
-        Message* msg = new Message();
-        msg->msg_type = MessageType::NO_ACTION;
-        return msg;
-    }
-    Message* ack_msg = new Message();
-    ack_msg->msg_type = MessageType::PROPOSAL_LEARNT;
-    ack_msg->receivers.push_back(get_msg->sender);
-    ack_msg->key = get_msg->key;
-    ack_msg->value = learner_->get_latest_value(get_msg->key);
-    return ack_msg;
+
+bool KV_Store::is_primary(Message* msg) {
+    return msg->view_num % env_->num_replicas_ == env_->replica_id_;
 }
 
-Message* KV_Store::handle_put_msg(Message* put_msg) {
+Message* KV_Store::handle_msg(Message* msg) {
+    Message* reply = new Message();
+    switch (message->msg_type) {
+        case MessageType::GET:
+            return handle_get_msg(msg);
+        case MessageType::PUT:
+            return handle_put_msg(msg);
+        case MessageType::GET_KEYS:
+            return handle_get_all_keys(msg);
+    }
+    // Should never get to this point
+    return reply;
+}
+
+Message* KV_Store::handle_get_all_keys(Message* msg){
+    Message* reply = new Message();
+    if (!is_primary(msg)) {
+        reply->msg_type = MessageType::NO_ACTION;
+        return reply;
+    }
+    reply->msg_type = MessageType::PROPOSAL_LEARNT;
+    reply->receivers.push_back(get_msg->sender);
+    reply->all_keys = learner_->get_all_keys();
+    return reply;
+}
+
+Message* KV_Store::handle_get_msg(Message* msg) {
+    Message* reply = new Message();
+    if (!is_primary(msg)) {
+        reply->msg_type = MessageType::NO_ACTION;
+        return reply;
+    }
+    reply->msg_type = MessageType::PROPOSAL_LEARNT;
+    reply->receivers.push_back(msg->sender);
+    reply->key = msg->key;
+    reply->value = learner_->get_latest_value(msg->key);
+    return reply;
+}
+
+Message* KV_Store::handle_put_msg(Message* msg) {
     Message* msg = new Message();
-    if (put_msg->view_num % replicas_.size() != replica_id_) {
+    if (!is_primary(msg)) {
         msg->msg_type = MessageType::NO_ACTION;
         return msg;
     }
     msg->msg_type = MessageType::START_PREPARE;
-    msg->view_num = put_msg->view_num;
-    string true_value = put_msg->key
-        + "#" + put_msg->value
+    msg->view_num = msg->view_num;
+    string true_value = msg->key
+        + "#" + msg->value
         + "#" + to_string(put_msg->sender.port_)
-        + "#" + put_msg->sender.host_
-        + "#" + to_string(put_msg->seq_num);
+        + "#" + msg->sender.host_
+        + "#" + to_string(msg->seq_num);
     msg->value = true_value;
-
-    msg->sender = node(port_, host_);
-    for (auto& r : replicas_) {
-        msg->receivers.push_back(r);
-    }
+    msg->sender = env_->server_;
+    env_->convert_msg_to_broadcast(msg);
     return msg;
 }

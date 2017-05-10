@@ -2,6 +2,7 @@
 #ifndef environment_h
 #define environment_h
 
+#include <fstream>
 #include <string>
 #include <vector>
 #include "message.h"
@@ -17,7 +18,7 @@ public:
     // Node representing this server
     node server_;
     // This node's id in the replica list
-    int id_;
+    int replica_id_;
     // Total number of replicas in the system
     size_t num_replicas_ = 0;
     // List of all the replicas in the system
@@ -25,7 +26,7 @@ public:
     // A pointer to the global network object used by this replica
     network* net_;
     // Turn a message into a broadcast message
-    void make_broadcast(Message* msg);
+    void convert_msg_to_broadcast(Message* msg);
 };
 
 #endif
