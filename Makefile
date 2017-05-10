@@ -6,8 +6,8 @@ VERSION = $(RELEASE)
 CXXFLAGS = -std=c++14 $(VERSION) -pedantic -pthread
 
 BOTH_LIB := objs/network.o objs/message.o
-PAXOS_LIB := objs/environment.o objs/acceptor.o objs/learner.o objs/proposer.o
-REPLICA_LIB := objs/paxos_main.o  objs/replica.o  objs/kv_store.o $(PAXOS_LIB) $(BOTH_LIB)
+PAXOS_LIB := objs/paxos.o objs/acceptor.o objs/learner.o objs/proposer.o
+REPLICA_LIB := objs/replica_main.o objs/environment.o objs/replica.o  objs/kv_store.o $(PAXOS_LIB) $(BOTH_LIB)
 CLIENT_LIB := objs/client_lib.o $(BOTH_LIB)
 MASTER_LIB := objs/master_main.o objs/master.o objs/shard.o $(BOTH_LIB)
 

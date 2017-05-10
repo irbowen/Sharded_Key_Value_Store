@@ -11,10 +11,10 @@
 
 /* Contains information about replicas, that can be easily passed
   down and injected into other classes */
-class environment {
+class Environment {
 public:
     // Construct the environment object
-    environment(int port, std::string host, int id, std::string config_file, network* net);
+    Environment(int port, std::string host, int id, std::string config_file, network* net);
     // Node representing this server
     node server_;
     // This node's id in the replica list
@@ -27,6 +27,8 @@ public:
     network* net_;
     // Turn a message into a broadcast message
     void convert_msg_to_broadcast(Message* msg);
+    // Create a string to id this replica - usefull for logs and debug
+    string get_host_port_id_string();
 };
 
 #endif

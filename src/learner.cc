@@ -68,7 +68,7 @@ vector<string> Learner::get_all_keys(){
     return return_keys;;
 }
 void Learner::print_log() {
-    string log_filename = "log_" + to_string(port) + "_" + to_string(id) +  + ".txt";
+    string log_filename = "log_" + env_->get_host_port_id_string() + ".txt";
     ostringstream oss;
     for (auto& msg : object_log) {
         if (msg.key == "READ_KEY") {
@@ -81,11 +81,8 @@ void Learner::print_log() {
     outfile << oss.str() << endl << endl;
 }
 
-
-void Learner::init(size_t replica_count, size_t _id, int port) {
-    this->port = port;
-    quorum = (1 + replica_count) >> 1;
-    id = _id;
+void Learner::init(Environment* env) {
+    env_ = env;
 }
 
 int Learner::get_seqnum() {

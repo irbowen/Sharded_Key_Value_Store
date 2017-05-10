@@ -7,8 +7,9 @@
 #include <map>
 #include <mutex>
 #include <string>
-#include <thread>
+
 #include "message.h"
+#include "environment.h"
 
 struct Score {
     size_t tally;
@@ -26,14 +27,13 @@ class Learner {
 private:
     std::mutex m;
     size_t quorum;
-    size_t id;
     std::map<int, Score> score_map;
-    int port;
+    Environment* env_;
 public:
     /* KV Store needs access to the data log */
     std::vector<std::string> log;
     std::vector<Object> object_log;
-    void init(size_t replica_count, size_t _id, int port);
+    void init(Environment* env);
 
     // For all of the below methods, the caller is responsible for freeing the memory
     // used by the messages that are returned

@@ -31,7 +31,7 @@ Message* KV_Store::handle_get_all_keys(Message* msg){
         return reply;
     }
     reply->msg_type = MessageType::PROPOSAL_LEARNT;
-    reply->receivers.push_back(get_msg->sender);
+    reply->receivers.push_back(msg->sender);
     reply->all_keys = learner_->get_all_keys();
     return reply;
 }
@@ -59,7 +59,7 @@ Message* KV_Store::handle_put_msg(Message* msg) {
     reply->view_num = msg->view_num;
     string true_value = msg->key
         + "#" + msg->value
-        + "#" + to_string(put_msg->sender.port_)
+        + "#" + to_string(msg->sender.port_)
         + "#" + msg->sender.host_
         + "#" + to_string(msg->seq_num);
     reply->value = true_value;

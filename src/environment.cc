@@ -2,7 +2,7 @@
 #include "../headers/environment.h"
 
 /* Setting up the replica with the provided port and host */
-environment::environment(int port, string host, int id, string config_file,
+Environment::Environment(int port, string host, int id, string config_file,
     network* net) : server_(port, host), replica_id_(id)
 {
     string h, p, rep_id;
@@ -16,9 +16,13 @@ environment::environment(int port, string host, int id, string config_file,
 
 /* Remove all current recipients, and add all replicas in the
    environment to the mesages receiver list */
-void environment::convert_msg_to_broadcast(Message* msg) {
+void Environment::convert_msg_to_broadcast(Message* msg) {
     msg->receivers.clear();
     for (auto& r: replicas_) {
         msg->receivers.push_back(r);
     }
+}
+
+string Environment::get_host_port_id_string() {
+  return server_.host_ + ":" + server_.port_ + ":" + replica_id_;
 }

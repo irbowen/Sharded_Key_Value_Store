@@ -12,13 +12,13 @@ class KV_Store {
 private:
     Learner* learner_;
     Environment* env_;
-    bool is_primary();
+    bool is_primary(Message* msg);
 
 public:
     KV_Store(Environment* env, Learner* learner);
 
     /* The dispatcher function */
-    void handle_kv_msg(Message* message);
+    Message* handle_msg(Message* message);
 
     /* The key value stuff! */
     Message* handle_get_msg(Message* get_msg);
