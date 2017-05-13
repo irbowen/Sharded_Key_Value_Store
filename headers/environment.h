@@ -14,7 +14,7 @@
 class Environment {
 public:
     // Construct the environment object
-    Environment(int port, std::string host, int id, std::string config_file, network* net);
+    Environment(int port, std::string host, int id, std::string config_file, network* net, bool debug);
     // Node representing this server
     node server_;
     // This node's id in the replica list
@@ -25,6 +25,9 @@ public:
     std::vector<node> replicas_;
     // A pointer to the global network object used by this replica
     network* net_;
+    //debug vs production
+    bool debug_ = false;
+    bool is_debug();
     // Turn a message into a broadcast message
     void convert_msg_to_broadcast(Message* msg);
     // Create a string to id this replica - usefull for logs and debug

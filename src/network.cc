@@ -46,7 +46,6 @@ Message* network::recv_from() {
         delete[] buf;
         Message* msg = new Message();
         msg->deserialize(tmp);
-        cout << tmp;
         return msg;
     }
 }
@@ -63,7 +62,7 @@ Message* network::recv_from_with_fixed_timeout() {
 
     while (true) {
         struct timeval tv;
-        tv.tv_sec = 5;
+        tv.tv_sec = 10;
         tv.tv_usec = 0;
         assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);

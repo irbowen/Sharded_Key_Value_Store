@@ -42,19 +42,21 @@ void Replica::start() {
 
 /* Handle the given message, handing off to whichever class should
    be responsible for the given message */
-void Replica::handle_msg(Message* message) {
+void Replica::handle_msg(Message* msg) {
     Message* reply = new Message();
-    if (message->is_paxos_msg()) {
-        reply = kv_store_->handle_msg(message);
+    if (env_->is_debug()) { cout << "Replica recv'ed: " << msg->serialize() << endl; }
+
+    if (msg->is_paxos_msg()) {
+        reply = paxos_->handle_msg(msg);
     }
-    if (message->is_kv_msg()) {
-        reply = paxos_->handle_msg(message);
+    if (msg->is_kv_msg()) {
+        reply = kv_store_->handle_msg(msg);
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
         reply->sender.host_ = env_->server_.host_;
         reply->sender.port_ = env_->server_.port_;
         env_->net_->sendto(reply);
     }
-    delete(message);
+    delete(msg);
     delete(reply);
 }

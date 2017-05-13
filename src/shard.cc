@@ -27,6 +27,7 @@ void Shard::run() {
             cv.wait(lock);
         }
         Message* next_msg = msg_queue_.front();
+        cout << "Shard is handling: " << next_msg->serialize() << endl;
         msg_queue_.pop();
         lock.unlock();
         Message* reply = new Message();
@@ -86,6 +87,7 @@ Message* Shard::handle_get(string key, string column, node sender) {
         msg.view_num = cur_view_num_;
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
+        cout << "[Master_Shard_Object] - Got reply from paxos: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             string val = reply->value;
             //cout << "[Master_Shard_Object] - Got value: " << val << endl;
@@ -109,7 +111,7 @@ Message* Shard::handle_put(string key, string column, string value, node sender)
     msg.column = column;
     msg.value = value;
     msg.sender = node(port_, host_);
-    for(auto& r : replicas_){
+    for(auto& r : replicas_) {
         msg.receivers.push_back(r);
     }
     net_.set_start_timeout_factor(4);
@@ -118,8 +120,8 @@ Message* Shard::handle_put(string key, string column, string value, node sender)
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            //cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
-            //    << " " << reply->get_value()  << "}}" << endl;
+            cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
+                << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
             reply->msg_type = MessageType::MASTER_ACK;
             reply->receivers.clear();
@@ -159,4 +161,3 @@ Message* Shard::handle_get_all_keys(node sender){
 Message* Shard::handle_delete(string key, string column, node sender) {
     return handle_put(key, column, "DELETED_KEY", sender);
 }
-

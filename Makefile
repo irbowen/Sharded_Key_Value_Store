@@ -13,7 +13,7 @@ MASTER_LIB := objs/master_main.o objs/master.o objs/shard.o $(BOTH_LIB)
 
 ########################################
 default: all
-all: paxos_server kv_master clients
+all: replica_exec kv_master clients
 
 DEPS := $(wildcard headers/*.h)
 
@@ -21,7 +21,7 @@ DEPS := $(wildcard headers/*.h)
 objs/%.o: src/%.cc $(DEPS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-paxos_server: $(REPLICA_LIB)
+replica_exec: $(REPLICA_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 kv_master: $(MASTER_LIB)

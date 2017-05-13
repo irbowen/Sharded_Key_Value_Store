@@ -34,8 +34,8 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value, Messa
 string Learner::get_latest_value(string key, string column) {
     lock_guard<mutex> lock(m);
     auto res = find_if(object_log.rbegin(), object_log.rend(),
-        [key](auto& obj) {
-            return obj.key_ == key;
+        [key, column](auto& obj) {
+            return obj.key_ == key && obj.column_ == column;
     });
     if (res == object_log.rend() || res->value_ == "DELETED_KEY") {
         return "ERROR - Key not found";

@@ -12,6 +12,8 @@ bool KV_Store::is_primary(Message* msg) {
 
 Message* KV_Store::handle_msg(Message* msg) {
     Message* reply = new Message();
+    // Debug output
+    if (env_->is_debug()) { cout << "KV-Store recv'ed: " << msg->serialize() << endl; }
     switch (msg->msg_type) {
         case MessageType::GET:
             return handle_get_msg(msg);
