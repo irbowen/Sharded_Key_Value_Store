@@ -40,14 +40,12 @@ void client_lib::put(string key, string column, string value) {
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
-        cout << "Client is sending " << msg.serialize() << endl;
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_fixed_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::MASTER_ACK) {
             delete(reply);
             return;
         }
-        std::this_thread::sleep_for(10s);
     }
 }
 
