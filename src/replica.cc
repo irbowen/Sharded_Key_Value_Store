@@ -57,6 +57,6 @@ void Replica::handle_msg(Message* msg) {
         reply->sender.port_ = env_->server_.port_;
         env_->net_->sendto(reply);
     }
-    //delete(msg);
-    //delete(reply);
+    delete(msg);
+    delete(reply);
 }
