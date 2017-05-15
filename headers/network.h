@@ -23,7 +23,8 @@
 
 using namespace std;
 #define MICROSECONDS 1000
-#define START_TIMEOUT (100 * MICROSECONDS)
+#define FIXED_TIMEOUT 20
+#define START_TIMEOUT (800 * MICROSECONDS)
 #define MICRO_PER_SECOND 1000000
 
 class network {
@@ -33,7 +34,7 @@ private:
     int serverfd;
     socklen_t addr_len;
     int micro_second_delay = START_TIMEOUT;
-    
+
 public:
     network(int port, std::string ip_addr);
     void set_start_timeout_factor(int factor);

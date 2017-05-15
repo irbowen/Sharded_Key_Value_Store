@@ -8,16 +8,18 @@ Shard::Shard(int port, std::string host, std::string config_filename)
 {
     string h, p, rep_id;
     ifstream config_fs(config_filename);
-    //cout << "[Master_Shard_Object] (" << port << ", " << host << ") is online with these replicas: ";
+    cout << "[Master_Shard_Object] (" << host << ":" << port << ") is online with these replicas: ";
     while (config_fs >> h >> p >> rep_id) {
         replicas_.push_back(node(stoi(p), h));
         cout << " " << host << ":" << p << ", ";
     }
     cout << endl;
 }
+
 string Shard::get_port_host(){
     return to_string(port_) + host_;
 }
+
 void Shard::run() {
     while (true) {
         unique_lock<mutex> lock(m);
@@ -32,15 +34,15 @@ void Shard::run() {
             case MessageType::NO_ACTION:
                 break;
             case MessageType::GET: {
-                reply = handle_get(next_msg->key, next_msg->sender);
+                reply = handle_get(next_msg->key, next_msg->column, next_msg->sender);
                 break;
             }
             case MessageType::PUT: {
-                reply = handle_put(next_msg->key, next_msg->value, next_msg->sender);
+                reply = handle_put(next_msg->key, next_msg->column, next_msg->value, next_msg->sender);
                 break;
             }
             case MessageType::DELETE: {
-                reply = handle_delete(next_msg->key, next_msg->sender);
+                reply = handle_delete(next_msg->key, next_msg->column, next_msg->sender);
                 break;
             }
             case MessageType::GET_KEYS: {
@@ -65,11 +67,12 @@ void Shard::register_msg(Message* message) {
     cv.notify_one();
 }
 
-Message* Shard::handle_get(string key, node sender) {
+Message* Shard::handle_get(string key, string column, node sender) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::GET;
     msg.key = key;
+    msg.column = column;
     msg.sender = node(port_, host_);
     for(auto& r : replicas_){
         msg.receivers.push_back(r);
@@ -78,10 +81,12 @@ Message* Shard::handle_get(string key, node sender) {
     while (true) {
         // run paxos for getting the message, so that the new primary if any is
         // up to date with the latest values that took place so far
-        handle_put("READ_KEY", key, sender);
+        // TODO: think abou this some more
+        handle_put("READ_KEY", key, column, sender);
         msg.view_num = cur_view_num_;
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
+        cout << "[Master_Shard_Object] - Got reply from paxos: " << reply->serialize() << endl;
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
             string val = reply->value;
             //cout << "[Master_Shard_Object] - Got value: " << val << endl;
@@ -97,14 +102,15 @@ Message* Shard::handle_get(string key, node sender) {
     }
 }
 
-Message* Shard::handle_put(string key, string value, node sender) {
+Message* Shard::handle_put(string key, string column, string value, node sender) {
     Message msg;
     msg.seq_num = client_seq_num_;
     msg.msg_type = MessageType::PUT;
     msg.key = key;
+    msg.column = column;
     msg.value = value;
     msg.sender = node(port_, host_);
-    for(auto& r : replicas_){
+    for(auto& r : replicas_) {
         msg.receivers.push_back(r);
     }
     net_.set_start_timeout_factor(4);
@@ -125,6 +131,7 @@ Message* Shard::handle_put(string key, string value, node sender) {
         cout << "View Num Changed to: " << cur_view_num_ << endl;
     }
 }
+
 Message* Shard::handle_get_all_keys(node sender){
     Message msg;
     msg.seq_num = client_seq_num_;
@@ -149,7 +156,7 @@ Message* Shard::handle_get_all_keys(node sender){
         cur_view_num_ += 1;
     }
 }
-Message* Shard::handle_delete(string key, node sender) {
-    return handle_put(key, "DELETED_KEY", sender);
-}
 
+Message* Shard::handle_delete(string key, string column, node sender) {
+    return handle_put(key, column, "DELETED_KEY", sender);
+}

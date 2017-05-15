@@ -38,7 +38,6 @@ Message* Acceptor::accept_propose_msg(int in_view, std::string new_value, int se
     return msg;
 }
 
-void Acceptor::init(size_t _num_replicas, int _id) {
-    num_replicas = _num_replicas;
-    id = _id;
+void Acceptor::init(Environment* env) {
+    env_ = env;
 }

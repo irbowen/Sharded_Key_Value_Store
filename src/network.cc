@@ -18,9 +18,9 @@ network::network(int _port, std::string _host) : port(_port), host(_host) {
     assert(setsockopt(serverfd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val)) == 0);
     assert(::bind(serverfd, (struct sockaddr*) &addr, sizeof(addr)) == 0);
     addr_len = sizeof(addr);
-    COUT << "@@@ socketfd: " << serverfd << " ";
-    COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << " ";
-    COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
+    //COUT << "@@@ socketfd: " << serverfd << " ";
+    //COUT << "@@@ host " << ntohl(addr.sin_addr.s_addr) << " ";
+    //COUT << "@@@ port " << ntohs(addr.sin_port) << endl;
 }
 
 /* Block recv on socket */
@@ -62,13 +62,12 @@ Message* network::recv_from_with_fixed_timeout() {
 
     while (true) {
         struct timeval tv;
-        tv.tv_sec = 5;
+        tv.tv_sec = FIXED_TIMEOUT;
         tv.tv_usec = 0;
         assert(setsockopt(serverfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv)) == 0);
         numbytes = recvfrom(serverfd, buf, MAXBUFLEN-1 , 0, (struct sockaddr*) &their_addr, &addr_len);
         if (numbytes <= 0) {
-            delete[] buf;
-            return nullptr;
+            continue;
         }
         string tmp(buf);
         delete[] buf;

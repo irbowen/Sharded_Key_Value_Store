@@ -131,7 +131,7 @@ void Master::handle_add_shard(Message *message){
     // note : the master is blocking on the above add shard operation
     // hence new requests from clients will be queued up in net_
     // but we use move_net for moving keys from shards
-    
+
     // send success to client
     reply = new Message;
     reply->msg_type = MessageType::MASTER_ACK;
@@ -151,4 +151,3 @@ void Master::handle_msg(Message* message) {
         handle_add_shard(message);
     }
 }
-

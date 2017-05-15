@@ -6,14 +6,14 @@ VERSION = $(RELEASE)
 CXXFLAGS = -std=c++14 $(VERSION) -pedantic -pthread
 
 BOTH_LIB := objs/network.o objs/message.o
-PAXOS_LIB := objs/environment.o objs/acceptor.o objs/learner.o objs/proposer.o
-REPLICA_LIB := objs/paxos_main.o  objs/replica.o  objs/kv_store.o $(PAXOS_LIB) $(BOTH_LIB)
+PAXOS_LIB := objs/paxos.o objs/acceptor.o objs/learner.o objs/proposer.o
+REPLICA_LIB := objs/replica_main.o objs/environment.o objs/replica.o  objs/kv_store.o $(PAXOS_LIB) $(BOTH_LIB)
 CLIENT_LIB := objs/client_lib.o $(BOTH_LIB)
 MASTER_LIB := objs/master_main.o objs/master.o objs/shard.o $(BOTH_LIB)
 
 ########################################
 default: all
-all: paxos_server kv_master clients
+all: replica_exec kv_master clients
 
 DEPS := $(wildcard headers/*.h)
 
@@ -21,7 +21,7 @@ DEPS := $(wildcard headers/*.h)
 objs/%.o: src/%.cc $(DEPS)
 	$(CXX) $(CXXFLAGS) -o $@ -c $<
 
-paxos_server: $(REPLICA_LIB)
+replica_exec: $(REPLICA_LIB)
 	$(CXX) $(CXXFLAGS) -o bin/$@ $^
 
 kv_master: $(MASTER_LIB)
@@ -38,7 +38,7 @@ kv_client_%.out: objs/kv_client_%.o $(CLIENT_LIB)
 
 ########################################
 clean:
-	touch bin/paxos_server bin/kv_master
+	touch bin/replica_exec bin/kv_master
 	touch log_0.txt
 	touch objs/dummy.o bin/dummy.out
-	rm objs/*.o bin/*.out log_*.txt bin/kv_master bin/paxos_server
+	rm objs/*.o bin/*.out log_*.txt bin/kv_master bin/replica_exec

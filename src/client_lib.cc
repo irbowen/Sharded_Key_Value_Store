@@ -13,10 +13,11 @@ client_lib::client_lib(int master_port, string master_host, int client_port, str
 }
 
 
-string client_lib::get(string key) {
+string client_lib::get(string key, string column) {
     Message msg;
     msg.msg_type = MessageType::GET;
     msg.key = key;
+    msg.column= column;
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {
@@ -30,10 +31,11 @@ string client_lib::get(string key) {
     }
 }
 
-void client_lib::put(string key, string value) {
+void client_lib::put(string key, string column, string value) {
     Message msg;
     msg.msg_type = MessageType::PUT;
     msg.key = key;
+    msg.column = column;
     msg.value = value;
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
@@ -47,10 +49,11 @@ void client_lib::put(string key, string value) {
     }
 }
 
-void client_lib::delete_key(std::string key) {
+void client_lib::delete_key(std::string key, string column) {
     Message msg;
     msg.msg_type = MessageType::DELETE;
     msg.key = key;
+    msg.column= column;
     msg.sender = node(client_port_, client_host_);
     msg.receivers.push_back(node(master_port_, master_host_));
     while (true) {

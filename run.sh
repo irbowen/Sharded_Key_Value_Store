@@ -3,4 +3,4 @@ make clean; make;
 ./scripts/start_master.sh
 ./scripts/start_replicas.sh
 sleep 1
-./bin/kv_client_fast.out
+./bin/kv_client_inter.out

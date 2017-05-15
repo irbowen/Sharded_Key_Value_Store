@@ -14,9 +14,9 @@ private:
     network net_;
 public:
     client_lib(int master_port, std::string master_host, int client_port, std::string client_host);
-    std::string get(std::string key);
-    void put(std::string key, std::string value);
-    void delete_key(std::string key);
+    std::string get(std::string key, std::string column);
+    void put(std::string key, std::string column, std::string value);
+    void delete_key(std::string key, std::string column);
     void add_shard(std::string config);
 
 };

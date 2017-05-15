@@ -39,9 +39,9 @@ public:
     std::string get_port_host();
     /* These functions assume that this shard has the key that you want */
     void register_msg(Message* message);
-    Message* handle_get(std::string key, node sender);
-    Message* handle_put(std::string key, std::string value, node sender);
-    Message* handle_delete(std::string key, node sender);
+    Message* handle_get(std::string key, std::string column, node sender);
+    Message* handle_put(std::string key, std::string column, std::string value, node sender);
+    Message* handle_delete(std::string key, std::string column, node sender);
     Message* handle_get_all_keys(node sender);
 };
 

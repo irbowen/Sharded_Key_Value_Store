@@ -14,17 +14,13 @@
 
 #include "acceptor.h"
 #include "learner.h"
-#include "network.h"
 #include "proposer.h"
+#include "environment.h"
 
-class paxos {
+class Paxos {
 private:
-    // server info
-    int port;
-    std::string host;
-
-    // replica id
-    int id;
+    // Environment, including replicas, id, and host/port pairs
+    Environment* env_;
 
     // holes that we need to simulate
     vector<int> seq_holes;
@@ -45,19 +41,18 @@ private:
 
     /* Mapping from client_id to the latest client sequence number that got finished */
     std::map<string, int> client_progress_map;
+    bool is_primary(int view_num);
+    bool is_previous_view(int view_num);
 
     /* Paxos uses the following classes to maintain consistency */
-    Acceptor acceptor;
-    Proposer proposer;
-    Learner learner;
+    Acceptor acceptor_;
+    Proposer proposer_;
+    Learner learner_;
 
 public:
     Message* handle_msg(Message*);
-    bool is_primary(int view_num);
-    bool is_previous_view(int view_num);
-    void make_broadcast(Message* msg);
-    paxos(int _port, std::string _host, int _id,
-      std::string _config_file, std::string _holes_file);
+    Paxos(Environment* env, std::string holes_file);
+    Learner* get_learner();
 };
 
 #endif

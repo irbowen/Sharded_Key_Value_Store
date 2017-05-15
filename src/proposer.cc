@@ -3,13 +3,10 @@
 
 using namespace std;
 
-void Proposer::init(vector<node> _replicas, int _id, network* net, vector<int> holes) {
-    replicas = _replicas;
+void Proposer::init(Environment* env, vector<int> holes) {
+    env_ = env;
     seq_holes = holes;
-    quorum = (1 + _replicas.size()) >> 1;
-    //COUT << "zQuorum is: " << quorum << endl;
-    id = _id;
-    this->net = net;
+    quorum_ = (1 + env_->num_replicas_) >> 1;
 }
 
 Message* Proposer::handle_start_prepare(int view_num) {
@@ -48,7 +45,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         all_acceptors_state.push_back(acceptor_state);
     }
     count[view_num] += 1;
-    if (count[view_num] == quorum && is_new_primary) {
+    if (count[view_num] == quorum_ && is_new_primary) {
         // i am the new primary, i have reached a quorum, i have f+1 acceptor states
         // i can begin the fix process
 
@@ -70,7 +67,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
             for(int i = 0; i < all_acceptors_state.size(); i++){
                 auto item = all_acceptors_state[i][j];
                 quorum_count[item.view_num] += 1;
-                if(quorum_count[item.view_num] >= quorum){
+                if(quorum_count[item.view_num] >= quorum_){
                     quorum_reached = true;
                 }
                 if(item.view_num > best_view_val.view_num){
@@ -89,7 +86,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
                     reply->receivers.push_back(r);
                 }
                 reply->sender = replicas[id];   // quick hack to get proposer's info
-                net->sendto(reply);
+                env_->net_->sendto(reply);
             }
             // if quorum is reached, do nothing for this column
         }
@@ -101,7 +98,7 @@ Message* Proposer::handle_prepare_accept(std::vector<view_val> acceptor_state, i
         all_acceptors_state.clear();
     }
 
-    if (count[view_num] == quorum) {
+    if (count[view_num] == quorum_) {
         return handle_prepare_accept_fast(acceptor_state, view_num, value, seq_num);
     }
 
@@ -125,10 +122,9 @@ Message* Proposer::handle_propose_reject(int view_num) {
 }
 
 bool Proposer::reached_quroum(int view_num) {
-    return count[view_num] >= quorum;
+    return count[view_num] >= quorum_;
 }
 
 bool Proposer::is_seq_hole(int seq){
     return find(seq_holes.begin(), seq_holes.end(), seq) != seq_holes.end();
 }
-
