@@ -23,7 +23,7 @@
 #include "../headers/message.h"
 
 /* Setting up the replica with the provided port and host */
-Paxos::Paxos(Environment* env, string holes_file) : cur_view_num(-1) {
+Paxos::Paxos(Environment* env, string holes_file) : cur_view_num(-1), env_(env) {
     if (holes_file != "") {
         string hole;
         ifstream holes_fs(holes_file);
@@ -59,8 +59,8 @@ Message* Paxos::handle_msg(Message* message) {
             int in_client_seq_number = message->get_client_seq_num();
             // if the client's request is already learnt, but didn't get a response
             // send a response right away
-            if(client_progress_map.count(in_client_id) != 0 &&
-                client_progress_map[in_client_id] >= in_client_seq_number){
+            if (client_progress_map.count(in_client_id) != 0 &&
+                client_progress_map[in_client_id] >= in_client_seq_number) {
                 reply->key = message->key;
                 reply->value = learner_.get_latest_value(message->key, message->column);
                 reply->msg_type = MessageType::PROPOSAL_LEARNT;
@@ -69,12 +69,15 @@ Message* Paxos::handle_msg(Message* message) {
             }
             proposer_.to_propose = message->value;
             if (message->view_num > cur_view_num) {
+                cout << "Cur view num, msg view num, num replicas, replica id" << cur_view_num << " " <<
+                    message->view_num << " " << env_->num_replicas_ << " " << env_->replica_id_ << endl;
                 cur_view_num = message->view_num;
                 if (cur_view_num % env_->num_replicas_ == env_->replica_id_) {
                     proposer_.is_new_primary = true;
                     reply = proposer_.handle_start_prepare(cur_view_num);
                     reply->value = message->value;
                     env_->convert_msg_to_broadcast(reply);
+                    break;
                 }
             }
             if (is_primary(message->view_num)) {
@@ -140,5 +143,6 @@ Message* Paxos::handle_msg(Message* message) {
             break;
         }
     }
+    cout << "Paxos has created this msg: " << reply->serialize() << endl;
     return reply;
 }

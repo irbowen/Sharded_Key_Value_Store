@@ -45,7 +45,6 @@ void Replica::start() {
 void Replica::handle_msg(Message* msg) {
     Message* reply = new Message();
     if (env_->is_debug()) { cout << "Replica recv'ed: " << msg->serialize() << endl; }
-
     if (msg->is_paxos_msg()) {
         reply = paxos_->handle_msg(msg);
     }
@@ -53,10 +52,11 @@ void Replica::handle_msg(Message* msg) {
         reply = kv_store_->handle_msg(msg);
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
+        cout << "Replica is sending this msg: " << reply->serialize() << endl;
         reply->sender.host_ = env_->server_.host_;
         reply->sender.port_ = env_->server_.port_;
         env_->net_->sendto(reply);
     }
-    delete(msg);
-    delete(reply);
+    //delete(msg);
+    //delete(reply);
 }

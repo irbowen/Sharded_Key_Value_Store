@@ -12,12 +12,12 @@ Environment::Environment(int port, string host, int id, string config_file,
     }
     num_replicas_ = replicas_.size();
     net_ = net;
+    cout << "Config file name " << config_file << " " << num_replicas_ << " " << id << "/" << replica_id_ << endl;
 }
 
 /* Remove all current recipients, and add all replicas in the
    environment to the mesages receiver list */
 void Environment::convert_msg_to_broadcast(Message* msg) {
-    msg->receivers.clear();
     for (auto& r: replicas_) {
         msg->receivers.push_back(r);
     }

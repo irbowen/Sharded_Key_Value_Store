@@ -13,7 +13,7 @@ bool KV_Store::is_primary(Message* msg) {
 Message* KV_Store::handle_msg(Message* msg) {
     Message* reply = new Message();
     // Debug output
-    if (env_->is_debug()) { cout << "KV-Store recv'ed: " << msg->serialize() << endl; }
+    if (env_->is_debug() && is_primary(msg)) { cout << "KV-Store recv'ed: " << msg->serialize() << endl; }
     switch (msg->msg_type) {
         case MessageType::GET:
             return handle_get_msg(msg);
@@ -55,7 +55,7 @@ Message* KV_Store::handle_put_msg(Message* msg) {
     Message* reply = new Message();
     if (!is_primary(msg)) {
         reply->msg_type = MessageType::NO_ACTION;
-        return msg;
+        return reply;
     }
     reply->msg_type = MessageType::START_PREPARE;
     reply->view_num = msg->view_num;
@@ -65,9 +65,10 @@ Message* KV_Store::handle_put_msg(Message* msg) {
         + "#" + to_string(msg->sender.port_)
         + "#" + msg->sender.host_
         + "#" + to_string(msg->seq_num);
-    cout << true_value;
     reply->value = true_value;
     reply->sender = env_->server_;
     env_->convert_msg_to_broadcast(reply);
+    if (env_->is_debug()) { cout << "KV Store has crated this msg: " << reply->serialize() << endl; }
+
     return reply;
 }
