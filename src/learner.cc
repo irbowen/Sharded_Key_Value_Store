@@ -13,6 +13,7 @@ Message* Learner::handle_learn_msg(int in_view, int seq_num, string value, Messa
     score_map[seq_num].tally += 1;
     score_map[seq_num].value = value;
     // If this is the message that made us equal to the qurom
+    if (env_->is_debug()) { cout << "Learner got msg " << msg->serialize() << endl; }
     if (score_map[seq_num].tally == quorum) {
         // We should broadcast a proposal learned msg to everyone
         reply->msg_type = MessageType::PROPOSAL_LEARNT;
@@ -75,7 +76,7 @@ void Learner::print_log() {
         if (obj.key_ == "READ_KEY") {
             continue;
         }
-        oss << obj.key_ << ":" << obj.value_ << ", ";
+        oss << obj.key_ << ":" << obj.column_ << ":" << obj.value_ << ", ";
     }
     ofstream outfile;
     outfile.open(log_filename, ios_base::app);
@@ -84,6 +85,8 @@ void Learner::print_log() {
 
 void Learner::init(Environment* env) {
     env_ = env;
+    quorum = (env_->num_replicas_ + 1) >> 1;
+    if (env_->is_debug()) { cout << "Quorum: " << quorum << endl; }
 }
 
 int Learner::get_seqnum() {

@@ -53,7 +53,7 @@ int main(int argc, char* argv[]) {
     assert(port != -1 && id != -1);
     // Create the environment, and then pass that to the replica
     network net(port, host);
-    Environment env(port, host, id, config, &net, true);
+    Environment env(port, host, id, config, &net, false);
     Replica r(&env, holes);
     r.start();
 }

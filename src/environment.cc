@@ -12,7 +12,10 @@ Environment::Environment(int port, string host, int id, string config_file,
     }
     num_replicas_ = replicas_.size();
     net_ = net;
-    cout << "Config file name " << config_file << " " << num_replicas_ << " " << id << "/" << replica_id_ << endl;
+    if (debug_) {
+      cout << "Config file name " << config_file << " " <<
+      num_replicas_ << " " << id << "/" << replica_id_ << endl;
+    }
 }
 
 /* Remove all current recipients, and add all replicas in the

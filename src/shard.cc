@@ -27,7 +27,6 @@ void Shard::run() {
             cv.wait(lock);
         }
         Message* next_msg = msg_queue_.front();
-        cout << "Shard is handling: " << next_msg->serialize() << endl;
         msg_queue_.pop();
         lock.unlock();
         Message* reply = new Message();
@@ -120,8 +119,8 @@ Message* Shard::handle_put(string key, string column, string value, node sender)
         net_.sendto(&msg);
         Message *reply = net_.recv_from_with_timeout();
         if (reply != nullptr && reply->msg_type == MessageType::PROPOSAL_LEARNT) {
-            cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
-                << " " << reply->get_value()  << "}}" << endl;
+            //cout << "[Master_Shard_Object] - Put ack {{" << reply->get_key()
+            //    << " " << reply->get_value()  << "}}" << endl;
             client_seq_num_++;
             reply->msg_type = MessageType::MASTER_ACK;
             reply->receivers.clear();

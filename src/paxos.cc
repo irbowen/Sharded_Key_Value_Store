@@ -69,8 +69,6 @@ Message* Paxos::handle_msg(Message* message) {
             }
             proposer_.to_propose = message->value;
             if (message->view_num > cur_view_num) {
-                cout << "Cur view num, msg view num, num replicas, replica id" << cur_view_num << " " <<
-                    message->view_num << " " << env_->num_replicas_ << " " << env_->replica_id_ << endl;
                 cur_view_num = message->view_num;
                 if (cur_view_num % env_->num_replicas_ == env_->replica_id_) {
                     proposer_.is_new_primary = true;
@@ -143,6 +141,6 @@ Message* Paxos::handle_msg(Message* message) {
             break;
         }
     }
-    cout << "Paxos has created this msg: " << reply->serialize() << endl;
+    if (env_->is_debug()) { cout << "Paxos has created this msg: " << reply->serialize() << endl; }
     return reply;
 }

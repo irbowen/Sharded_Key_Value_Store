@@ -141,8 +141,6 @@ void Master::handle_add_shard(Message *message){
 void Master::handle_msg(Message* message) {
     /* Figure out which shard is responsible for this key,
        and send the call to it */
-    cout << "Master is forwarding: " << message->serialize() << endl;
-    cout << "Shard size: " << shards_.size() << std::endl;
     if (message->msg_type == MessageType::GET ||
             message->msg_type == MessageType::PUT ||
             message->msg_type == MessageType::DELETE) {

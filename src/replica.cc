@@ -52,7 +52,7 @@ void Replica::handle_msg(Message* msg) {
         reply = kv_store_->handle_msg(msg);
     }
     if (reply != nullptr && reply->msg_type != MessageType::NO_ACTION) {
-        cout << "Replica is sending this msg: " << reply->serialize() << endl;
+      if (env_->is_debug()) { cout << "Replica is sending: " << reply->serialize() << endl; }
         reply->sender.host_ = env_->server_.host_;
         reply->sender.port_ = env_->server_.port_;
         env_->net_->sendto(reply);
